@@ -1,0 +1,48 @@
+<div class="container">
+  <div class="panel">
+    <app-dashboard (promotinType)="onEventChanged($event)"></app-dashboard>    
+    <!-- Panel Left ends -->
+    <div class="panel-rt panel-rt__extend">
+      <app-header></app-header>
+      <div class="panel panel_promotions">
+          <div class="loader" *ngIf="isStartLoader"></div>
+        <div class="panel_promotions__top" *ngIf=" promotionsData">
+          <h1>Select your promotion <span>({{ promotionsData[0]?.title }})</span></h1>
+          <div class="panel_promotions__list">
+            <ul>
+              <li *ngFor="let eachpromotion of promotionsData; let i = index">
+                <div class="promo-block"></div>
+                <div class="promo-title" *ngIf="eachpromotion.parent_id == promotionsData[0].id"><a href="javascript:void(0);">{{ eachpromotion.title }}</a></div>
+              </li>             
+              <li class="promo_add_icon"> <a >
+                <div class="add_icon"><img src="assets/images/add.svg" width="70" height="70" /></div>
+                <span>more..</span> </a> </li>
+            </ul>
+          </div>
+          <!-- Promotinal list ends -->
+        </div>
+        <!-- promotional top block ends-->
+        <div class="panel_promotions__btm">
+          <h1 class="txt-black">Your Ionized promotion <span>(Download to use)</span></h1>
+          <div class="panel_promotions__grid" *ngFor="let eachblog of ionizedBlogData; let i = index">
+            <div class="grid">
+              <div class="grid_x_small bx-shadow brd-radius-10">
+                <div class="promo_img"> <img src="assets/images/dummy_img.jpg">
+                  <div class="promo_download"><a href="javascript:void(0);"><Img src="assets/css/images/download-icon.png"></a></div>
+                </div>
+                <div class="promot_details"> <span class="promo_title">{{ eachblog.title }}</span>
+                  <button class="button btn_small button_seconday ripple"><span>Publish</span></button>
+                </div>
+              </div>              
+            </div>            
+            
+          </div>
+        </div>
+        <!-- promotional Bottom block ends-->
+      </div>
+    </div>
+    <!-- Panel Right Ends -->
+  </div>
+  <!-- Panel ends -->
+</div>
+<!-- Container ends -->

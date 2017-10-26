@@ -1,0 +1,355 @@
+<div class="container">
+    <div class="panel">
+
+              <app-dashboard (analyticType)="onEventChanged($event)"></app-dashboard>
+              <div *ngIf="websiteAnalytics">
+                      <h1>Your Website Rank</h1>
+                      <div>World Ranking ={{wordRank}}</div>
+                      <div>India Ranking ={{indiaRank}}</div>
+                        
+                      <h1>User Engagement On Website</h1>
+                      <input type="radio" value="0" name="userengage" [ngModel]="userengage" (click)="lastMonthUserEngagementonWebsite()" > Last Month
+                      <input type="radio" value="1" name="userengage" [ngModel]="userengage" (click)="lastSixMonthsUserEngagementonWebsite()"> Last 6 Months 
+                      <div *ngIf="showUserEngagementLM" class="div-table">
+                          <div class="div-table-row">
+                            <div class="div-table-col">Last Month</div>
+                            <div class="div-table-col">Views</div>
+                          </div>
+                          <div class="div-table-row">
+                            <div class="div-table-col">Number of Users Visited</div>
+                            <div class="div-table-col">{{lUserVisited}}</div>
+                          </div>
+                          <div class="div-table-row">
+                              <div class="div-table-col">User Bounce Rate(%)</div>
+                              <div class="div-table-col">{{lBounceRate}}</div>
+                          </div>
+                          <div class="div-table-row">
+                              <div class="div-table-col">Avg Page-views Per Visit</div>
+                              <div class="div-table-col">{{lPageViews}}</div>
+                          </div>
+                          <div class="div-table-row">
+                              <div class="div-table-col">Average Time Spent(Mins)</div>
+                              <div class="div-table-col">{{lAvgPageViews}}</div>
+                          </div>
+                      </div>
+                      <div *ngIf="showUserEngagementLS" class="div-table">
+                            <div class="div-table-row">
+                                <div class="div-table-col">Last Six Months</div>
+                                <div class="div-table-col" *ngFor="let month of lastSixmonths">{{month}}</div>
+                            </div>
+                            <div class="div-table-row">
+                                <div class="div-table-col">Number of Users Visited</div>
+                                <div class="div-table-col" *ngFor="let user of lsUserVisited">{{user}}</div>
+                            </div>
+                            <div class="div-table-row">
+                                <div class="div-table-col">User Bounce Rate(%)</div>
+                                <div class="div-table-col" *ngFor="let bounce of lsBounceRate">{{bounce}}</div>
+                            </div>
+                            <div class="div-table-row">
+                                <div class="div-table-col">Avg Page-views Per Visit</div>
+                                <div class="div-table-col" *ngFor="let pageviews of lsPageViews">{{pageviews}}</div>
+                            </div>
+                            <div class="div-table-row">
+                                <div class="div-table-col">Average Time Spent(Mins)</div>
+                                <div class="div-table-col" *ngFor="let timespent of lsAvgTimeSpent">{{timespent}}</div>
+                            </div>
+                      </div>
+
+                      <h1>Trend Of User Visits</h1>
+                      <input type="radio" value="0" name="estimated" [ngModel]="estimated" (click)="getEstimatedDaily()" > Day-Wise
+                      <input type="radio" value="1" name="estimated" [ngModel]="estimated" (click)="getEstimatedMonthly()"> Month-Wise
+                      <div style="width:400px !important;" *ngIf="showDailyLine">
+                            <canvas baseChart width="100" height="100"
+                                        [datasets]="lineChartDataForDaily"
+                                        [labels]="lineChartLabelsForDaily"
+                                        [options]="lineChartOptions"
+                                        [colors]="lineChartColors"
+                                        [legend]="lineChartLegend"
+                                        [chartType]="lineChartType"
+                                        (chartHover)="chartHovered($event)"
+                                        (chartClick)="chartClicked($event)"></canvas>
+                      </div>
+                      <div style="width:400px !important;" *ngIf="showMonthly">
+                            <canvas baseChart width="100" height="100"
+                                        [datasets]="lineChartDataForMonthly"
+                                        [labels]="lineChartLabelsForMonthly"
+                                        [options]="lineChartOptions"
+                                        [colors]="lineChartColors"
+                                        [legend]="lineChartLegend"
+                                        [chartType]="lineChartType"
+                                        (chartHover)="chartHovered($event)"
+                                        (chartClick)="chartClicked($event)"></canvas>
+                      </div> 
+
+                      <h1>Total Visitors - Age vs Genders</h1>
+                      <input type="radio" value="0" name="ageAndGender" [ngModel]="ageAndGender" (click)="lastThreeMonthsUsersBasedOnAgeAndGender()" > Last 3 Months
+                      <input type="radio" value="1" name="ageAndGender" [ngModel]="ageAndGender" (click)="lastSixMonthsUsersBasedOnAgeAndGender()"> Last 6 Months
+                      <div style="display: block" *ngIf="showThreeBar">
+                            <canvas baseChart
+                                [datasets]="lastThreeMonthsAgeAndGender"
+                                [labels]="barChartLabels"
+                                [options]="barChartOptions"
+                                [legend]="barChartLegend"
+                                [chartType]="barChartType"></canvas>
+                      </div>
+
+                      <h1>Source Of Visitors</h1>
+                      <input type="radio" value="0" name="social" [ngModel]="social" (click)="lastThreeMonthsFromSocial()" > Last 3 Months
+                      <input type="radio" value="1" name="social" [ngModel]="social" (click)="lastSixMonthsFromSocial()"> Last 6 Months
+                      <div style="display: block" *ngIf="showSocilal">
+                            <canvas baseChart
+                                [datasets]="socialVisitors"
+                                [labels]="sourceOfVisitorsLabels"
+                                [colors]="barChartColors"
+                                [options]="barChartOptions"
+                                [legend]="barChartLegend"
+                                [chartType]="barChartType"></canvas>
+                      </div>
+
+                      <h1>Top pages</h1>
+                      <input type="radio" value="0" name="toppages" [ngModel]="toppages" (click)="topPagesLastMonth()" > Last 3 Months
+                      <input type="radio" value="1" name="toppages" [ngModel]="toppages" (click)="topPagesLastThreeMonths()"> Last 6 Months 
+                      <div *ngIf="showTopPages" class="div-table">
+                            <div class="div-table-row">
+                            <div class="div-table-col">TopPages</div>
+                            <div class="div-table-col">Page-views</div>
+                            <div class="div-table-col">Avg Time Spent (Mins)</div>
+                            <div class="div-table-col">Bounce Rate (%)</div>
+                            <div class="div-table-col">Enters From</div>
+                            <div class="div-table-col">Exits From</div>
+                      </div>
+                      <div class="div-table-row" *ngFor="let page of pages;let i = index">
+                            <div class="div-table-col">{{page}}</div>
+                            <div class="div-table-col">{{pageviews[i]}}</div>
+                            <div class="div-table-col">{{timeOnPage[i]}}</div>
+                            <div class="div-table-col">{{bounces[i]}}</div>
+                            <div class="div-table-col">{{entrances[i]}}</div>
+                            <div class="div-table-col">{{exits[i]}}</div> 
+                      </div>
+                      </div>
+
+                      <h1>Top Keywords In Google Search</h1>
+                      <input type="radio" value="0" name="keywords" [ngModel]="keywords" (click)="lastMonthKeywords()" > Last Month
+                      <input type="radio" value="1" name="keywords" [ngModel]="keywords" (click)="lastThreeMonthsKeywords()"> Last 3 Months
+                      <div *ngIf="keywords" class="div-table">
+                          <div class="div-table-row">
+                          <div class="div-table-col">Keyword</div>
+                          <div class="div-table-col">Total Visits</div>
+                          <div class="div-table-col">Page-views</div>
+                          <div class="div-table-col">Visits Duration(Mins)</div>
+                      </div>
+                      <div class="div-table-row" *ngFor="let keyword of keywordsSearched;let i = index">
+                          <div class="div-table-col">{{keyword}}</div>
+                          <div class="div-table-col">{{sessions[i]}}</div>
+                          <div class="div-table-col">{{keywordpageviews[i]}}</div>
+                          <div class="div-table-col">{{sessionDuration[i]}}</div>
+                      </div>
+                      </div>
+
+                      <h1>Users From Top Cities</h1>
+                      <div *ngIf="showCitites" class="div-table">
+                          <div class="div-table-row">
+                              <div class="div-table-col">Citites</div>
+                              <div class="div-table-col">Users</div>
+                              <div class="div-table-col">New Users</div>
+                              <div class="div-table-col">Visits Duration(Mins)</div>
+                          </div>
+                          <div class="div-table-row" *ngFor="let city of cities;let i = index">
+                              <div class="div-table-col">{{city}}</div>
+                              <div class="div-table-col">{{users[i]}}</div>
+                              <div class="div-table-col">{{newUsers[i]}}</div>
+                              <div class="div-table-col">{{pageviewsInCities[i]}}</div>
+                          </div>
+                      </div>
+                    
+                      <br><br>
+              </div> 
+              <!--publish analytics-->
+              <div *ngIf="showPublishAnalytics">
+                      <h1>Published Blogs</h1>
+                      <div style="display: block" *ngIf="showBlogsBarChart">
+                      <canvas baseChart
+                          [datasets]="blogsBarChartData"
+                          [labels]="blogsBarChartLabels"
+                          [options]="barChartOptions"
+                          [legend]="barChartLegend"
+                          [chartType]="barChartType"></canvas>
+                      </div>
+                      <br><br>     
+                      <h1> Blogs </h1>
+                      <div class="div-table" *ngIf="showBlogTable">
+                          <div class="div-table-row">
+                              <div class="div-table-col">Blog Type</div>
+                              <div class="div-table-col">Count</div>
+                          </div>
+                          <div class="div-table-row">
+                              <div class="div-table-col">Published</div>
+                              <div class="div-table-col">{{publishedBlogsTable[0].Publish}}</div>
+                          </div>
+                          <div class="div-table-row">
+                              <div class="div-table-col">Ionized</div>
+                              <div class="div-table-col">{{publishedBlogsTable[0].Ionized}}</div>
+                          </div>
+                          <div class="div-table-row">
+                              <div class="div-table-col">Ionize</div>
+                              <div class="div-table-col">{{publishedBlogsTable[0].Ionizing}}</div>
+                          </div>
+                      </div>
+                      <div style="display: block" *ngIf="shownewsLetter">
+                            <canvas baseChart
+                            [datasets]="newsLettersBarChartData"
+                            [labels]="newsLettersBarChartLabels"
+                            [options]="barChartOptions"
+                            [legend]="barChartLegend"
+                            [chartType]="barChartType"></canvas>
+                      </div>
+                </div>
+
+                <!--publish analytics-->
+                <div *ngIf="showQueryAnalytics">
+                          <h1>All Answered And UnAnswered Questions Count By Category </h1>
+                          <div class="div-table">
+                              <div class="div-table-row">
+                                  <div class="div-table-col">Category</div>
+                                  <div class="div-table-col">Questions</div>
+                                  <div class="div-table-col">Answered</div>
+                                  <div class="div-table-col">Un Answered</div>
+                              </div>
+                              <div class="div-table-row" *ngFor="let question of categorQuestions">
+                                  <div class="div-table-col">{{question.category_name}}</div>
+                                  <div class="div-table-col">{{question.questions}}</div>
+                                  <div class="div-table-col">{{question.answered}}</div>
+                                  <div class="div-table-col">{{question.unanswered}}</div>
+                              </div>
+                          </div>
+                          <br><br>  
+                          <h1>All Answered And UnAnswered Questions Count By Category </h1>
+                          <div class="div-table">
+                              <div class="div-table-row">
+                                  <div class="div-table-col">Month</div>
+                                  <div class="div-table-col">Count</div>
+                              </div>
+                              <div class="div-table-row" *ngFor="let question of yearlyQuestions">
+                                  <div class="div-table-col">{{question.month}}</div>
+                                  <div class="div-table-col">{{question.count}}</div>
+                              </div>
+                          </div>
+                          <br><br> 
+                </div>
+                <!--visit analytics-->
+                <div *ngIf="showVisitAnalytics">
+                    <input type="radio" value="0" name="visits" [ngModel]="visits" (click)="dateChange()" [checked]="true" > By Date
+                    <input type="radio" value="1" name="visits" [ngModel]="visits" (click)="monthChanged()"> By Month
+                    <input type="radio" value="2" name="visits" [ngModel]="visits" (click)="yearChanged()" > By year
+                    <input type="radio" value="3" name="visits" [ngModel]="visits" (click)="revenueChanged()"> By Revenue
+                    <br><br>
+                    <input type="date" [ngModel] ="dt | date:'yyyy-MM-dd'" (ngModelChange)="dt = $event;dateChange(dt)" *ngIf="showDate"> 
+                    <div style="width:600px !important;" *ngIf="showDailyLineChart">
+                          <canvas baseChart width="100" height="100"
+                                  [datasets]="visitDailyLineChartData"
+                                  [labels]="visitDailyLineChartLabels"
+                                  [options]="lineChartOptions"
+                                  [colors]="lineChartColors"
+                                  [legend]="lineChartLegend"
+                                  [chartType]="lineChartType"
+                                  (chartHover)="chartHovered($event)"
+                                  (chartClick)="chartClicked($event)"></canvas>
+                    </div>
+                    <div style="display: block" *ngIf="showDailyBarChart">
+                          <canvas baseChart
+                                  [datasets]="visitDailyBarChartData"
+                                  [labels]="visitsDailyBarChartLabels"
+                                  [options]="barChartOptions"
+                                  [legend]="barChartLegend"
+                                  [chartType]="barChartType"></canvas>
+                    </div>
+                    <div *ngIf="showMonthlyDrop">           
+                            <select [(ngModel)]="selectedMonth" (ngModelChange)="monthChanged(selectedMonth,selectedYear)">
+                                    <option *ngFor="let c of months" [ngValue]="c.code">{{c.name}}</option>
+                            </select>
+                                <select [(ngModel)]="selectedYear" (ngModelChange)="monthChanged(selectedMonth,selectedYear)">
+                                    <option *ngFor="let c of years" [ngValue]="c.code">{{c.name}}</option>
+                            </select>
+                    </div>
+
+                    <div style="width:600px !important;" *ngIf="showMonthlyLineChart">
+                          <canvas baseChart width="100" height="100"
+                                  [datasets]="visitMonthlyLineChartData"
+                                  [labels]="visitMonthyLineChartLabels"
+                                  [options]="lineChartOptions"
+                                  [colors]="lineChartColors"
+                                  [legend]="lineChartLegend"
+                                  [chartType]="lineChartType"
+                                  (chartHover)="chartHovered($event)"
+                                  (chartClick)="chartClicked($event)"></canvas>
+                      </div>
+                      <div style="display: block" *ngIf="showMonthlyBarChart">
+                              <canvas baseChart
+                                  [datasets]="visitMonthlyBarChartData"
+                                  [labels]="visitsMonthlyBarChartLabels"
+                                  [options]="barChartOptions"
+                                  [legend]="barChartLegend"
+                                  [chartType]="barChartType"></canvas>
+                        </div>
+                
+                        <div *ngIf="showYearlyDrop">     
+                            <select [(ngModel)]="selectYear" (ngModelChange)="yearChanged(selectYear)">
+                                <option *ngFor="let year of years" [ngValue]="year.code">{{year.name}}</option>
+                            </select>
+                        </div>
+                        <div style="width:600px !important;" *ngIf="showYearlyLineChart">
+                              <canvas baseChart width="100" height="100"
+                                  [datasets]="visitYearlyLineChartData"
+                                  [labels]="visitYearlyLineChartLabels"
+                                  [options]="lineChartOptions"
+                                  [colors]="lineChartColors"
+                                  [legend]="lineChartLegend"
+                                  [chartType]="lineChartType"
+                                  (chartHover)="chartHovered($event)"
+                                  (chartClick)="chartClicked($event)"></canvas>
+                        </div>
+                        <div style="display: block" *ngIf="showYearlyBarChart">
+                                <canvas baseChart
+                                  [datasets]="visitYearlyBarChartData"
+                                  [labels]="visitsYearlyBarChartLabels"
+                                  [options]="barChartOptions"
+                                  [legend]="barChartLegend"
+                                  [chartType]="barChartType"></canvas>
+                        </div>
+                        <div style="display: block" *ngIf="showByRevenue">
+                            <canvas baseChart
+                                  [data]="doctorWiseRevenueData"
+                                  [labels]="doctorWiseRevenueLabels"
+                                  [chartType]="doughnutChartType"></canvas>
+                        </div>
+                        <div style="display: block" *ngIf="showByVisits">
+                            <canvas baseChart
+                                  [data]="doctorWiseVisitsData"
+                                  [labels]="doctorWiseVisitsLabels"
+                                  [chartType]="doughnutChartType"></canvas>
+                        </div>
+                </div>
+                        <br><br>     
+    </div></div>
+
+    <style>
+      .div-table {
+          display: table;         
+          width: auto;                 
+    /* cellspacing:poor IE support for  this */
+      }
+      .div-table-row {
+        display: table-row;
+        width: auto;
+        clear: both;
+      
+      }
+      .div-table-col {
+        float: left; /* fix for  buggy browsers */
+        display: table-column;         
+        width: 170px;  
+        border:1px solid;
+              
+      }
+      </style>
+

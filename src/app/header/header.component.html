@@ -1,0 +1,7 @@
+<div class="rt-header wrapper__padding">
+    <label class="username"><span *ngIf="router.url.includes('home')" class="name">Hi,</span><span class="honorific">Dr. </span>{{ user.name }}</label>
+    <div class="rt-header__rt__block">
+        <a href="javascript:void(0)" class="calender">&nbsp;</a>
+      <button class="button rounded ripple" (click)="logout();" type="submit">Logout</button>
+    </div>
+  </div>

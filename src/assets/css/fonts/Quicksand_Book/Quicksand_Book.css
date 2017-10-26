@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'Quicksand_Book';
+    src: url('fonts/Quicksand_Book.eot');
+    src: url('fonts/Quicksand_Book.eot') format('embedded-opentype'),
+         url('fonts/Quicksand_Book.woff2') format('woff2'),
+         url('fonts/Quicksand_Book.woff') format('woff'),
+         url('fonts/Quicksand_Book.ttf') format('truetype'),
+         url('fonts/Quicksand_Book.svg#Quicksand_Book') format('svg');
+}

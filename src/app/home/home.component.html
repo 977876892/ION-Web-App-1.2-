@@ -1,0 +1,162 @@
+<div class="container">   
+    <div class="panel">
+        <div class="loader" *ngIf="isStartLoader"></div>
+<app-dashboard></app-dashboard>
+      <div class="panel-rt panel_bg__sty_1">
+   <app-header></app-header>
+    <div class="panel" *ngIf="dashboardData[0]; let eachdata">
+      <div class="panel_xs">
+        <button class="button btn_start brd-radius-5" (click)="isPromoPopupOpen = true;">Start New</button>
+        <div class="panel_box panel_box_publish brd-radius-5 xs-box-margin xs-box-padding">
+          <div class="title publish-title">Publish</div>
+          <div class="count bx-shadow-style2"><span>{{ ConvertToInt(eachdata.draft) + ConvertToInt(eachdata.ionized) }}</span></div>
+          <ul class="panel_box_list">
+            <li><span class="number">{{ eachdata.draft }}</span> new blog drafts are waiting for your inputs. <a href="javascript:void(0);">Add now.</a></li>
+            <li><span class="number">{{ eachdata.ionized }}</span> Ionized blogs are ready for publish. <a href="javascript:void(0);">Review & schedule now.</a></li>
+          </ul>
+        </div>
+        <div class="panel_box panel_box_visit brd-radius-5 xs-box-margin xs-box-padding">
+          <div class="title visit-title">Visits</div>
+          <div class="count bx-shadow-style2"><span>{{ eachdata.visitcount }}</span></div>
+          <ul class="panel_box_list">
+            <li>You have  <span class="number">{{ eachdata.visitcount }}</span> patient appointments today. <a href="javascript:void(0);">View now.</a></li>
+          </ul>
+        </div>
+      </div>
+      <!-- Second Col -->
+      <div class="panel_xs">
+        <div class="panel_box panel_box_query brd-radius-5 xs-box-padding">
+          <div class="title query-title">Queries</div>
+          <div class="count bx-shadow-style2"><span>{{ ConvertToInt(eachdata.unanswered)  }}</span></div>
+          <ul class="panel_box_list">
+          <li>You have <span class="number">{{ eachdata.unanswered }}</span> unanswered queries. <a href="javascript:void(0);">View & Reply.</a></li>
+          </ul>
+        </div>
+        
+        <div class="panel_box panel_box_bg brd-radius-5 xs-box-margin xs-box-padding">        
+        <div class="panel_box_transparent"></div>
+        <div class="title">{{ notificationsData.title }}</div>
+        <p>{{ notificationsData.intro }}</p>
+        
+              
+         
+          
+        </div>
+      </div>
+      <!-- Second Col ends -->
+      <!-- Last Col -->
+      <div class="panel_xs panel_xs_last">
+      
+      <div class="panel_box panel_box_h-feeds xs-box-padding">
+          <div class="title txt-center">Hospital feeds</div>
+          
+          <ul class="panel_box_list" *ngFor="let eachfeed of dashboardFeedData; let i = index">
+          <li class="brd-radius-5">
+            <div class="feed_image"><img *ngIf="eachfeed.avatar == ''" src="assets/images/user_image.jpg" width="65" height="65" alt="Hospital Feed">
+              <img *ngIf="eachfeed.avatar != ''" src="{{ eachfeed.avatar }}" width="65" height="65" alt="Hospital Feed"></div>
+            <div class="feed_info"> <span class="lg-text">{{ eachfeed.content.split(":")[0] }}</span> {{ eachfeed.content.split(":")[1] }}
+              <div class="feed_info_stamp">4hr ago</div>
+            </div>
+            <div class="feed_actions txt-center"> 
+                <a *ngIf="eachfeed.action == 'View'" href="javascript:void(0);" class="view_link">
+                    <div>{{ eachfeed.action }}</div>
+                  </a>
+                  <a *ngIf="eachfeed.action == 'Reply'" routerLink="/queries/{{eachfeed.context_id}}" href="javascript:void(0);" class="view_link">
+                      <div>{{ eachfeed.action }}</div>
+                  </a>
+              <a *ngIf="eachfeed.action == 'Congratulated'" href="javascript:void(0);"> <img src="assets/images/congractulation-icon.png">
+              <div>{{ eachfeed.action }}</div>
+              </a> </div>
+          </li>    
+        </ul>
+        
+        </div>
+      
+      
+      
+      
+      </div>
+      <!-- last Col ends -->
+    </div>
+  </div>
+  
+      <!-- Panel Right Ends -->
+</div>
+<!-- Popup1 -->
+<div class="model model-promotions" *ngIf="isPromoPopupOpen"> 
+  <a class="close" href="javascript:void(0);" style="display:none;">Close</a>
+  <div class="model-titlebar">
+  <span class="model-title" style="display:none;">Popup Title</span>
+  </div>
+  <div class="model-content model-bg gradient-1">
+   <h2>Hello Dr. Arjun,
+   <span>What would you ti the start on?</span></h2>
+  
+  	<div class="actions">
+    <a href="javascript:void(0);" class="visit brd-radius-15 xs-bg-white"><img src="assets/images/add-visits-icon.png"><br>Add Visit</a>
+    <a href="javascript:void(0);" (click) = "isSelectPromo = true;" class="promo brd-radius-15 xs-bg-white"><img src="assets/images/add-promo-icon.png"><br>Add Promo</a>
+    <a href="javascript:void(0);" class="blog brd-radius-15 xs-bg-white"><img src="assets/images/add-blog-icon.png" align="absmiddle">Start a new Blog</a>
+    
+    
+    </div> 
+   
+  
+   </div>
+  </div>  
+    <!-- Popup1 -->
+    <!-- Popup2 -->
+  <div class="model model-promotions" *ngIf="isSelectPromo"> 
+    <a class="close" href="javascript:void(0);" style="display:none;">Close</a>
+    <div class="model-titlebar">
+    <span class="model-title" style="display:none;">Popup Title</span>
+    </div>
+    <div class="model-content model-promotions-content model-bg gradient-1">
+      <div class="v-align-center">
+      <p>Creat, fregnent promotion of<br>
+     your brand, makes the patient <br>
+    remember it in need!!</p>
+    
+       <button class="button button_primary brd-radius-15" type="button" (click) = "getPromotionsCall();"><span>Select a Promo</span></button>
+     </div>
+    
+     </div>
+    </div>
+    
+      <!-- Popup2 -->
+       <!-- Popup3 -->
+  <div class="model model-promotions" *ngIf="isPromoSelected"> 
+    <a class="close" href="javascript:void(0);" style="display:none;">Close</a>
+    <div class="model-titlebar">
+    <span class="model-title" style="display:none;">Popup Title</span>
+    </div>
+    <div class="model-content model-bg gradient-1 model-promotions-content">
+      <div class="v-align-center">
+      <p>Which promotion would you<br> like to start from?</p>
+  
+    <div class="popular-promotions">
+      
+      <h2>{{ promotionsData[0]?.title }}</h2>
+      
+      
+      <div class="panel_promotions__list">
+        <ul>
+          <li *ngFor="let eachpromotion of promotionsData; let i = index">
+            <div class="promo-block"></div>
+            <div class="promo-title" *ngIf="eachpromotion.parent_id == promotionsData[0].id"><a href="javascript:void(0);">{{ eachpromotion.title }}</a></div>
+          </li>     
+              </ul>             
+             
+            </div>
+      </div>
+  
+     <a href="javascript:void(0);" class="viewmore" routerLink="/promotions">View More...</a>
+  
+  
+     </div>
+    
+     </div>
+    </div>
+    
+      <!-- Popup3 -->
+<div class="overlay" *ngIf="isPromoPopupOpen || isSelectPromo"></div>
+</div>

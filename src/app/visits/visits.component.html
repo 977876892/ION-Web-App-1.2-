@@ -1,0 +1,88 @@
+<div class="container">
+  <div class="panel">
+        <app-dashboard></app-dashboard>
+  
+    <div class="panel-rt panel-rt__extend panel_bg__sty_3 ">
+            <app-header></app-header>
+      <div class="panel">
+          <div class="loader" *ngIf="isStartLoader"></div>
+        <div class="visits_main">
+          <div class="search-filter">
+            <div class="filter-items">
+              <div class="filters">
+              <label class="labels">Sort By:</label>
+              <a class="drp-down">First Name</a>
+              <ul class="drp-down-list">
+                <li>First Name</li>
+                <li>Last Name</li>
+              </ul>
+              </div>
+
+              <div class="filters">
+              <label class="labels">Doctor:</label>
+				<a class="drp-down">Dr. Kumaran</a>
+              <ul class="drp-down-list">
+                <li>Dr. Kumaran</li>
+                <li>Dr. Kumaran</li>
+              </ul>
+              </div>
+            </div>
+            <div class="filter-add">
+			<button class="button add-icon">Add Visit</button>
+			</div>
+          </div> <!-- Visits search Ends -->
+
+		<div class="table-data">
+		<table class="visits-table-data" cellpadding="0" cellspacing="0" width="100%">
+  <tr class="titles">
+	<th>&nbsp;</th>
+    <th>First Name</th>
+    <th>Age</th>
+    <th>Phone</th>
+	<th>Email</th>
+	<th>Doctor</th>
+	<th>Time</th>
+	<th>Status</th>
+	<th>Paid Amt</th>
+	
+  </tr>
+  <tr class="heading">
+	<th>&nbsp;</th>
+    <th>Aug 15</th>
+   	
+  </tr>
+  <tr *ngFor="let eachdata of visitsData; let i = index">
+	<td><span class="avatar avatar-r">{{ eachdata.nametag }}</span></td>
+    <td class="v-name">{{ eachdata.name }}</td>
+    <td class="v-age">{{ eachdata.age }}</td>
+    <td class="v-mobile">{{ eachdata.mobile }}</td>
+	<td class="v-email">{{ eachdata.email }}</td>
+    <td class="v-doctor">{{ eachdata.resname }}</td>
+	<td class="v-time">{{ eachdata.display_starttime }}</td>
+    <td class="status" *ngIf="eachdata.payment_status == 'pending'"><a class="reject">{{ eachdata.payment_status }}</a></td>
+    <td class="status" *ngIf="eachdata.payment_status == 'accept'"><a class="accept">{{ eachdata.payment_status }}</a></td>
+	<td class="v-amount">{{ eachdata.booking_total }}</td>
+  </tr>
+  
+  
+   <!-- <tr class="heading">
+	<th>&nbsp;</th>
+    <th>Oct 20</th>
+   	
+  </tr> -->
+
+</table>
+
+		
+		</div>
+			<!-- Visitors bottom table block -->
+
+        </div><!-- Visits wrap ends -->
+        
+      </div>
+    </div>
+    <!-- Panel Right Ends -->
+  </div>
+  <!-- Panel ends -->
+</div>
+<!-- Container ends -->

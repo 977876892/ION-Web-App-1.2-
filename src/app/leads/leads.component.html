@@ -1,0 +1,112 @@
+<div class="container">
+    <div class="panel">
+            <app-dashboard></app-dashboard>
+      <!-- Panel Left ends -->
+      <div class="panel-rt  panel_bg__sty_3">
+            <app-header></app-header>
+        <div class="panel">
+          <div class="leads_main">
+            <div class="search-filter">
+              <div class="filter-items">
+                <div class="filters">
+                <label class="labels">Sort By:</label>
+                <a class="drp-down">First Name</a>
+                <ul class="drp-down-list">
+                  <li>First Name</li>
+                  <li>Last Name</li>
+                </ul>
+                </div>
+  
+                <div class="filters">
+                <label class="labels">Doctor:</label>
+                  <a class="drp-down">Dr. Kumaran</a>
+                <ul class="drp-down-list">
+                  <li>Dr. Kumaran</li>
+                  <li>Dr. Kumaran</li>
+                </ul>
+                </div>
+                
+                 <div class="filters">
+                
+                <a class="drp-down all-filters">All Filters</a>
+                <ul class="drp-down-list">
+                  <li>First Name</li>
+                  <li>Last Name</li>
+                </ul>
+                </div>
+                
+              </div>
+              <div class="filter-add">
+              <button class="button add-icon">Add Lead</button>
+              <a href="#" class="downloads"><img src="assets/css/images/download-icon-2.png" width="33" height="30"></a>
+              <a href="#" class="print"><img src="assets/css/images/print-icon.png" width="33" height="31"></a>
+              </div>
+            </div> <!-- Visits search Ends -->
+  
+          <div class="table-data">
+          <table class="visits-table-data" cellpadding="0" cellspacing="0" width="100%">
+    <tr class="titles">
+      <th>
+      <label>
+      <input name="1" value="true" id="1" class="checkbox" type="checkbox">
+      <span>&nbsp;</span>
+      </label>
+      </th>
+      <th class="t-avatar">avatar</th>
+      <th>Name</th>
+      <th>Gender</th>
+      <th>Age</th>
+      <th>Phone</th>
+      <th>Email</th>
+      <th>Source</th>
+      <th>Groups/Tags</th>
+      <th>Actions</th>
+      
+    </tr>
+    
+     <tr class="heading">
+      <th>&nbsp;</th>
+     
+         
+    </tr>
+    
+    
+    <tr *ngFor="let eachdata of leadsData; let i = index">
+      <td class="seleted">
+      <label>
+      <input name="1" value="true" id="1" class="checkbox" checked type="checkbox">
+      <span>&nbsp;</span>
+      </label>
+      </td>
+      
+      <td class="seleted"><span class="avatar avatar-r">{{ eachdata.imgTag }}</span></td>
+      <td class="v-name seleted">{{ eachdata.firstname }}</td>
+       <td class="v-sex seleted">{{ eachdata.sex }}</td>
+      <td class="v-age seleted">{{ eachdata.age }}</td>
+      <td class="v-mobile seleted">{{ eachdata.mobile }}</td>
+      <td class="v-email seleted">{{ eachdata.email }}</td>
+      <td class="v-doctor seleted">{{ eachdata.leadsTags }}</td>
+      <td class="tags seleted"><a href="#">{{ eachdata.city }}</a> <a href="#">
+      <div class="dotted-line">
+          <div></div><div></div><div></div>
+      </div></a></td>
+      <td class="tags"><a class="reject">rejected</a></td>
+      <td class="v-edit seleted"><a href="#" class="edit">edit</a></td>
+    </tr>  
+     
+    
+  </table>
+  
+          
+          </div>
+              <!-- Visitors bottom table block -->
+  
+          </div><!-- Visits wrap ends -->
+          
+        </div>
+      </div>
+      <!-- Panel Right Ends -->
+    </div>
+    <!-- Panel ends -->
+  </div>
+  <!-- Container ends -->
