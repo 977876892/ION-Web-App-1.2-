@@ -40,7 +40,7 @@ export class DashboardService {
     // const userId = this.storage.session.user ? this.storage.session.user.id : 0;
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
     const userId = currentuser.id;
-    return this.http.get(API.GET_DASHBOARD_NOTIFICATIONS(userId)).map(
+    return this.http.get(API.GET_DASHBOARD_NOTIFICATIONS(userId,currentuser.auth)).map(
       (responseData) => {
         const key = '_body';
         return JSON.parse(responseData[key]);
@@ -52,6 +52,15 @@ export class DashboardService {
     console.log(limitStart);
 
     return this.http.get(API.GET_BLOGS('', '', 1)).map(
+      (responseData) => {
+        const key = '_body';
+        return JSON.parse(responseData[key]);
+      },
+    );
+  }
+  congartulate(feedid){
+     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+        return this.http.get(API.CONGRATULATE(feedid,currentuser.id)).map(
       (responseData) => {
         const key = '_body';
         return JSON.parse(responseData[key]);

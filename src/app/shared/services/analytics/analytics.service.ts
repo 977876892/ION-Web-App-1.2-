@@ -13,7 +13,8 @@ export class AnalyticsService {
     //get all analytics api calls
     
     getAnalytics(){
-        return this.http.get(API.GET_ANALYTICS()).map(
+         const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+        return this.http.get(API.GET_ANALYTICS(currentuser.analyticId)).map(
             (responseData) =>{
                     const key = '_body';
                     return JSON.parse(responseData[key]);
@@ -27,7 +28,7 @@ export class AnalyticsService {
                     return JSON.parse(responseData[key]);
             }   
         )
-    }
+    };
     getEstimatedMonthlyVisits(allApis){
              return this.http.get("http://dashboard.getion.in/reports/myproxy.php?"+allApis[0].value).map(
             (responseData) =>{

@@ -6,6 +6,10 @@
 //npm install xml2js --save
 //npm install ng2-charts --save
 //npm install chart.js --save
+//npm i --save angular4-carousel(for dashboard screen scroll)
+//npm install ngx-chips --save (for tags)
+//npm install angular-froala-wysiwyg (for editor)
+
 
 
 import { Component, Output, OnInit, ElementRef, ViewChild } from '@angular/core';
@@ -13,7 +17,6 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import * as _ from 'underscore';
 import * as xml2js from 'xml2js';
 import { AnalyticsService } from '../shared/services/analytics/analytics.service';
-//import { QueriesService } from '../shared/services/queries/queries.service';
 
 @Component({
   selector: 'app-analytics',
@@ -32,19 +35,27 @@ export class AnalyticsComponent implements OnInit {
   
   }
     //public estimated:string='0';
+  selectedDate:Date=new Date();
   allApiCalls:any[];
   estimated:number;
   websiteAnalytics:boolean=true;
   showPublishAnalytics:boolean=false;
   showVisitAnalytics:boolean=false;
   showQueryAnalytics:boolean=false;
+  isStartLoader: boolean = false;
+  curentYear;
   ngOnInit() {
-    if (localStorage.getItem('user') === null) {
+    if (localStorage.getItem('user') == null || localStorage.getItem('user') == '') {
       this.router.navigate(['login']);
     } else {
       this.getAnalytics();
       this.estimated=0;
     }
+
+   
+    
+      
+    
   
   }
 
@@ -76,6 +87,7 @@ export class AnalyticsComponent implements OnInit {
   }
 
   getAnalytics() {
+    this.isStartLoader = true;
     this.analyticsService.getAnalytics().subscribe(
             (analyticsResponse: any) => {
                 this.allApiCalls=analyticsResponse.extra_fields;
@@ -96,7 +108,7 @@ export class AnalyticsComponent implements OnInit {
             }, (err) => {
 
         }, () => {
-
+          this.isStartLoader = false;
       });
   }
 
@@ -157,6 +169,24 @@ export class AnalyticsComponent implements OnInit {
                         pointHoverBackgroundColor: '#5BB2EC',
                         pointHoverBorderColor: '#5BB2EC'
                       }
+                ];fd819c
+                public cancelledAndAcceptedColor:Array<any> = [
+                      
+                   { // grey 5bb2ec
+                        backgroundColor: '#5BB2EC',
+                        borderColor: '#5BB2EC',
+                        pointBackgroundColor: '#5BB2EC',
+                        pointBorderColor: '#5BB2EC',
+                        pointHoverBackgroundColor: '#5BB2EC',
+                        pointHoverBorderColor: '#5BB2EC'
+                      },{ // grey 5bb2ec
+                        backgroundColor: '#fd819c',
+                        borderColor: '#fd819c',
+                        pointBackgroundColor: '#fd819c',
+                        pointBorderColor: '#fd819c',
+                        pointHoverBackgroundColor: '#fd819c',
+                        pointHoverBorderColor: '#fd819c'
+                      }
                 ];
                 //bar chart
   
@@ -169,6 +199,7 @@ export class AnalyticsComponent implements OnInit {
                 public lineChartLabelsForMonthly:Array<any>=new Array();
 
                 getEstimatedDaily(){
+                  this.isStartLoader = true;
                     this.showMonthly=false;
                         this.analyticsService.getEstimatedDailyVisits(this.allApiCalls).subscribe(
                           (analyticsResponse: any) => {
@@ -186,9 +217,11 @@ export class AnalyticsComponent implements OnInit {
                           }, (err) => {
 
                         }, () => {
+                          this.isStartLoader = false;
                       });
                 }
                 getEstimatedMonthly(){
+                  this.isStartLoader = true;
                       this.showDailyLine=false;
                           this.analyticsService.getEstimatedMonthlyVisits(this.allApiCalls).subscribe(
                                   (analyticsResponse: any) => {
@@ -217,6 +250,7 @@ export class AnalyticsComponent implements OnInit {
                                           this.showMonthly=true;
                                   }, (err) => {
                                   }, () => {
+                                    this.isStartLoader = false;
                     });
                 }
   //Trend Of User Visits end
@@ -232,6 +266,7 @@ export class AnalyticsComponent implements OnInit {
                   {data: [], label: 'Female'}
                 ];
                 lastThreeMonthsUsersBasedOnAgeAndGender(){
+                  this.isStartLoader = true;
                       this.showThreeBar=false;
                       this.analyticsService.lastThreeMonthsAandG(this.allApiCalls).subscribe(
                             (analyticsResponse: any) => {
@@ -239,18 +274,19 @@ export class AnalyticsComponent implements OnInit {
                             }, (err) => {
 
                             }, () => {
-
+                              this.isStartLoader = false;
                             });
                 }
                 lastSixMonthsUsersBasedOnAgeAndGender(){
                         this.showThreeBar=false;
+                        this.isStartLoader = true;
                         this.analyticsService.lastSixMonthsAandG(this.allApiCalls).subscribe(
                               (analyticsResponse: any) => {
                                 this.ageAndGenderDisplay(analyticsResponse)
                               }, (err) => {
 
                               }, () => {
-
+                                this.isStartLoader = false;
                               });
                 }
                 ageAndGenderDisplay(analyticsResponse){
@@ -298,16 +334,18 @@ export class AnalyticsComponent implements OnInit {
                 ];
                 lastThreeMonthsFromSocial(){
                         this.showSocilal=false;
+                        this.isStartLoader = true;
                         this.analyticsService.socilaTrafficLTM(this.allApiCalls).subscribe(
                             (analyticsResponse: any) => {
                                 this.sourceOfVisitors(analyticsResponse);
                             }, (err) => {
 
                             }, () => {
-
+                              this.isStartLoader = false;
                         });
                 }
                 lastSixMonthsFromSocial(){
+                  this.isStartLoader = true;
                         this.showSocilal=false;
                         this.analyticsService.socilaTrafficLSM(this.allApiCalls).subscribe(
                               (analyticsResponse: any) => {
@@ -315,7 +353,7 @@ export class AnalyticsComponent implements OnInit {
                               }, (err) => {
 
                               }, () => {
-
+                                this.isStartLoader = false;
                         });
                 }
                 sourceOfVisitors(analyticsResponse){
@@ -347,6 +385,7 @@ export class AnalyticsComponent implements OnInit {
                 public exits:Array<any>=new Array();
                 public showTopPages=false;
                 topPagesLastMonth(){
+                  this.isStartLoader = true;
                         this.showTopPages=false;
                         this.analyticsService.topPagesLM(this.allApiCalls).subscribe(
                                 (analyticsResponse: any) => {
@@ -354,10 +393,11 @@ export class AnalyticsComponent implements OnInit {
                                 }, (err) => {
 
                                 }, () => {
-
+                                  this.isStartLoader = false;
                                 });
                 }
                 topPagesLastThreeMonths(){
+                  this.isStartLoader = true;
                         this.showTopPages=false;
                         this.analyticsService.topPagesLTM(this.allApiCalls).subscribe(
                                 (analyticsResponse: any) => {
@@ -365,7 +405,7 @@ export class AnalyticsComponent implements OnInit {
                                 }, (err) => {
 
                                 }, () => {
-
+                                  this.isStartLoader = false;
                       });
                 }
                 showTopPagesGraph(analyticsResponse){
@@ -394,6 +434,7 @@ export class AnalyticsComponent implements OnInit {
                 public keywordpageviews:Array<any>=new Array();
                 public keywords=false;
                 lastMonthKeywords(){
+                  this.isStartLoader = true;
                       this.keywords=false;
                       this.analyticsService.keywordsLM(this.allApiCalls).subscribe(
                             (analyticsResponse: any) => {
@@ -401,10 +442,11 @@ export class AnalyticsComponent implements OnInit {
                             }, (err) => {
 
                             }, () => {
-
+                              this.isStartLoader = false;
                       });
                 }
                 lastThreeMonthsKeywords(){
+                  this.isStartLoader = true;
                       this.keywords=false;
                       this.analyticsService.keywordsLTM(this.allApiCalls).subscribe(
                               (analyticsResponse: any) => {
@@ -412,6 +454,7 @@ export class AnalyticsComponent implements OnInit {
                               }, (err) => {
 
                               }, () => {
+                                this.isStartLoader = false;
                       });
                 }
                 showKeyWordsGraph(analyticsResponse){  
@@ -504,21 +547,22 @@ export class AnalyticsComponent implements OnInit {
                 public lastSixmonths:Array<any>=new Array();
                 public lsShowUserEngagement=false;
                 lastSixMonthsUserEngagementonWebsite(){
+                        this.showUserEngagementLM=false;
                         this.analyticsService.lastSixMonthsNoOfUsersVisited(this.allApiCalls).subscribe(
                         (analyticsResponse: any) => {
-                          this.showUserEngagementLM=false;
+                          
                               var monthsData=analyticsResponse.rows;
                               var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
                               for(var i=0;i<6;i++){
                               this.lastSixmonths[i]=months[parseInt((monthsData[i+1])[0])-1]
                               }
-                              for(var i=0;i<analyticsResponse.rows.length-1;i++)
+                              for(var i=0;i<6;i++)
                                 {
                                    this.lsUserVisited[i]=(analyticsResponse.rows[i+1])[2]
                                 }
                               this.analyticsService.lastSixMonthsBounceRate(this.allApiCalls).subscribe(
                                   (analyticsResponse: any) => {
-                                    for(var i=0;i<analyticsResponse.rows.length-1;i++)
+                                    for(var i=0;i<6;i++)
                                     {
                                       this.lsBounceRate[i]=Math.round((analyticsResponse.rows[i+1])[2]);
                                     }
@@ -535,7 +579,7 @@ export class AnalyticsComponent implements OnInit {
                                                   }        
                                                 this.analyticsService.lastSixMonthsAvgTimeSpent(this.allApiCalls).subscribe(
                                                           (analyticsResponse: any) => {
-                                                            for(var i=0;i<analyticsResponse.rows.length-1;i++)
+                                                            for(var i=0;i<6;i++)
                                                             {
                                                               this.lsAvgTimeSpent[i]=Math.round((analyticsResponse.rows[i+1])[2]/60);
                                                             }
@@ -557,7 +601,8 @@ export class AnalyticsComponent implements OnInit {
                             (analyticsResponse: any) => {
                               var indiaRank,worldRank;
                                 xml2js.parseString(analyticsResponse._body, function (err, result) {
-                                if(typeof result.ALEXA.SD[0].COUNTRY[0].$.RANK=="undefined")
+                                  console.log(result);
+                                if(typeof result.ALEXA.SD[0].COUNTRY=="undefined")
                                   {
                                       indiaRank="No Country Rank";
                                   } else{
@@ -601,7 +646,7 @@ export class AnalyticsComponent implements OnInit {
           blogsByTable(){
             this.analyticsService.publishedBlogsByTable().subscribe(
                 (blogs: any) => {
-                      //console.log(blogs);
+                      console.log(blogs);
                       this.publishedBlogsTable=blogs.description;
                       this.showBlogTable=true;
             })
@@ -630,11 +675,12 @@ export class AnalyticsComponent implements OnInit {
 
   
   //query analytics
-          public categorQuestions:Array<any>=[];
+          public categoryQuestions:Array<any>=[];
           queriesByCategory(){
             this.analyticsService.queriesByCategory().subscribe(
                 (questions: any) => {
-                      this.categorQuestions=questions.description;
+                  console.log(questions.description);
+                      this.categoryQuestions=questions.description;
             })
           }
           public yearlyQuestions:Array<any>=[];
@@ -777,15 +823,35 @@ export class AnalyticsComponent implements OnInit {
             {name: "Jul",code: "07"},{name: "Aug",code: "08"}, {name: "Sep",code: "09"},
             {name: "Oct",code: "10"},{name: "Nov",code: "11"},{name: "Dec",code: "12"}
             ];
+         
           public years = [
-            { name: "2010",code: "2010"},{name: "2011",code: "2011"}, { name: "2012",code: "2012"},
-            {name: "2013",code: "2013"},{name: "2014",code: "2014"},{name: "2015",code: "2015"},
-            {name: "2016",code: "2016"},{name: "2017",code: "2017"}, {name: "2018",code: "2018"},
+            // { name: "2010",code: "2010"},{name: "2011",code: "2011"}, { name: "2012",code: "2012"},
+            // {name: "2013",code: "2013"},{name: "2014",code: "2014"},{name: "2015",code: "2015"},
+            // {name: "2016",code: "2016"},
+            {name: "2017",code: "2017"}, {name: "2018",code: "2018"},
             {name: "2019",code: "2019"},{name: "2020",code: "2020"},{name: "2021",code: "2021"}
             ];
           public showMonthlyDrop=false;
+         
           public monthChanged=function(selectedMonth,selectedYear){
-
+            var date = new Date();
+            this.getmonth = ("0" + (date.getMonth() + 1)).slice(-2)
+            var year=date.getFullYear();
+            if(selectedMonth == undefined || selectedYear == undefined){
+              selectedMonth=this.getmonth;
+              selectedYear=year;
+              this.defaultMon=this.getmonth;
+              this.defaultYear=year;
+              
+              console.log( this.defaultMon);
+              console.log(this.defaultYear);
+            }
+            else{
+              selectedMonth=selectedMonth;
+              selectedYear=selectedYear;
+            }
+               console.log(selectedMonth);
+               console.log(selectedYear);
               this.showDate=false;
               this.showDailyLineChart=false;
               this.showDailyBarChart=false;
@@ -869,9 +935,17 @@ export class AnalyticsComponent implements OnInit {
 
  //visit analytics year wise
           //year change
+         
             public showYearlyDrop=false;
             public yearChanged(selectYear){
-              //console.log(selectYear);
+              var date = new Date();
+              var year=date.getFullYear();
+              console.log(selectYear);
+              console.log(year);
+              this.curentYear=year;
+              if(selectYear == undefined){
+                selectYear=this.curentYear;
+              }
               this.showDate=false;
               this.showDailyLineChart=false;
               this.showDailyBarChart=false;
@@ -976,7 +1050,7 @@ export class AnalyticsComponent implements OnInit {
                   this.showMonthlyBarChart=false;
 
                   this.showYearlyDrop=false;
-                  this.showDailyBarChart=false;
+                  this.showYearlyBarChart=false;
                   this.showYearlyLineChart=false;
 
                   this.doctorWiseRevenue();
@@ -987,11 +1061,14 @@ export class AnalyticsComponent implements OnInit {
               public doctorWiseRevenueData:number[]=[];
               public doughnutChartType:string = 'doughnut';
               public showByRevenue=false;
-              
+              public doctorWiseRevenueDataForTable:any=[];
+              public doctorWiseVisitsDataForTable:any=[];
               doctorWiseRevenue(){
                     this.showByRevenue=false;
                     this.analyticsService.doctorWiseRevenue().subscribe(
                     (doctorWiseRevenue: any) => {
+                      this.doctorWiseRevenueDataForTable=doctorWiseRevenue.count;
+                     // console.log(this.doctorWiseRevenueDataForTable);
                             var doctorWiseRevenue=doctorWiseRevenue.count;
                             for(var i=0;i<doctorWiseRevenue.length;i++)
                             {
@@ -1011,7 +1088,8 @@ export class AnalyticsComponent implements OnInit {
                     this.showByVisits=false;
                     this.analyticsService.doctorWiseVisits().subscribe(
                     (doctorWiseVisits: any) => {
-                      //console.log(doctorWiseVisits);
+                      console.log(doctorWiseVisits);
+                            this.doctorWiseVisitsDataForTable=doctorWiseVisits.count;
                             var doctorWiseVisits=doctorWiseVisits.count;
                             for(var i=0;i<doctorWiseVisits.length;i++)
                             {

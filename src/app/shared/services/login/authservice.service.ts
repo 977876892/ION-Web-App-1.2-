@@ -20,7 +20,7 @@ export class AuthserviceService {
     return this.http.post(API.LOGIN_API(), resData, options).map(
       (responseData) => {
         const key = '_body';
-        return JSON.parse(responseData[key]);
+        return JSON.parse(responseData[key]); 
       },
     );
   }
@@ -32,5 +32,33 @@ export class AuthserviceService {
         return JSON.parse(responseData[key]);
       },
     );
-   }
+   };
+  getCommonDetails(teamid){
+    return this.http.get(API.GET_COMMON_DETAILS(teamid)).map(
+      (responseData) => {
+        const key = '_body';
+        return JSON.parse(responseData[key]);
+      },
+    );
+  }
+  // image upload service
+  uploadImageService(formData) {
+    const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+    return this.http.post(API.UPLOAD_IMAGE(),
+    formData).map(
+      (responseData) => {
+        const key = '_body';
+        return JSON.parse(responseData[key]);
+      },
+    );
+  }
+
+  termsandcondition(){
+    return this.http.get(API.TERM_CONDITIONS())
+    .map((responseData)=>{
+      // console.log(responseData);
+      const key = '_body';
+      return JSON.parse(responseData[key]);
+    });
+  }
 }

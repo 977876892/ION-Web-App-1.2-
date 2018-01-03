@@ -10,9 +10,10 @@ export class QueriesService {
 
   constructor(private http: Http) { }
   // Getting all queries.
-  getAllQueries() {
+  
+  getAllQueries(startFrom,limit) {
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
-    return this.http.get(API.GET_ALL_QUERIES(currentuser.username)).map(
+    return this.http.get(API.GET_ALL_QUERIES(currentuser.id,currentuser.username,startFrom,limit)).map(
       (responseData) => {
         const key = '_body';
         return JSON.parse(responseData[key]);
@@ -21,9 +22,9 @@ export class QueriesService {
    }
 
    // Getting unanswered queris.
-   getUnAnsweredQueries() {
+   getUnAnsweredQueries(startFrom,limit) {
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
-    return this.http.get(API.GET_UNANSWERED_QUERIES(currentuser.id, currentuser.username)).map(
+    return this.http.get(API.GET_UNANSWERED_QUERIES(currentuser.id, currentuser.username,startFrom,limit)).map(
       (responseData) => {
         const key = '_body';
         return JSON.parse(responseData[key]);
@@ -31,9 +32,9 @@ export class QueriesService {
     );
    }
     // Getting answered queris.
-    getAnsweredQueries() {
+    getAnsweredQueries(startFrom,limit) {
       const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
-      return this.http.get(API.GET_ANSWERED_QUERIES(currentuser.id, currentuser.username)).map(
+      return this.http.get(API.GET_ANSWERED_QUERIES(currentuser.id, currentuser.username,startFrom,limit)).map(
         (responseData) => {
           const key = '_body';
           return JSON.parse(responseData[key]);
@@ -42,8 +43,8 @@ export class QueriesService {
      }
      // Get detail querie
      getDetailQuerie(id) {
-     // const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
-      return this.http.get(API.GET_DETAILS_QUERIE(id)).map(
+     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+      return this.http.get(API.GET_DETAILS_QUERIE(id,currentuser.id)).map(
         (responseData) => {
           const key = '_body';
           return JSON.parse(responseData[key]);
@@ -51,9 +52,10 @@ export class QueriesService {
       );
      }
      // Adding answer to querie
-     addAnswerToQuerie(replyData, qId) {
+     addAnswerToQuerie(replyData, qId,publishOrNotValue,attachments) {
+       console.log(publishOrNotValue);
       const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
-      return this.http.get(API.ADD_ANSWER_TO_QUERIE(qId, replyData, currentuser.id, currentuser.username, currentuser.pwd)).map(
+      return this.http.get(API.ADD_ANSWER_TO_QUERIE(qId, replyData, currentuser.id, currentuser.username, currentuser.pwd,publishOrNotValue,attachments)).map(
         (responseData) => {
           const key = '_body';
           return JSON.parse(responseData[key]);
@@ -86,5 +88,63 @@ export class QueriesService {
           return JSON.parse(responseData[key]);
         });
      }
+      dowmloadQuries(){
+        const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+        return this.http.get(API.DOWNLOAD_QUERIES(currentuser.username)).map(
+        (responseData) => {
+          return responseData['_body'];
+          // const key = '_body';
+          // return JSON.parse(responseData[key]);
+        });
+       
+      }
+      getQueryCategories(){
+        const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+        return this.http.get(API.GET_QUERIES_CATEGORIES(currentuser.teamid)).map(
+        (responseData) => {
+           const key = '_body';
+          return JSON.parse(responseData[key]);
+        });
+      }
+      queryTrasfer(catid,questionId){
+         const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+        return this.http.get(API.TRANSER_QUERY(currentuser.username,currentuser.pwd,questionId,catid)).map(
+        (responseData) => {
+           const key = '_body';
+          return JSON.parse(responseData[key]);
+        });
+      }
+      editQuerieService(qid, title, content) {
+        const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+       return this.http.get(API.UPDATE_QUERIE(qid, title, content, currentuser.username, currentuser.pwd)).map(
+       (responseData) => {
+          const key = '_body';
+         return JSON.parse(responseData[key]);
+       });
+     }
+    deleteQuery(questionId){
+       const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+       return this.http.get(API.DELETE_QUERY(currentuser.username, currentuser.pwd,questionId)).map(
+       (responseData) => {
+          const key = '_body';
+         return JSON.parse(responseData[key]);
+       });
+    }
+     quickReplyUpdateService(content,editId){
+          console.log(content);
+         return this.http.get(API.UPDATE_QUICK_REPLY(content,editId)).map(
+       (responseData) => {
+          const key = '_body';
+         return JSON.parse(responseData[key]); 
+       });
+     }
+    makeTheQuestionASPoular(questionId){
+       const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+       return this.http.put(API.MAKE_AS_POPULAR(currentuser.username, currentuser.pwd,questionId),'').map(
+       (responseData) => {
+          const key = '_body';
+         return JSON.parse(responseData[key]);
+       });
+    }
 
 }

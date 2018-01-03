@@ -1,13 +1,696 @@
+<style>
+    .table-user-information>tbody>tr {
+        height: 50px;
+        width: 100%;
+        border-bottom: 1px solid rgb(221, 221, 221);
+    }
+    
+    .table-user-information>tbody>tr:first-child {
+        border-top: 0;
+    }
+    
+    .table-user-information>tbody>tr>td {
+        border-top: 0;
+    }
+    
+    .pwd tr td {
+        height: 24px;
+    }
+     
+    input[type=password],
+    input[type=text],
+    input[type=email],
+    input[type=number], 
+    textarea {
+        width: 100%;
+        padding: 7px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    
+    input[type=submit] {
+        width: 100%;
+        background-color: #33cccc;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    
+   
+    
+    .popup_input tr td {
+        width:50%;
+        height:50px;
+        text-align: justify;
+        color: #bbb;
+        padding-bottom: 15px !important;
+    }
+    
+   
+</style>
+
 <div class="container">
-  <div class="panel">
-    <app-dashboard></app-dashboard>    
-    <!-- Panel Left ends -->
-    <div class="panel-rt panel-rt__extend">
-      <app-header></app-header>
-      <span>Settings...</span>
+    <div class="panel">
+        <app-dashboard (eventType)="onEventChanged($event)"></app-dashboard>
+
+        <!-- Profile start-->
+        
+        <div class="panel-rt panel-rt__extend" *ngIf="showProfile">
+                <app-header></app-header>
+            <!-- edit profile -->
+            <div class="loader" *ngIf="isStartLoader"></div>
+            <div class="panel">
+                    <div class="panel_box panel_box_contact xs-box-padding panel_shadow">
+            <div class="setting_profile_table">
+                <div style="padding: 10px 15px;background-color: #d9edf7;border-bottom: 1px solid transparent;border-top-right-radius: 3px;border-top-left-radius: 3px;border-color: #bce8f1;">
+                    <h3 style="color: #31708f;"><b> {{item.fname}} {{item.lname}} </b></h3>
+                </div>
+                <div class="setting_profile_detail_R">
+                    <!-- <img id="setting_profile_photo" alt="User Pic" src="{{item.profile_pic}}" class="img-circle img-responsive"> -->
+                    <div class="lt-div">
+                        <div class="profile_card">
+                          <div class="profile_img">
+                            <!-- <a *ngIf="imageSrc == ''"><img src="assets/css/images/profile_no_img.png" ></a> -->
+                            <a  *ngIf="imageSrc == ''"><img src="{{pic}}" height="154px" width="154px" style="border-radius: 100px;"></a>
+                            <a  *ngIf="imageSrc"><img src="{{imageSrc}}" height="154px" width="154px" style="border-radius: 100px;"></a>
+                         
+                        </div>
+                        
+                        <div class="profile_bottom"><span>
+                            <label for="file-upload"  class="custom-file-upload" *ngIf="!isShowImgDeleteButt">
+                                Upload Image
+                            </label>
+                             
+                            <div *ngIf="isShowImgDeleteButt">
+                              <label for="file-upload"  class="custom-file-upload" class="upload-img">CHANGE</label>
+                             <div style="float:left">
+                              <span style="width: 1px;height: 40px;background-color:#0000002e;" *ngIf="isShowImgDeleteButt"></span>
+                            </div>
+                              <label style=" color: red;" class="upload-img" (click)="uploadprofilepicDelete()"> <b>X</b> DELETE</label>
+                            </div>
+                        <input type="file" id="file-upload" #fileInput placeholder="Upload image..." (change)="uploadprofilepic()" accept="image/*"/>
+                        <!-- <button type="button" (click)="upload()" class="upload" *ngIf="imageSrc == ''">Upload Image</button> -->
+                      </span></div>
+                
+                        </div>
+                        <p style="color:red;" *ngIf="imageUploadAlert">{{imgsize}}</p>
+                        <p style="color:red;" *ngIf="imageerrorAlert">{{imgerror}}</p>
+                      </div>
+                </div>
+                <div class="setting_profile_detail">
+
+                    <table class="table table-user-information">
+                        <tbody>
+                            <tr>
+                                <td style="width:40%;">First Name:</td>
+                                <td style="width:60%;">
+                                    <input type="text" placeholder="First Name" [(ngModel)]="item.fname">
+                                </td>
+                                <hr>
+                            </tr>
+                            <tr>
+                                <td>Last Name:</td>
+                                <td>
+                                    <input type="text" placeholder="Last Name" [(ngModel)]="item.lname">
+                                </td>
+                                <hr>
+                            </tr>
+                            <tr>
+                                <td>Email:</td>
+                                <td>
+                                    <input type="email" placeholder="Email" [(ngModel)]="item.email">
+                                </td>
+                                <hr>
+                            </tr>
+
+
+                            <tr>
+                                <td>Mobile No:</td>
+                                <td>
+                                    <input type="number" placeholder="Mobile No" [(ngModel)]="item.mobile">
+                                </td>
+                                <hr>
+                            </tr>
+                            <tr>
+                                <td>Role:</td>
+                                <td>
+                                    <input type="text" placeholder="Role" [(ngModel)]="item.role">
+                                </td>
+                                <hr>
+                            </tr>
+                            <tr>
+                                <td>Overview:</td>
+                                <td>
+                                    <textarea placeholder="Overview" [(ngModel)]="item.aboutme"></textarea>
+                                </td>
+                                <hr>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>
+                                    <input type="submit" value="Submit" (click)="profile_sub(item)" style="padding:10px;">
+                                    <!--<button style="margin-top:8px;padding:10px;background-color:#33cccc;cursor: pointer;" (click)="profile_sub(item)">Submit</button>-->
+                                    <!-- <button style="margin-top:8px;padding:10px;background-color:#33cccc;cursor: pointer;">Edit</button> -->
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+            <!-- change password -->
+            <div class="setting_change_password_box">
+                <div style="padding: 10px 15px;background-color: #d9edf7;border-bottom: 1px solid transparent;border-top-right-radius: 3px;border-top-left-radius: 3px;border-color: #bce8f1;">
+                    <h3 style="color: #31708f;">Change Password</h3>
+                </div>
+                <div style="margin:0px auto;width:63%;margin-top:15px;">
+
+                    <table class="pwd">
+
+                        <tr>
+                            <td style="width:50%;">
+                                Current Password
+                            </td>
+                            <td style="width:50%;">
+                                <input type="password" [(ngModel)]="pwditem.oldpwd" placeholder="Current Password" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                New Password
+                            </td>
+                            <td>
+                                <input type="password" [(ngModel)]="pwditem.newpwd" placeholder="New Password" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Confirm Password
+                            </td>
+                            <td>
+                                <input type="password" [(ngModel)]="pwditem.conpwd" placeholder="Confirm Password" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <input type="submit" value="Submit" (click)="changepassword(pwditem)">
+                            </td>
+                        </tr>
+
+                    </table>
+
+                </div>
+            </div>
+            </div>
+            </div>
+
+        </div>
+        <!-- Profile end-->
+
+
+        <!-- Contactus start-->
+        <div class="panel-rt panel-rt__extend" *ngIf="showContactus">
+                <app-header></app-header>
+                 <div class="panel_box panel_box_contact  xs-box-padding panel_shadow" >
+                <div class="wrap-90 m-auto">
+                <div class="clearfix">
+                    <div class="contact_logo">
+                        <div class="contact_logo_img">
+                            <img src="assets/images/ion_support.png" class="logo-rounded img-responsive" />
+                        </div>
+                    </div>
+                     <div class="contact_form panel_shadow">
+                  <h5>Ask Your Query Or Report Any Issue:</h5>
+                  <textarea placeholder="Type your query here" class="contact_text m-b-60 input-full" cols="6" rows="10" ></textarea>
+                  <div class="clearfix">
+                      <div class="wrap-48 setting_contact_sele">
+                         <select class="drp-down brd-radius-5 h-40" style="height: 45px !important;">
+                             <option>select</option>
+                         </select>
+
+                      </div>
+                      <div class="wrap-40 setting_contact_40">
+                            <a class="btn btn-black btn-block btn-regular brd-radius-5 h-40 align-center" style="line-height:26px;height:26px !important;">Submit Query
+
+                          </a>
+                      </div>
+                      </div>
+
+              </div>
+                
+                      <div class="wrap-40 pull-left" style="width: 42% !important;">
+                          <a class="btn btn-main button-large btn-block clearfix contact-btn">
+                              <span class="pull-left">
+                                  <img class="contact-btn-img" src="assets/images/icon-call.png" /></span>
+                              <span class="pull-left">
+                                  <div>Need help? call us now</div>
+                                  <b>+919876543210</b>
+                              </span>
+                          </a>
+                      </div>
+                      <div class="wrap-40 pull-right" style="margin-right:53px !important">
+                            <a class="btn btn-main button-large btn-block clearfix contact-btn">
+                              <span class="pull-left">
+                                  <img class="contact-btn-img" src="assets/images/icon-chat.png" /></span>
+                                
+                              <span class="pull-left btn-large-lh" style="margin-top: 4px;margin-left: 38px;">
+                                  <div>chat assist Now &nbsp;&nbsp; ></div>
+                                  <div>+919876543210</div>
+
+                              </span>
+                          </a>
+                        
+                      </div>
+                      
+                </div>
+                </div>
+                </div>
+            <!-- <div style="width:50%;height:200px;margin-top:10px;">
+                <img src="assets/images/contact_us.jpg" alt="" width="100%" height="200px">
+                <div style="width:100%;">
+                    <h6 style="line-height:30px;padding-left:5px;height:30px;background-color:#33cccc;">Contact Our Team:</h6>
+                    <table>
+                        <tr>
+                            <td>
+                                <h6 style="color:grey;margin:10px 0px 0px 20px;">contact@medicodesk.com</h6>
+                            </td>
+                            <td>
+                                <h6 style="font-size:25px;margin:10px 0px 0px 35px;">&#9993;</h6>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <h6 style="color:grey;margin:10px 0px 0px 20px;">+914040268080</h6>
+                            </td>
+                            <td>
+                                <h6 style="font-size:25px;margin:10px 0px 0px 35px;">
+                                    &#9993;
+                                </h6>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="width:100%;margin-top:10px;">
+                    <h6 style="line-height:30px;padding-left:5px;height:30px;background-color:#33cccc;">Address:</h6>
+                    <h6 style="text-align:justify;margin:10px 0px 0px 20px;color:grey;">
+                        Medicodesk Healthtech Pvt Ltd <br>Office No-518, 5th Floor, Manjeera Majestic <br> Commercial Complex, JNTU-Hitech City Road, <br> KPHB, Hyderabad-85
+                    </h6>
+                    <p style="margin:15px 0px 0px 20px;color:grey;">Please contact us if you have any questions.</p>
+                </div>
+
+            </div> -->
+        </div>
+        <!-- Contactus end-->
+
+        <!-- subscription start -->
+   
+        <div class="panel-rt panel-rt__extend" *ngIf="showSubscription">
+            <app-header></app-header>
+            <div class="panel">
+              <div class="panel_box panel_box_contact xs-box-padding panel_shadow">
+                  <div class="wrap-90 m-auto" style="margin:0;">
+                <div class="clearfix">
+                    <div class="wrap-40 pull-left" style="width: 33%;">
+                    <h2 class="wrap-h2">Your ION <br> Subscription Plan</h2>
+                 </div>
+                    <div class="wrap-50 pull-left panel_box panel_shadow brd-radius-15" style="width: 50%;">
+                        <div class="subscribe_head">
+                            <ul class="subscription-list">
+                                <li class="clearfix">
+                                    <div class="side-line wrap-40 text-uppercase pull-left" style="width: 136px;">Subscription duration</div>
+                                    <div class="pull-left text-uppercase l-h-2">
+                                        <!-- <span class="">{{subscriptionDetails.subscription}}</span>
+                                        &nbsp;
+                                        <span class="sub-lh">To</span> &nbsp;
+                                        <span class="">{{subscriptionDetails.expiration}}</span> -->
+                                          <table>
+                                              <tr>
+                                                  <td>
+                                                      <span class="">{{subscriptionStart[0]}}</span><br>
+                                                       <p style="margin-top: 8px;">{{subscriptionStart[1]}}</p>
+                                                  </td>
+                                                  <td style="padding: 0px 10px 10px 15px;">
+                                                      <br>
+                                                      <span class="sub-lh">To</span> &nbsp;
+                                                  </td>
+                                                  <td>
+                                                         <span class="">{{subscriptionEnd[0]}}</span><br>
+                                                             <p style="margin-top: 8px;">{{subscriptionEnd[1]}}</p>
+                                                  </td>
+                                              </tr>
+                                          </table>
+                                         
+                                        
+                                        
+                                            
+                                    </div>
+      
+                                </li>
+                                <li class="clearfix">
+                                    <div class="side-line wrap-40 text-uppercase pull-left" style="width: 136px;">Total Credits Left</div>
+                                    <div class="pull-left l-h-2"><span class="font-2em">{{subscriptionDetails.credits_left}}</span> &nbsp; <span class="text-uppercase" >credits left</span></div>
+      
+                                </li>
+                            </ul>
+                        </div>
+                       <div class="subscribe_content"><ul class="subscription-list">
+                            <li class="clearfix">
+                                <div class="side-line wrap-40 text-uppercase pull-left l-h-2">Total sms left</div>
+                                <div class="pull-left l-h-2"><span class="font-2em">{{subscriptionDetails.smsbalance}}</span> &nbsp; <span class="text-uppercase">
+                                    sms</span></div>
+                            </li>
+                            <li class="clearfix">
+                                <div class="side-line wrap-40 text-uppercase pull-left l-h-2">Total Emails Sent</div>
+                                <div class="pull-left l-h-2"><span class="font-2em">{{subscriptionDetails.email_sent}}</span> &nbsp; <span class="text-uppercase">
+                                    EMAILS</span></div>
+                            </li>
+                            <!-- <li class="clearfix">
+                                <div class="side-line wrap-40 text-uppercase pull-left l-h-2">seo plan</div>
+                                <div class="pull-left l-h-2">
+                                    <span class="">On page, Off page</span></div>
+                            </li>
+                            <li class="clearfix">
+                                <div class="side-line wrap-40 text-uppercase pull-left l-h-2">keywords in plan</div>
+                                <div class="pull-left "> <span class="">
+                                    Lorem ipsum, lorem</span></div>
+                            </li> -->
+                        </ul></div>
+                       <!-- <div class="align-center m-b-20">
+                           <a class="btn btn-black btn-regular brd-radius-10  align-center ">
+                               RENEW SUBSCRIPTION
+                                </a>
+      
+      
+                            </div> -->
+                    </div>
+      
+                    </div>
+      
+              </div>
+            </div>
+              
+            </div>
+          </div>
+          <!-- Panel Right Ends -->
+        <!-- subscription end -->
+
+         <!-- users start -->
+   <div *ngIf="showUsers" class="panel-rt panel-rt__extend">
+            <app-header></app-header>
+             <div class="loader" *ngIf="isStartLoader"></div>
+            <div class="panel" >
+                    <div class="panel_box panel_box_contact xs-box-padding panel_shadow panel_box_contact_user" style="background-color: #f0f0f0 !important;box-shadow: none;">
+            <!-- Add user button  -->
+            <div class="user_add_but">
+                <div class="user_add_but_back_color">
+                  <div class="add_user_card">
+                      <h2 class="user_card_h2" (click)="openUserDialog()">Add User</h2>
+                  </div>
+                </div>
+            </div>
+
+          <!-- users card  -->
+       <ul>
+           <li *ngFor="let user of usersList">
+                <div class="users_card">
+
+                    <div class="setting_user">
+                         <ul>
+                             <li style="float:left;">
+                                 <img src="assets/css/images/profile_no_img.png" *ngIf="user.avatar == 'http://staging.getion.in/'" id="default-user-list-img" class="img-responsive" alt="">
+                                 <img src="{{user.avatar}}" id="all-user-list-img" *ngIf="user.avatar != 'http://staging.getion.in/'" class="img-responsive" alt="">
+                             </li>
+                             <li class="setting_user_40">
+                                 <h2 style="color:#33cccc;"><b>{{user.firstname}}</b></h2>
+                                 <!-- <p style="font-size:14px;">By Doctor</p> -->
+                                 <!-- <p style="font-size:12px;">children</p> -->
+
+                             </li>
+                             <li (click)="openUserDialog(user.id)" class="setting_user_10">
+                                 <b>></b>
+                             </li>
+                         </ul>
+                    </div>
+
+                    <div class="setting_user_detail">
+                       <ul class="setting_user_detail_ul">
+                           <li class="setting_user_detail_ul_li">
+                               <p>Name</p>
+                               <br>
+                               <p>User Type</p>
+                               <br>
+                               <p>Email</p>
+                           </li>
+                           <li class="setting_user_data">
+                               <p>{{user.firstname}}</p>
+                               <br>
+                               <p *ngIf="user.group_id == 10">Doctor</p>
+                               <p *ngIf="user.group_id == 17">Business Head</p>
+                               <p *ngIf="user.group_id == 15">Frontdesk</p>
+                               <p *ngIf="user.group_id == 16">Junior Doctor</p>
+                               <br>
+                                <p>{{user.email}}</p>
+                               <!-- <p>{{user.email[0]}}</p>
+                               <p>@{{user.email[1]}}</p> -->
+                           </li>
+                       </ul>
+                    </div>
+
+                </div>
+           </li>
+       </ul>
+       </div>
+</div>
+</div>
+    <!-- users end -->
+
+
+
+
+        <!-- Panel Right Ends -->
     </div>
-    <!-- Panel Right Ends -->
-  </div>
-  <!-- Panel ends -->
+    <!-- Panel ends -->
 </div>
 <!-- Container ends -->
+
+
+
+<!-- Popup User -->
+<div class="model model-profile-view  bx-shadow no-padding" *ngIf="isShowUserPopup" [style.margin-top.px]="windowBottom" style="width:1000px;margin-left: -425px;">
+        <div class="loader" *ngIf="isStartLoader"></div>
+        <div class="setting_user_popup_11">
+              <div class="setting_user_popup_12">
+                  <div class="lt-div">
+                    <div class="profile_card">
+                        <div class="profile_img" style="padding:15px;">
+            
+                            <img src="assets/css/images/profile_no_img.png" *ngIf="userDetailsForm.controls['image'].value==''||userDetailsForm.controls['image'].value=='http://staging.getion.in/'||userDetailsForm.controls['image'].value==null">
+                            <img src="{{userDetailsForm.controls['image'].value}}" style="width: 154px;height: 154px;border-radius: 100px;" *ngIf="userDetailsForm.controls['image'].value!='http://staging.getion.in/' && userDetailsForm.controls['image'].value!='' && userDetailsForm.controls['image'].value!=null">
+                            <!-- <a *ngIf="imageSrc"><img src="{{imageSrc}}" height="154px" width="154px"></a> -->
+                    </div>
+                  
+                    <div class="profile_bottom" style="border-top: 2px #f6f6f6 solid;height: 42px;line-height: 42px;font-size: 15px;font-weight: 400;text-transform: uppercase;"><span>
+                        <label for="file-upload" class="custom-file-upload" *ngIf="!isShowImgDeleteButt">
+                            Upload Image
+                        </label>
+                         <div *ngIf="isShowImgDeleteButt">
+                              <label for="file-upload"  class="custom-file-upload" class="user-upload-img">CHANGE</label>
+                             <div style="float:left">
+                              <span style="width: 1px;height: 40px;background-color:#0000002e;" ></span>
+                            </div>
+                              <label style=" color: red;" class="user-upload-img" (click)="uploadImgeDelete()"> <b>X</b> DELETE</label>
+                        </div>
+                    <input type="file" id="file-upload" #fileInput placeholder="Upload image..." (change)="upload()"/>
+                        <!-- <a class="upload">UPLOAD Image</a> -->
+                    </span></div>
+      </div>
+    </div> <p style="color:red;" *ngIf="imageerrorAlert">{{imgerror}}</p>
+                     <!-- <img src="https://www.doctoralliance.com/images/doctor_face2.jpg" style="width:90px;height:90px;border-radius:100%;display:table;margin:0 auto;position: relative;top: 10px;" class="img-responsive" alt="">  -->
+              </div>
+              <div class="setting_user_popup">
+                 <a class="close" style="cursor: pointer;" (click)="isShowUserPopup = false;closeUserPopUp();">Close</a>
+                    <table style="width:100%;" class="popup_input">
+                        <tr>
+                            <td>
+                                 FIRST NAME
+                                 <br>
+                                <input type="text" placeholder="First Name"  style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['firstname']" required>  <br>
+                                <span style="color:red" *ngIf="userDetailsForm.controls['firstname'].hasError('required') && userDetailsForm.controls['firstname'].touched"> Please Enter The First Name. </span>
+                                <!-- <span style="color:red" *ngIf="userDetailsForm.controls['firstname'].hasError('minlength') && userDetailsForm.controls['firstname'].touched"> Please Enter The Firstname. </span> -->
+                            </td>
+                            <td>
+                                LAST NAME
+                                <br>
+                                <input type="text" placeholder="Last Name" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['surname']" required>  <br>
+                                <span style="color:red" *ngIf="userDetailsForm.controls['surname'].hasError('required') && userDetailsForm.controls['surname'].touched"> Please Enter The Last Name. </span>
+                              
+                            </td>
+                        </tr>
+
+                        <tr>
+                                <td>
+                                     USER NAME
+                                     <br>
+                                    <input type="text" placeholder="User Name" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['username']" required>  <br>
+                                    <span style="color:red" *ngIf="userDetailsForm.controls['username'].hasError('required') && userDetailsForm.controls['username'].touched"> Please Enter The User Name. </span>
+                              
+                                </td>
+                                <td>
+                                    EMAIL ID
+                                    <br>
+                                    <!-- <input type="email" placeholder="Email Id" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['email']" required>  <br> -->
+                                    <input type="email" maxlength="40" style="width:90%;height: 37px;border-radius: 50px;" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+[.]+[a-z]{1,4}$" [formControl]="userDetailsForm.controls['email']" required>
+                                    <span style="color:red" *ngIf="userDetailsForm.controls['email'].hasError('required') && userDetailsForm.controls['email'].touched"> Please Enter The Email. </span>
+                                    <span style="color:red" *ngIf="userDetailsForm.controls['email'].hasError('pattern') && userDetailsForm.controls['email'].touched">Invalid email</span> 
+                                </td>
+                            </tr>
+                             <tr *ngIf="isAddUser">
+                                    <td>
+                                        PASSWORD
+                                         <br>
+                                        <input type="password" placeholder="Password" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['password']">  <br>
+                                         <span style="color:red" *ngIf="userDetailsForm.controls['password'].hasError('required') && userDetailsForm.controls['password'].touched"> Please Enter The Password. </span>                                        
+                                    </td>
+                                    <td>
+                                            RETYPE PASSWORD
+                                        <br>
+                                        <input type="password" placeholder="Retype Password" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['reTypePassword']">  <br>
+                                         <span style="color:red" *ngIf="userDetailsForm.controls['reTypePassword'].hasError('required') && userDetailsForm.controls['reTypePassword'].touched"> Please Enter The Re Type Password. </span>
+                                    </td>
+
+                            </tr>
+                              <span style="color:red;margin-right: 75px;" *ngIf="isAddUser">{{pwdNotMatch}}</span>
+                            <tr *ngIf="!isAddUser">
+                                    <td>
+                                        PASSWORD
+                                         <br>
+                                        <input type="password" placeholder="Password" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['password']"  required>  <br>
+                                        <span style="color:red" *ngIf="userDetailsForm.controls['password'].hasError('required') && userDetailsForm.controls['password'].touched"> Please Enter The Password. </span>
+                                        
+                                    </td>
+                                    <td>
+                                            RETYPE PASSWORD
+                                        <br>
+                                        <input type="password" placeholder="Retype Password" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['reTypePassword']" required>  <br>
+                                        <span style="color:red" *ngIf="userDetailsForm.controls['reTypePassword'].hasError('required') && userDetailsForm.controls['reTypePassword'].touched"> Please Enter The Re Type Password. </span>
+                                        
+                                    </td>
+
+                            </tr>
+                             <span style="color:red;margin-right: 75px;" *ngIf="!isAddUser">{{pwdNotMatch}}</span>
+                    </table>
+                        <div class="setting_user_groups">
+                            <h4 style="font-size: 17px;color:#bbb;">GROUPS</h4><br>
+                            <span class="gender" *ngFor="let groups of userGroups">
+                                 <!-- <input [checked]="groups.checked" [formControl]="userDetailsForm.controls['groups']" [value]="groups.value" name="rdblGender" id="rdblGender_0" type="radio" (click)="groupClick(groups.value)">
+                                <label for="rdblGender_0">  {{groups.name}}</label> -->
+                                <input [checked]="groups.checked" [formControl]="userDetailsForm.controls['groups']" [value]="groups.value" name="rdblGender" id="rdblGender_0" type="radio" (click)="groupClick(groups.value)">
+                                <label for="rdblGender_0"> {{groups.name}}</label>
+                                <!-- <input [formControl]="userDetailsForm.controls['groups']" value="10" name="rdblGender" id="rdblGender_0" type="radio" (click)="groupClick(10)">
+                                <label for="rdblGender_0">  Doctors</label>
+                                <input value="15" [formControl]="userDetailsForm.controls['groups']" name="rdblGender" id="rdblGender_1" type="radio" (click)="groupClick(15)">
+                                <label for="rdblGender_1"> Junior Doctors</label>
+                                 <input [formControl]="userDetailsForm.controls['groups']" value="16" name="rdblGender" id="rdblGender_0" type="radio" (click)="groupClick(16)">
+                                <label for="rdblGender_0">  Frontdesk Team</label>
+                                <input value="17" [formControl]="userDetailsForm.controls['groups']" name="rdblGender" id="rdblGender_1" type="radio" (click)="groupClick(17)">
+                                <label for="rdblGender_1"> Business Head  </label> -->
+
+                                </span> 
+
+                             
+                                          
+                           <!-- <div *ngFor="let option of userGroups;let i =index;" class="row">
+                                <div class="col-md-4">
+                                            <input name="groups" type="checkbox" value="{{option.value}}" [(ngModel)]="option.checked" (click)="selectedGroup(i)">{{option.name}}
+                                 </div>
+                             <input type="checkbox" value="15" name="options"  (change)="updateCheckedOptions(option, $event)"> Frontdesk Team
+                            <input type="checkbox" value="16" name="options"  (change)="updateCheckedOptions(option, $event)"> Junior Doctors
+                            <input type="checkbox" value="10" name="options"  (change)="updateCheckedOptions(option, $event)"> Doctors
+                            <input type="checkbox" value="17" name="options"  (change)="updateCheckedOptions(option, $event)"> Business Head  
+                        </div> -->
+                        </div>
+                        <div *ngIf="isGroupsRequied" style="margin-top: 15px;">
+                         <span style="color:red"> Please Select Group. </span></div>
+                    <br><br><br><br>
+                    <angular2-multiselect [data]="allcategoryname" [(ngModel)]="selectedItems" [settings]="dropdownSettings" (onSelect)="onItemSelect($event)" (onDeSelect)="OnItemDeSelect($event)" (onSelectAll)="onSelectAll($event)" (onDeSelectAll)="onDeSelectAll($event)"></angular2-multiselect>                     
+                    <table style="width:100%;margin-top:15px;" class="popup_input">
+                        <!-- <tr>
+                            <td>
+                                QUERY
+                                <br>
+                                 <div style="width:90%;height:37px;border-radius: 50px;margin-top:10px;border:1px solid grey;">
+                                        <input type="checkbox" style="margin: 12px;"> General Enquiry
+                                 </div>
+                            </td>
+                            <td>
+                                    PERMISSION
+                                    <br>
+                                     <div style="width:90%;height:37px;border-radius: 50px;margin-top:10px;border:1px solid grey;">
+                                            <input type="checkbox" style="margin: 12px;"> Dental Implants
+                                     </div>
+                            </td>
+                        </tr> -->
+
+                        <!-- <tr>
+                                <td>
+                                   Receive System Emails
+                                   <select style="background-color:#ddd;padding:3px;"  (change)="receiveMail(receiveMail.value);" #receiveMail>
+                                       <option value="yes">Yes</option>
+                                       <option value="no">No</option>
+                                   </select>
+                                </td>
+                                <td>
+                                     Block User
+                                     <select style="background-color:#ddd;padding:3px;" (change)="blockUser(blockID.value);" #blockID>
+                                            <option value="yes">Yes</option>
+                                            <option value="no">No</option>
+                                        </select>
+                                     Delete
+                                    <select style="background-color:#ddd;padding:3px;">
+                                            <option value="yes">Yes</option>
+                                            <option value="no">No</option>
+                                        </select> 
+                                </td>
+                            </tr>  -->
+                            <tr>
+                                <td>
+                                    <button style="width:90%;height:37px;background-color:#33cccc;cursor: pointer;border-radius:50px;color:white;" (click)="addNewUser()" *ngIf="isAddUser"><b>ADD USER</b></button>
+                                    <button style="width:90%;height:37px;background-color:#33cccc;cursor: pointer;border-radius:50px;color:white;" (click)="updateUser()" *ngIf="!isAddUser"><b>UPDATE</b></button>
+                                </td>
+                                <td>
+                                    <button style="width:90%;height:37px;background-color:#555;cursor: pointer;border-radius:50px;color:white;" (click)="closeUserPopUp()"><b>CANCEL</b></button>
+                                </td>
+                            </tr>
+                    </table>
+
+              </div>
+        </div>
+      
+</div>
+
+   <!-- alert -->
+    <div class="model model-alerts" *ngIf="isAlertPopup"> 
+                <!-- <a class="close">Close</a> -->
+                
+                <div class="model-content">
+                 <p>{{ alertMessage }}</p>           
+                <div class="btn_actions">
+                  <div class="button btn-ok" (click)="isAlertPopup = false;">ok</div>
+                  <!-- <div class="button btn-dismiss" (click)="isAlertPopup = false;">cancel</div> -->
+              
+                  </div>
+                 </div>
+     </div>
+        
+          <!-- Popup -->  
+<div class="overlay" *ngIf="isShowUserPopup||isAlertPopup ||isStartLoader"></div>

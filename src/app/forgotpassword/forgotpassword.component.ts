@@ -10,7 +10,8 @@ import { AuthserviceService } from '../shared/services/login/authservice.service
   styleUrls: ['./forgotpassword.component.css']
 })
 export class ForgotpasswordComponent implements OnInit {
-
+  isStartLoader:boolean=false;
+  isAlertPopup:boolean=false;
   forgotPasswordForm: FormGroup = this.builder.group({
     username: new FormControl(''),
   });
@@ -43,6 +44,21 @@ export class ForgotpasswordComponent implements OnInit {
 
       });
 
+  }
+  termsdata:any=[];  
+  termsCondition(){
+   
+    this.isStartLoader = true;
+    return this.loginService.termsandcondition()
+    .subscribe(
+      (termdataResponse: any) => {
+         // console.log(termdataResponse);
+         this.isAlertPopup = true;
+         this.termsdata=termdataResponse.introtext;
+         console.log(this.termsdata);
+         this.isStartLoader = false;
+        // console.log(this.termsdata);
+      }) 
   }
 
 }
