@@ -1,0 +1,720 @@
+<!--<style>
+  .input-wrap{
+    padding: 8px 20px !important;
+  }
+</style> -->
+<div class="container">
+  <div class="panel">
+        <app-dashboard (eventType)="onEventChanged($event)"></app-dashboard>
+
+    <div class="panel-rt panel-rt__extend panel_bg__sty_3 ">
+            <app-header></app-header>
+      <div class="panel">
+          <div class="loader" *ngIf="isStartLoader"></div>
+        <div class="visits_main">
+          <div class="search-filter">
+            <div class="filter-items">
+              <div class="filters filters-inline" >
+              <label class="labels">Sort By:</label>
+              <select class="drp-down filters-inline-sel" [(ngModel)]="orderVal">
+                  <option [selected]="true" value="">Default</option>
+                  <option value="name">Name</option>
+                </select>
+              <!-- <a class="drp-down">Name</a>
+              <ul class="drp-down-list">
+                <li>Name</li>
+
+              </ul> -->
+              </div>
+
+              <div class="filters filters-inline">
+              <label class="labels">Doctor:</label>
+              <select class="drp-down xs-fill-wt filters-inline-sel" (change)="getFilterByDoctorsData(resID.value);" #resID>
+                  <option [selected]="true" value="">Select a doctor</option>
+                  <option *ngFor="let eachdoctor of doctorsListForFilter" [value]="eachdoctor.id_resources" >
+                        {{eachdoctor.name}}
+                  </option>
+                </select>
+				<!-- <a class="drp-down">Dr. Kumaran</a>
+              <ul class="drp-down-list">
+                <li>Dr. Kumaran</li>
+                <li>Dr. Kumaran</li>
+              </ul> -->
+              </div>
+            </div>
+            <div class="filter-add filters-inline">
+      <button class="button add-icon" (click)="addVisitPopup(); isAddVisit = !isAddVisit">Add Visit</button>
+      <a class="downloads" (click)="downloadVisits()"><img src="assets/css/images/download-icon-2.png" width="33" height="30"></a>
+			<a style="cursor: pointer;" (click)="printOptionsClick('printSectionId');" class="print"><img src="assets/css/images/print-icon.png" width="33" height="31"></a>
+			</div>
+          </div> <!-- Visits search Ends -->
+
+		<div class="table-data">
+
+		<table class="visits-table-data" cellpadding="0" cellspacing="0" width="100%">
+        <tr class="titles">
+          <th>&nbsp;</th>
+          <th class="txt-uppercae">Name</th>
+          <!-- <th class="txt-uppercae">Age</th> -->
+          <th class="txt-uppercae">Phone</th>
+          <!-- <th class="txt-uppercae">Email</th> -->
+          <th class="txt-uppercae">Doctor</th>
+          <th class="txt-uppercae" style="width: 130px !important;">Time</th>
+          <th class="txt-uppercae v_sta">Status</th>
+          <th class="txt-uppercae paid_amt">Paid Amt</th>
+        </tr>
+    </table>
+      <div style="text-align: center;margin-top: 10px;" *ngIf="showNovisitsAvailable">No Appointments Available.</div>
+<table class="visits-table-data" cellpadding="0" cellspacing="0" width="100%" *ngFor= "let booking of visitsData; let i = index">
+
+  <tr class="heading">
+	 
+    <th>{{booking[0]}}</th>
+  </tr>
+  <tr *ngFor="let eachdata of booking[1] | orderBy: orderVal; let j = index">
+        <td (click)="patientDetails(eachdata.id);" *ngIf="eachdata.image!=''"><img src="{{eachdata.image}}" style="width: 34px;height: 34px;border-radius: 50%;"></td>
+        <td (click)="patientDetails(eachdata.id);" *ngIf="eachdata.image==''"><span class="avatar avatar-r">{{ eachdata.nametag }}</span></td>
+        <td class="v-name xs-pad-10 visit_styling" (click)="patientDetails(eachdata.id);"> 
+            <div style="width:128px !important; white-space: nowrap;overflow: hidden !important;text-overflow: ellipsis;" title="{{ eachdata.name }}"> {{ eachdata.name }}</div>
+        </td>
+        <!-- <td class="v-age xs-pad-10">{{ eachdata.age }}</td> -->
+        <td class="v-mobile xs-pad-10 visit_styling">{{ eachdata.mobile }}</td>
+        <!-- <td class="v-email xs-pad-10">{{ eachdata.email }}</td> -->
+        <td class="v-doctor xs-pad-10 visit_styling_doc">{{ eachdata.resname }}</td>
+        <td class="v-time xs-pad-10 visit_styling">{{ eachdata.display_starttime }}</td>
+        <td class="status xs-pad-10" *ngIf="eachdata.request_status == 'new'"><span class="new_full">{{ eachdata.request_status }}</span></td>
+        <td class="status xs-pad-10" *ngIf= "eachdata.request_status == 'Canceled'||eachdata.request_status == 'canceled'"><a class="reject">Cancelled</a></td>
+        <td class="status xs-pad-10" *ngIf="eachdata.request_status == 'accepted'"><a class="accept">{{ eachdata.request_status }}</a></td>
+        <td class="status xs-pad-10" *ngIf="eachdata.request_status == 'Review'"><span class="review_full">{{ eachdata.request_status }}</span></td>
+        <td class="v-amount xs-pad-10">{{ eachdata.booking_deposit }}</td>
+        <td class="v-edit xs-pad-10" (click)="visitEdit(eachdata.id);"><a style="cursor: pointer;" class="edit">edit</a></td>
+  </tr>
+  
+  </table>
+  
+   <!-- <tr class="heading">
+	<th>&nbsp;</th>
+    <th>Oct 20</th>
+   	
+  </tr> -->
+
+
+
+		
+		</div>
+			<!-- Visitors bottom table block -->
+
+        </div><!-- Visits wrap ends -->
+        
+      </div>
+    </div>
+    <!-- Panel Right Ends -->
+  </div>
+  <!-- Panel ends -->   
+      <!-- add visit Popup -->
+  <div class="model model-add_leads bx-shadow" *ngIf="isAddVisit || isEditVisit"> 
+      <div class="loader" *ngIf="isAddVisitLoader"></div>
+      <a class="close" style="cursor: pointer;" (click)="isAddVisit = false;isEditVisit = false;closeAddAndEditVisit();">Close</a>
+     
+       <div class="model-content">
+       <h2  *ngIf="!isEditVisit">New Appointment Booking</h2>
+       <h2  *ngIf="isEditVisit">Edit Appointment Booking</h2>
+      <div class="lt-div">
+        <div class="profile_card">
+          <div class="profile_img">
+            <a *ngIf="imageSrc == ''"><img src="assets/css/images/profile_no_img.png" ></a>
+            <a  *ngIf="imageSrc"><img src="{{imageSrc}}" height="154px" width="154px" style="border-radius: 100px;"></a>
+          </div>
+        
+        <div class="profile_bottom"><span>
+            <label for="file-upload"  class="custom-file-upload" *ngIf="!isShowImgDeleteButt">
+                Upload Image
+            </label>
+             
+            <div *ngIf="isShowImgDeleteButt">
+              <label for="file-upload"  class="custom-file-upload" class="upload-img">CHANGE</label>
+             <div style="float:left">
+              <span style="width: 1px;height: 40px;background-color:#0000002e;" *ngIf="isShowImgDeleteButt"></span>
+            </div>
+              <label style=" color: red;" class="upload-img" (click)="uploadImgeDelete()"> <b>X</b> DELETE</label>
+            </div>
+        <input type="file" id="file-upload" #fileInput placeholder="Upload image..." (change)="upload()" accept="image/*"/>
+        <!-- <button type="button" (click)="upload()" class="upload" *ngIf="imageSrc == ''">Upload Image</button> -->
+      </span></div>
+
+        </div> 
+        <p style="color:red;" *ngIf="imageUploadAlert">{{imgsize}}</p>
+        <p style="color:red;" *ngIf="imageerrorAlert">{{imgerror}}</p>
+      <p style="margin-top: 12px;">SOURCE</p>
+      <p style="margin-top: 6px;"><b>Visits</b></p>
+      </div>
+      <div class="rt-div">
+          <form [formGroup]="visitForm" novalidate="novalidate">
+        <div class="appointment-block bx-border-stl-2" *ngIf="isAddVisit || isEditVisit">
+          <div class="heading" *ngIf="isAddVisit">ADD APPOINTMENT DETAILS</div>    
+          <div class="heading" *ngIf="isEditVisit">EDIT APPOINTMENT DETAILS</div>       
+    <div class="form-section">
+        <div class="form-section-top visit_chan">
+        <ul>
+        <li>
+        <label class="labels">SELECT SPECIALITY</label>
+        <select class="drp-down xs-fill-wt" (change)="getDoctors(categeryID.value)" [formControl]="visitForm.controls['category']" #categeryID required>
+          <option [selected]="true" value="">Select a speciality</option>
+          <option *ngFor="let eachcategeory of visitCategeoryData" [value]="eachcategeory.id_categories">
+                {{eachcategeory.name}}
+            </option>
+        </select>
+          <span class="booking_error" *ngIf="visitForm.controls['category'].hasError('required') && visitForm.controls['category'].touched">Please Select Category</span>
+
+        </li>
+        <li>
+         <label class="labels">SELECT DATE</label>
+          <!-- <date-picker [formControl]="visitForm.controls['startdate']" format="L" required></date-picker> -->
+          <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" [formControl]="visitForm.controls['startdate']" autoClose="true" (onSelect)="getDoctorTimeSlots(doctorID.value, selectedDate.value)"  required #selectedDate placeHolder="dd-mm-yyyy" min="{{stopDates}}"></owl-date-time>
+          <!-- <input type="date" class="input xs-fill-wt" (change)="getDoctorTimeSlots(doctorID.value, selectedDate.value)" [formControl]="visitForm.controls['startdate']" required #selectedDate> -->
+          <span class="booking_error" *ngIf="visitForm.controls['startdate'].hasError('required') && visitForm.controls['startdate'].touched">Date Is Required</span>
+          <span class="booking_error" *ngIf="visitForm.controls['startdate'].hasError('minlength') && visitForm.controls['startdate'].touched"> Please Select Date.</span>
+          </li>
+        <!-- <li>
+          <label class="labels">Select Date</label>
+           <date-picker [formControl]="visitForm.controls['startdate']" format="L" required></date-picker>
+          <owl-date-time class="input xs-fill-wt" hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" [formControl]="visitForm.controls['startdate']" autoClose="true" (onSelect)="getDoctorTimeSlots(doctorID.value, selectedDate.value)"  required #selectedDate placeHolder="dd-mm-yyyy" min="{{stopDates}}"></owl-date-time>
+           <input type="date" class="input xs-fill-wt" (change)="getDoctorTimeSlots(doctorID.value, selectedDate.value)" [formControl]="visitForm.controls['startdate']" required #selectedDate>
+          <span style="color:red" *ngIf="visitForm.controls['startdate'].hasError('required') && visitForm.controls['startdate'].touched">Date Is Required</span>
+          <span style="color:red" *ngIf="visitForm.controls['startdate'].hasError('minlength') && visitForm.controls['startdate'].touched"> Please Select Date.</span>
+          </li> -->
+          <li>
+              <label class="labels">APPOINTMENT STATUS</label>
+               <select class="drp-down xs-fill-wt" [formControl]="visitForm.controls['request_status']" required>
+                   <option [selected]="true" value="">Select Status</option>
+                   <!-- <option *ngFor="let status of status_fields" [value]="status.id" >
+                       {{status.value}}
+                   </option>-->
+                   <option value="new">New</option>
+                   <option value="accepted">Accepted</option>
+                   <option value="canceled" *ngIf="isEditVisit">Cancelled</option>
+                   <option value="Review" *ngIf="isEditVisit">Review</option>
+               </select>
+                  <span class="booking_error" *ngIf="visitForm.controls['request_status'].hasError('required') && visitForm.controls['request_status'].touched">Please Select Status</span>
+               </li>
+
+        </ul>
+        <ul>
+            <li>
+                <label class="labels">SELECT DOCTOR</label>
+                <select class="drp-down xs-fill-wt" (change)="getDoctorTimeSlots(doctorID.value, selectedDate.value)" [formControl]="visitForm.controls['res_id']" #doctorID required>
+                  <option [selected]="true" value="">Select a doctor</option>
+                  <option *ngFor="let eachdoctor of visitDoctorsData" [value]="eachdoctor.id_resources" >
+                        {{eachdoctor.name}}
+                  </option>
+                </select>
+                <span class="booking_error" *ngIf="visitForm.controls['res_id'].hasError('required') && visitForm.controls['res_id'].touched">Please Select Doctor</span>
+
+                </li>
+        <li>
+        <label class="labels">SELECT TIME SLOT</label>
+        <select class="drp-down xs-fill-wt" [formControl]="visitForm.controls['starttime']" required (change)="timechange()">
+            <option [selected]="true" value="">Select time slot</option>
+            <option *ngFor="let eachtimeslot of timeSlotsData" [value]="eachtimeslot.id" [disabled]="eachtimeslot.booked!='Available' || eachtimeslot.isDisabled">
+                <!-- {{eachtimeslot.startendtime}}({{eachtimeslot.booked}}) -->
+                {{eachtimeslot.startendtime}}
+            </option>
+        </select>
+           <span class="booking_error" *ngIf="visitForm.controls['starttime'].hasError('required') && visitForm.controls['starttime'].touched">Please Select Timeslots</span>
+            <!-- <span style="color:red" *ngIf="visitForm.controls['starttime'].touched && timeChange && isEditVisit">Please Select Timeslots</span> -->
+        </li>
+           <!-- <li *ngIf="!isAddVisit">
+        <label class="labels">Select Time Slot</label>
+        <select class="drp-down xs-fill-wt" [formControl]="visitForm.controls['starttime']" required (change)="timechange()">
+            <option [selected]="true" value="">Select time slot</option>
+            <option *ngFor="let eachtimeslot of timeSlotsData" [value]="eachtimeslot.id" [disabled]="eachtimeslot.booked!='Available' || eachtimeslot.isDisabled">
+                {{eachtimeslot.startendtime}}
+            </option>
+        </select>
+           <span style="color:red" *ngIf="visitForm.controls['starttime'].hasError('required') && visitForm.controls['starttime'].touched">Please Select Timeslots</span>
+        </li> -->
+
+          <!-- <li>
+        <label class="labels">Appointment Status</label>
+        <select class="drp-down xs-fill-wt" [formControl]="visitForm.controls['request_status']">
+          <option [value]="accepted" [selected]="true">Accepted</option>
+          <option [value]="canceled">Cancelled</option>
+           <option [value]="">Review</option>	 -->
+          <!-- <option [value]="new">New</option>	 -->
+        <!--
+        </select>
+        </li> -->
+        <li>
+        <label class="labels">AMOUNT PAID</label>
+          <input type="number" class="input xs-fill-wt visits-bk-apmt-ip" [formControl]="visitForm.controls['booking_deposit']" required>
+          <span class="booking_error" *ngIf="visitForm.controls['booking_deposit'].hasError('required') && visitForm.controls['booking_deposit'].touched">Amount Is Required</span>
+
+        </li>
+        </ul>
+        </div>
+
+        </div>
+
+        </div>
+
+        <div class="form-section">
+        <div class="form-section-top">
+        <ul>
+        <li>
+        <label class="labels">FIRST NAME</label>
+          <input type="text" class="input xs-fill-wt visits-bk-apmt-ip" minlength="3" maxlength="40" pattern="\S.*\S" [formControl]="visitForm.controls['firstname']" required>
+          <span class="booking_error" *ngIf="visitForm.controls['firstname'].hasError('required') && visitForm.controls['firstname'].touched">Firstname Required</span>
+          <span class="booking_error" *ngIf="visitForm.controls['firstname'].hasError('minlength') && visitForm.controls['firstname'].touched"> Firstname be at least three characters in length.</span>
+          <span class="booking_error" *ngIf="visitForm.controls['firstname'].hasError('pattern') && visitForm.controls['firstname'].touched">{{spaceComment}}</span>
+
+        </li>
+        <li>
+            <label class="labels">GENDER</label>
+            <div class="gender visits-bk-apmt-asl">
+                <input [checked]="gender[0].checked" [formControl]="visitForm.controls['sex']" value="Male" name="rdblGender" id="rdblGender_0" type="radio">
+                <label for="rdblGender_0"> Male</label>
+                <input [checked]="gender[1].checked" [formControl]="visitForm.controls['sex']" value="Female" name="rdblGender" id="rdblGender_1" type="radio">
+                <label for="rdblGender_1"> Female</label>
+            </div>
+          </li>
+            <li>
+                <label class="labels">PHONE</label>
+                <input type="number" (input)="onTypeNumValid($event.target.value)" class="input xs-fill-wt visits-bk-apmt-ip"  minlength="10" maxlength="12" [formControl]="visitForm.controls['phone']" required>
+                <span class="booking_error" *ngIf="visitForm.controls['phone'].hasError('required') && visitForm.controls['phone'].touched">Phone Number is Required</span>
+                <!-- <span style="color:red" *ngIf="phoneEmpty"> Phone Number is Required</span> -->
+                <span class="booking_error" *ngIf="phoneMinlength"> Phone Number Should Be 10 Numbers.</span>
+          </li>
+
+        <!-- <li>
+        <label class="labels">Amount Due</label>
+        <input type="number" class="input xs-fill-wt" minlength="3" maxlength="40" [formControl]="visitForm.controls['name']" required>
+        <span style="color:red" *ngIf="visitForm.controls['name'].hasError('required') && visitForm.controls['name'].touched">Invalid name</span>
+        <span style="color:red" *ngIf="visitForm.controls['name'].hasError('minlength') && visitForm.controls['name'].touched"> name be at least three characters in length.</span>
+
+        </li> -->
+
+        <!-- <li>
+        <label class="labels">City</label>
+        <input type="text" class="input xs-fill-wt" minlength="2" maxlength="40" [formControl]="visitForm.controls['city']" required>
+        <span style="color:red" *ngIf="visitForm.controls['city'].hasError('required') && visitForm.controls['city'].touched">Invalid city</span>
+        <span style="color:red" *ngIf="visitForm.controls['city'].hasError('minlength') && visitForm.controls['city'].touched"> city be at least three characters in length.</span>
+
+        </li> -->
+        </ul>
+
+        <ul>
+        <li>
+        <label class="labels">LAST NAME</label>
+        <input type="text" class="input xs-fill-wt visits-bk-apmt-ip" [formControl]="visitForm.controls['lastname']" pattern="\S*\S"  required>
+        <span class="booking_error" *ngIf="visitForm.controls['lastname'].hasError('required') && visitForm.controls['lastname'].touched">Lastname Required</span>
+        <!-- <span style="color:red" *ngIf="visitForm.controls['lastname'].hasError('minlength') && visitForm.controls['lastname'].touched"> Lastname be at least three characters in length.</span> -->
+        <span class="booking_error" *ngIf="visitForm.controls['lastname'].hasError('pattern') &&  visitForm.controls['lastname'].touched">{{spaceComment}}</span>
+        </li>
+        <li class="visits-dob">
+            <label class="labels">DATE OF BIRTH</label>
+             <!-- <ng-datepicker [formControl]="visitForm.controls['dob']"></ng-datepicker>  -->
+             <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" [formControl]="visitForm.controls['dob']" (onSelect)="dobSelected(visitForm.controls['dob'].value)" autoClose="true" placeHolder="dd-mm-yyyy" max="{{stopDates}}"></owl-date-time>
+            <!-- <input type="text" type="date" class="input xs-fill-wt" minlength="5" maxlength="40" [formControl]="visitForm.controls['dob']"> -->
+            <!--<span style="color:red" *ngIf="visitForm.controls['dob'].hasError('required') && visitForm.controls['dob'].touched">Invalid date of birth</span>
+            <span style="color:red" *ngIf="visitForm.controls['dob'].hasError('minlength') && visitForm.controls['dob'].touched"> lastname be at least three characters in length.</span> -->
+
+        </li>
+        <li>
+            <label class="labels">EMAIL</label>
+              <input type="email" class="input xs-fill-wt visits-bk-apmt-ip" maxlength="40" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+[.]+[a-z]{1,4}$" [formControl]="visitForm.controls['email']" required>
+              <span class="booking_error" *ngIf="visitForm.controls['email'].hasError('required') && visitForm.controls['email'].touched">Email is required</span>
+              <span class="booking_error" *ngIf="visitForm.controls['email'].hasError('pattern') && visitForm.controls['email'].touched">Invalid email</span>
+            </li>
+        <!-- <li> -->
+        <!-- <label class="labels">Doctor</label>
+        <input type="text" class="input xs-fill-wt">
+        </li>
+
+        <li>
+        <label class="labels">Area Locality</label>
+        <input type="text" class="input xs-fill-wt">
+        </li> -->
+        </ul>
+        </div>
+
+
+        <div class="form-section-btm visits-bk-apmt-btm">
+        <ul>
+        <li>
+        <label class="labels">ADD REMARKS</label>
+        <input type="text" class="input xs-fill-wt visits-bk-apmt-ip" maxlength="120" [formControl]="visitForm.controls['comments']">
+        </li>
+        </ul>
+        </div>
+        <!-- <div class="form-section-btm">
+              <tag-input [(ngModel)]='patientDetailsData.tags'
+                        (onBlur)="onInputBlurred($event)"
+                        (onFocus)="onInputFocused($event)"
+                        (onSelect)="onSelected($event)"
+                        (onRemove)="onItemRemoved($event)"
+                        (onTextChange)="onTextChange($event)"
+                        (onAdd)="onItemAdded($event)">
+              </tag-input>
+        </div> -->
+              <div class="form-section-btm" *ngIf="isAddVisit">
+                  <ul>
+                  <li>
+                    <tag-input [formControl]="visitForm.controls['tags']">
+                      <tag-input-dropdown [autocompleteItems]="autoComplete">
+                      </tag-input-dropdown>
+                    </tag-input>
+                  </li>
+                  </ul>
+              </div>
+
+ 
+        <div class="actions" *ngIf="!isEditVisit">
+        <button class="button profile-action ripple" type="submit" (click)="addVisit()">ADD APPOINTMENT</button> &#160;&#160;
+        <button class="button cancel-action" (click)="isAddVisit = false;closeAddAndEditVisit();" style="margin-top: 1px;">cancel</button>
+        </div>
+
+
+        </div>
+        <div class="form-section" *ngIf="isEditVisit">
+          <div class="form-section-top">
+              <div class="actions">
+                  <button class="button profile-action ripple" type="submit" (click)="visitUpdate()">Update</button>&#160;&#160;
+                  <button class="button cancel-action" (click)="isEditVisit=false;closeAddAndEditVisit();" style="margin-top: 1px;">cancel</button>
+                  </div>
+          </div>
+          </div>
+        </form>
+      </div>
+
+       </div>
+      </div>
+        <!-- add visit Popup end-->
+        <!-- Popup patient details-->
+  <div class="model model-profile-view bx-shadow no-padding" *ngIf="isShowPatientDetails">
+    <a class="close" style="cursor: pointer;" (click)="isShowPatientDetails = false;">Close</a>
+    <div class="model-titlebar">
+    <span class="model-title"> PATIENT DETAILS</span>
+    </div>
+     <div class="model-content">
+
+     <div class="profile-view">
+
+  <table class="profile-table" width="80%" cellpadding="0" cellspacing="0">
+  <tbody>
+  <tr>
+    <td class="profile-img" *ngIf="patientDetailsData.image == ''"><img src="assets/css/images/profile_no_img.png" style="width:120px;height: 120px; margin-top: 25px;border-radius: 100%;"></td>
+  <td class="profile-img" *ngIf="patientDetailsData.image"><img src="{{patientDetailsData.image}}" style="width:120px;height: 120px; margin-top: 25px;border-radius: 100%;"></td>
+  <td class="profile-info">
+  <div>
+  <h3>{{ patientDetailsData.name }}</h3>
+  <p class="phone">{{ patientDetailsData.mobile }}</p>
+  <p class="email">{{ patientDetailsData.email }}</p>
+  </div>
+  </td>
+  </tr>
+  </tbody>
+
+
+  </table>
+
+  <div class="appointment-block bx-border-stl-2">
+  <div class="heading">Appointment Details</div>
+
+  <table class="profile-table saved-profile no-margin" width="100%" cellpadding="0" cellspacing="0">
+  <tbody>
+  <tr>
+  <td class="profile_data  txt-center">
+  <label class="labels date txt-center">{{ patientDetailsData.display_startdate }} </label>
+  <label class="labels time txt-center">{{ patientDetailsData.display_starttime }}</label>
+  </td>
+  </tr>
+
+  <tr>
+   <td class="profile_data txt-center">
+   <label class="doc_details">{{ patientDetailsData.resname }}</label><br><br>
+   <label class="accept_full" *ngIf='patientDetailsData.request_status=="accepted"'>Accepted</label>
+   <label class="new_full" *ngIf='patientDetailsData.request_status=="new"'>New</label>
+   <label class="review_full" *ngIf='patientDetailsData.request_status=="Review"'>Review</label>
+   <label class="rejected_full" *ngIf='patientDetailsData.request_status=="canceled"'>Cancelled</label>
+
+  </td>
+  </tr>
+  </tbody>
+  </table>
+
+  </div>
+
+
+  <table class="profile-table saved-profile" width="70%" cellpadding="0" cellspacing="0">
+  <tbody>
+  <tr>
+  <td>
+  <label class="labels">Amount paid</label>
+  <input type="text" class="input" value="{{ patientDetailsData.booking_deposit }}" readonly>
+  </td>
+  <td>
+  <label class="labels">Date of birth</label>
+  <input type="text" class="input" value="{{ patientDetailsData.birthday }}" readonly>
+  </td>
+  <td>
+  <label class="labels">Gender</label>
+  {{ patientDetailsData.sex }}
+ <!--  <input type="text" class="input" value="{{ patientDetailsData.sex }}" readonly> -->
+  </td>
+  </tr>
+  <tr>
+  <td>
+  <label class="labels">City</label>
+  {{ patientDetailsData.city }}
+<!--   <input type="text" class="input" value="{{ patientDetailsData.city }}" readonly>
+ -->  </td>
+  <td>
+  <label class="labels">Area Locality</label>
+  <input type="text" class="input" value="{{ patientDetailsData.area }}" readonly>
+  </td>
+  <td>
+  <label class="labels">Source</label>
+  Visits
+<!--   <input type="text" class="input" value="Visits" readonly>
+ -->  </td>
+  </tr>
+  <!-- <tr>
+  <td colspan="3">
+  <label class="labels">Source</label>
+  <div class="lead-groups"><a style="cursor: pointer;" *ngIf="patientDetailsData.city">{{ patientDetailsData.city }}</a><a style="cursor: pointer;" *ngIf="patientDetailsData.resname">{{patientDetailsData.resname}}</a>
+    <a style="cursor: pointer;" *ngIf="patientDetailsData.ServiceName">{{patientDetailsData.ServiceName}}</a></div>
+  </td>
+  </tr> -->
+
+  <tr>
+  <td colspan="3">
+  <label class="labels">Remarks</label>
+  <p class="lead-remark">{{ patientDetailsData.remarks }}</p>
+  </td>
+  </tr>
+
+
+
+  </tbody>
+
+  </table>
+    
+     
+     </div>
+      
+     
+     </div>
+    </div>
+    
+      <!-- Popup -->    
+       <!-- Popup print one -->
+  <div class="model model-add_leads bx-shadow model-popup" *ngIf="isPrintClicked"> 
+    <a class="close" href="javascript:void(0);" (click)="isPrintClicked=false;visitDownloadForm.reset();showTodayOrTomorrowError=false;
+    showBetweenError=false;">Close</a>
+   
+     <div class="model-content">
+      <div class="appointment-block bx-border-stl-2">
+        <div class="heading">DOWNLOAD & PRINT DETAILS</div>
+  <div class="form-section">
+    <form [formGroup]="visitDownloadForm">
+      <div class="form-section-top">
+          <div>
+               <div class="m-b-20 d-inline-b sele">
+                <label class="labels d-block">Select Duration</label>
+                  <span class="flt-div flt-gender pull-left">
+                      <input type="radio" [checked]="true" [formControl]="visitDownloadForm.controls['selectDuration']" value="0"/>
+                      <label></label>   </span>
+                      <span class="input-wrap pull-left dow_print_back" style="margin: -7px 0px 0px -7px;" >
+                           <label class="checkbox"><input type="checkbox" [formControl]="visitDownloadForm.controls['today']" (change)="select_duration_error_msg()"><span class="d-inline-b" >Today</span></label>
+                           <label class="checkbox"><input type="checkbox" [formControl]="visitDownloadForm.controls['tomorrow']" (change)="select_duration_error_msg()"><span class="d-inline-b">Tomorrow</span></label>
+                      </span><br>
+                     
+                </div>
+                
+                <div class="m-b-20 d-inline-b sele">
+                  <label class="labels d-block" style="margin-top: 32px;"></label>
+                  <span class="flt-div flt-gender pull-left" >
+                      <input type="radio" [formControl]="visitDownloadForm.controls['selectDuration']" value="1"/>
+                      <label></label>  </span>
+                      <div class="input-wrap pull-left print12 dow_print_back">
+                         <a href="javascript:void(0);" class="text-link visits-download-date">
+                            <!-- <ng-datepicker [(ngModel)]="selectedDateValue"></ng-datepicker> -->
+                            <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" autoClose="true" placeHolder="dd-mm-yyyy"
+                            [formControl]="visitDownloadForm.controls['fromDate']" (onSelect)="not_select_date_error_msg(selectedDate.value)" #selectedDate></owl-date-time>
+                         <!-- <span><img src="assets/css/images/calender-icon.png" />
+                        </span> -->
+                        </a>
+                        <span>TO</span>
+                          <a href="javascript:void(0);" class="text-link visits-download-date" style="margin-left: 32px !important;">
+                            <!-- <ng-datepicker [(ngModel)]="selectedDateValue"></ng-datepicker> -->
+                            <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" autoClose="true" placeHolder="dd-mm-yyyy"
+                            [formControl]="visitDownloadForm.controls['toDate']" (onSelect)="not_select_date_error_msg(selectedDate.value)" #selectedDate></owl-date-time>
+                            <!-- sep 1, 2017
+                          <span><img src="assets/css/images/calender-icon.png" /> </span> -->
+                        </a>
+                    </div>
+                      <br>
+                      
+  
+                 </div>
+             </div>
+             <div style="margin-top: 20px;">
+                  <div class="select_duration_comm">
+                      <span style="color:red"  *ngIf="showTodayOrTomorrowError">Select Atleast One</span>
+                      <!-- <span style="color:red" >Select Atleast one</span> -->
+                  </div>
+                  <div class="select_duration_comm1">
+                      <!-- <span style="color:red">Dates Are Required</span> -->
+                      <span style="color:red" *ngIf="showBetweenError">Dates Are Required</span>
+                  </div>
+                
+             </div>
+                <div class="m-t-60 d-block Column" >
+                  <label class="labels d-block">Select Column</label>
+  
+                      <!-- <span class="input-wrap  ">
+                           <label class="checkbox"><input type="checkbox"><span class="d-inline-b">Age</span></label>
+                           <label class="checkbox"><input type="checkbox"><span class="d-inline-b">Phone</span></label>
+                           <label class="checkbox"><input type="checkbox"><span class="d-inline-b">Email</span></label>
+                           <label class="checkbox"><input type="checkbox"><span class="d-inline-b">Time</span></label> 
+                           <label class="checkbox"><input type="checkbox"><span class="d-inline-b">Status</span></label>
+                           <label class="checkbox"><input type="checkbox"><span class="d-inline-b">Paid Amnt</span></label>
+
+                      </span> -->
+                      <span class="input-wrap dow_print_back">
+                        <div *ngFor="let item of select_column;let i = index"><label class="checkbox"  style="padding: 0px 7px 0px 7px;"  *ngIf="i>1"><input type="checkbox" [checked]="item.Checked" (change)="item.Checked=!item.Checked"><span class="d-inline-b">{{item.title}}</span></label></div>
+                   </span>
+              </div>
+              <div class="">
+                  <label class="labels">Doctor Name</label>
+                  <div class="clearfix">
+                      <div class="wrap-48 pull-left" style="width:45% !important;">
+                        <select class="drp-down xs-fill-wt visits-download-doc-sel" [formControl]="visitDownloadForm.controls['selecedDoctor']" style="background-color: #ffffff !important;">
+                            <option [selected]="true" value="">Select a doctor</option>
+                            <option *ngFor="let eachdoctor of doctorsListForFilter" [value]="eachdoctor.id_resources" >
+                                  {{eachdoctor.name}}
+                            </option>       
+                        </select> 
+              </div>
+                       <div class="wrap-48 pull-left generate"><a href="javascript:void(0);" class="btn btn-black text-uppercase btn-block btn-lg btn-regular brd-radius-50 align-center" (click)="showPrintScreen();">Generate Report</a> </div>
+                  </div>
+              </div>
+  
+      </div>  
+    </form>
+      
+      </div>  
+  
+      </div>  
+  
+    </div>
+     
+    
+     </div>
+    
+    
+      <!-- Popup end-->
+       <!-- Popup Print report 2-->
+  <div class="model bx-shadow isPrinting" *ngIf="isPrinting"> 
+    <a class="close" href="javascript:void(0);" (click)="isPrinting = false;visitDownloadForm.reset();excelOrPdf='excel'">Close</a>
+   
+     <div class="model-content brd-radius-5 bx-border-stl-2">
+         <div class="table-data m-b-40" id="printSectionId" style="overflow-x: inherit !important;">
+      
+  <table class="table table-bordered" cellpadding="0" cellspacing="0" width="100%" >
+    <tbody>
+    <tr class="titles text-uppercase ">
+  
+        <th>doctor</th>
+        <th>First name</th>
+        <th *ngIf="select_column[2].Checked" class="print_item_screen">age</th>
+        <th *ngIf="select_column[3].Checked" class="print_item_screen">phone</th>
+        <th *ngIf="select_column[4].Checked" class="print_item_screen">email</th>
+        <th *ngIf="select_column[5].Checked" class="print_item_screen">time</th>
+        <th *ngIf="select_column[6].Checked" class="print_item_screen">status</th>
+        <th *ngIf="select_column[7].Checked" class="print_item_screen">paid amount</th>
+        </tr>
+    <tr *ngFor="let filterVisit of filteredVisits">
+        <td>{{filterVisit.resname}}</td>
+        <td>{{filterVisit.name}}</td>
+        <td *ngIf="select_column[2].Checked"> {{filterVisit.age}}</td>
+        <td *ngIf="select_column[3].Checked">{{filterVisit.mobile}}</td>
+        <td *ngIf="select_column[4].Checked">{{filterVisit.email}}</td>
+        <td *ngIf="select_column[5].Checked">{{filterVisit.starttime}}</td> 
+        <td class="tags" *ngIf="select_column[6].Checked"><a class="rejected sm">{{filterVisit.request_status}}</a> </td>
+        <td *ngIf="select_column[7].Checked"> {{filterVisit.booking_deposit}}</td>
+  
+    </tr>
+
+    </tbody>
+              </table>
+             </div>
+    </div>
+      <div class="wrap-80 m-auto print_Details">
+            <div class="appointment-block bx-border-stl-2">
+        <div class="heading">DOWNLOAD & PRINT DETAIL</div>
+  <div class="form-section">
+      <div class="form-section-top">
+          
+              <div class="">
+                <div style="float:left;">
+                    <span class="flt-div flt-gender">
+                        <input [checked]="true" type="radio" class="dow_ra" value="excel" [(ngModel)]="excelOrPdf"/>
+                        <label></label>
+                    </span>
+                    <img src="assets/css/images/xl.png" alt="xl" class="dow_img"> 
+
+                  <span class="flt-div flt-gender">
+                      <input type="radio" class="dow_ra" value="pdf" [(ngModel)]="excelOrPdf"/>
+                      <label></label>
+                  </span>
+                  <img src="assets/css/images/PDF.png" alt="PDF" class="dow_img" > 
+                      
+                </div>
+                  <div class="clearfix">
+                      <div class="wrap-48 pull-left p1"><a (click)="downloadFilteredVisits()" href="javascript:void(0);" style="background-color:#33cccc;" class="btn btn-black text-uppercase btn-block btn-lg btn-regular brd-radius-50 align-center">Download</a> </div>                      
+                       <div class="wrap-48 pull-left p1"><a (click)="printToCart();" href="javascript:void(0);" class="btn btn-black text-uppercase btn-block btn-lg btn-regular brd-radius-50 align-center">Print Report</a> </div>                       
+                  </div>
+              </div>
+  
+      </div>
+  
+  
+  
+  
+      </div>
+  
+  
+      </div>
+     
+    
+     </div>
+    </div>
+    
+      <!-- Popup end -->
+      <!-- alert -->
+      <div class="model model-alerts" *ngIf="isAlertPopup" style="margin-top: 275px;"> 
+          <!-- <a class="close" href="javascript:void(0);">Close</a> -->
+          
+          <div class="model-content">
+           <p>{{ alertMessage }}</p>           
+          <div class="btn_actions">
+            <div class="button btn-ok" (click)="isAlertPopup = false;">ok</div>
+           
+        
+            </div>
+           </div>
+          </div>
+            <!--image alert-->
+ <!-- <div class="model model-alerts" *ngIf="imageUploadAlert" style="border-radius: 10px;box-shadow: 0 0 5px #777;top:367px;">  -->
+    <!-- <a class="close" href="javascript:void(0);">Close</a> -->    
+    <!-- <div class="model-content">
+     <p>The file size can not exceed 8MB.</p>           
+    <div class="btn_actions">
+      <div class="button btn-ok" (click)="imageUploadAlert = false;">OK</div>  
+      </div>
+     </div>
+    </div> -->
+</div>
+<!-- Container ends -->
+<div class="overlay" *ngIf="isAddVisit || isPrinting || isPrintClicked || imageUploadAlert || isEditVisit || isShowPatientDetails || isStartLoader || isAlertPopup"></div>
