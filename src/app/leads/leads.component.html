@@ -1,0 +1,536 @@
+<div class="container">
+  <div class="panel">
+    <app-dashboard></app-dashboard>
+    <!-- Panel Left ends -->
+    <div class="panel-rt  panel_bg__sty_3">
+      <app-header></app-header>
+      <div class="panel">
+          <div class="loader" *ngIf="isStartLoader"></div>
+        <div class="leads_main">
+          <div class="search-filter">
+            <div class="filter-items" *ngIf="!isCheckBoxChecked">
+              <!-- <div class="filters">
+              <label class="labels">Sort By:</label>
+              <a class="drp-down">Name</a>
+              <ul class="drp-down-list">
+                <li>First Name</li>
+                <li>Last Name</li>
+              </ul>
+              </div> -->
+ 
+              <!-- <div class="filters"> 
+              <label class="labels">Doctor:</label>
+				<a class="drp-down">Dr. Kumaran</a>
+              <ul class="drp-down-list">
+                <li>Dr. Kumaran</li>
+                <li>Dr. Kumaran</li>
+              </ul>
+              </div> -->
+			  
+			   <div class="filters" #filtercontainer>
+              
+              <a class="drp-down all-filters"  (click)="allFiltersCall(); $event.stopPropagation(); ">All Filters</a>
+
+              <ul class="drp-down-list">
+                <li>First Name</li>
+                <li>Last Name</li>
+              </ul>
+              <div class="filter_popup bx-shadow" [hidden]="!isAllFilters" style="left: 35% !important;">
+              <form [formGroup]="leadFilterForm" novalidate="novalidate">
+              <div class="content">
+              <div class="filter-lt">
+                  <ul>    
+                      <li>
+                       <div class="flt flt-gender bx-border brd-radius-5">
+                       <div class="heading">Gender</div>
+                       <div class="flt-div gender">
+                       <input checked="checked" [formControl]="leadFilterForm.controls['gender']" value="Male" name="rdblGender" id="rdblGender_0" type="radio">
+                       <label for="rdblGender_0"> Male</label>
+                       <input value="FeMale" [formControl]="leadFilterForm.controls['gender']" name="rdblGender" id="rdblGender_1" type="radio">
+                       <label for="rdblGender_1"> Female</label>
+                       </div>
+                       </div>
+
+                      </li>
+
+                        <li>
+                       <div class="flt flt-age bx-border brd-radius-5">
+                       <div class="heading">Age</div>
+                      <div class="flt-div age">
+                      <div class="age_from"> 
+                          <label>From</label>
+                          <select class="drp-down" [formControl]="leadFilterForm.controls['ageFrom']">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                            <option value="50">50</option>
+                            <option value="60">60</option>
+                            <option value="70">70</option>
+                            <option value="80">80</option>
+                            <option value="90">90</option>
+                            <option value="100">100</option>    
+                         </select> 
+                         </div>
+
+                         <div class="age_to"> 
+                          <label>To</label>
+                          <select class="drp-down"  [formControl]="leadFilterForm.controls['ageTo']">
+                              <option value="10">10</option>
+                              <option value="20">20</option>
+                              <option value="30">30</option>
+                              <option value="40">40</option>
+                              <option value="50">50</option>
+                              <option value="60">60</option>
+                              <option value="70">70</option>
+                              <option value="80">80</option>
+                              <option value="90">90</option>
+                              <option value="100">100</option>    
+                         </select> 
+                         </div>
+
+
+                      </div>
+
+
+                      </div>
+
+                      </li>
+
+                        <li>
+                       <div class="flt flt-contact bx-border brd-radius-5">
+                       <div class="heading">Includes Only</div>
+                      <div class="flt-div">
+                          <label>
+                          <input name="publish" value="email" id="publish" class="checkbox" type="checkbox" [formControl]="leadFilterForm.controls['includesEmail']"  [hidden]="true">
+                          <span class="">Email</span>
+                          </label>
+
+                          <label>
+                          <input name="publish" value="phone" id="publish" class="checkbox" checked="checked" type="checkbox" [formControl]="leadFilterForm.controls['includesPhone']"  [hidden]="true">
+                          <span class="">Phone</span>
+                          </label>
+
+                      </div>
+                       </div>
+
+                      </li>
+
+                  </ul>
+
+              </div>
+              <div class="filter-rt">
+
+                  <ul>
+                    <li>
+                       <div class="flt flt-source bx-border brd-radius-5">
+                       <div class="heading">Source</div>
+                      <div class="flt-div">
+                          
+                          <label>
+                          <input name="publish" value="lead" id="publish" class="checkbox" type="checkbox" [formControl]="leadFilterForm.controls['sourceLead']"  [hidden]="true">
+                          <span class="">Leads</span>
+                          </label>
+
+                          <label>
+                          <input name="publish" value="visit" id="publish" class="checkbox" checked="checked" type="checkbox" [formControl]="leadFilterForm.controls['sourceVisit']"  [hidden]="true">
+                          <span class="">Visits</span>
+                          </label>
+                            <label>
+                            <input name="publish" value="query" id="publish" class="checkbox" type="checkbox" [formControl]="leadFilterForm.controls['sourceQuery']"  [hidden]="true">
+                            <span class="">Queries</span>
+                            </label>
+
+                            <!-- <label>
+                            <input name="publish" value="visit" id="publish" class="checkbox" checked="checked" type="checkbox" [formControl]="leadFilterForm.controls['sourcePhone']">
+                            <span class="">Visit</span>
+                            </label> -->
+
+                      </div>
+                       </div>
+
+                      </li>
+
+                        <li>
+                        
+                       <div class="flt flt-group bx-border brd-radius-5">
+                       <div class="heading">Groups</div>
+                      <div class="flt-div" style="overflow-y:scroll; height:170px; overflow-x:hidden; position:relative;">
+                          <label *ngFor="let eachtag of leadtagsForFilter; let j = index;">
+                          <input name="publish" value="{{eachtag.title}}" class="checkbox" type="checkbox" [checked]="eachtag.isChecked" (change)="changeTagClick(eachtag)" [hidden]="true" >
+                          <span style="text-transform: capitalize;">{{eachtag.title}}</span>
+                          </label>
+                         
+                      </div>
+                       </div>
+
+                      </li>
+                  </ul>
+              </div>
+
+            <div class="btn_actions">
+                <button class="button btn-apply" type="submit" (click)="applyFilter();isAllFilters = false;">Apply Filter</button> 
+                <button class="button btn-cancel" (click)="isAllFilters = false;cancelTheFilter();">Cancel</button>
+                <button class="button btn-cancel" (click)="resetTheform();">Reset</button>
+            </div>
+
+              </div>
+              </form>
+
+          </div>
+              </div>
+			  
+            </div>
+            <div class="filter-items fill-brd" *ngIf="isCheckBoxChecked">
+                <button class="button ripple" (click)="addToGroups();"><img src="assets/css/images/add-group-icon.png"><span>Add to Groups</span></button>
+                <button class="button ripple" (click)="deleteSelectedLeads();"><img src="assets/css/images/delete-icon.png"><span>Delete</span></button>
+                <!-- <button class="button ripple"><img src="assets/css/images/add-star-icon.png"><span>Add Star</span></button> -->
+                <button class="button ripple" (click)="sendSms()"><img src="assets/css/images/sms-icon.png"><span>Send SMS</span></button>
+                </div>
+            <div class="filter-add">
+			<button class="button add-icon" (click)="clearForm(); isAddLead = !isAddLead;" style="border: 2px #33CCCC solid !important;">Add Lead</button>
+			<a class="downloads" (click)="downloadLeads()"><img src="assets/css/images/download-icon-2.png" width="33" height="30"></a>
+			<a  class="print"><img src="assets/css/images/print-icon.png" width="33" height="31"></a>
+			</div>
+          </div> <!-- Visits search Ends -->
+    <div *ngIf="showNoleadsAvailable" style="margin-top: 40px;text-align: center;">No Leads Are Available.</div>
+		<div class="table-data" *ngIf="!showNoleadsAvailable">
+		<table class="visits-table-data" cellpadding="0" cellspacing="0" width="100%">
+  <tr class="titles">
+	<th>
+	<label>
+	<input name="1" value="true" id="1" class="checkbox" type="checkbox">
+	<span>&nbsp;</span>
+    </label>
+	</th>
+	<th class="t-avatar">avatar</th>
+    <th>Name</th>
+    <th>Gender</th>
+	<th>Age</th>
+    <th>Phone</th>
+	<th>Email</th>
+	<th>Source</th>
+	<th>Groups/Tags</th>
+	<th>Actions</th>
+	
+  </tr>
+   
+   <tr class="heading">
+	<th>&nbsp;</th>
+   
+   	
+  </tr>
+ 
+  <tr *ngFor="let eachdata of pageItems; let i = index" >
+    <td [class.seleted]="eachdata.isChecked">
+    <label>
+    <input name="1" value="false" (change)="selectedLeadUsingId(eachdata);" class="checkbox" type="checkbox" [(ngModel)]="eachdata.isChecked">
+    <span>&nbsp;</span>
+    </label>
+    </td>
+    <td [class.seleted]="eachdata.isChecked" *ngIf="eachdata.image!=''&&eachdata.image!='undefined'"><img src="{{eachdata.image}}" style="width: 34px;height: 34px;border-radius: 50%;object-fit: cover;"></td>
+    <td [class.seleted]="eachdata.isChecked"  *ngIf="eachdata.image==''||eachdata.image=='undefined'"><span class="avatar avatar-r" style="margin: inherit !important;">{{ eachdata.imgTag }}</span></td>
+    <td class="v-name " [class.seleted]="eachdata.isChecked">{{ eachdata.firstname }}</td>
+     <td class="v-sex " [class.seleted]="eachdata.isChecked">{{ eachdata.sex }}</td>
+    <td class="v-age " [class.seleted]="eachdata.isChecked">{{ eachdata.age }}</td>
+    <td class="v-mobile " [class.seleted]="eachdata.isChecked">{{ eachdata.mobile }}</td>
+    <td class="v-email " [class.seleted]="eachdata.isChecked">{{ eachdata.email }}</td>
+    <td class="v-doctor " [class.seleted]="eachdata.isChecked">{{ eachdata.source}}</td>
+    <td class="tags" [class.seleted]="eachdata.isChecked">
+      <a *ngFor="let eachtag of eachdata.tagArr | slice:0:3;">{{ eachtag }}</a> 
+      <a style="cursor: pointer;" *ngIf="eachdata.tagArr.length > 3" (click)="$event.stopPropagation();clickedOnDottedLine(i);">
+      <div class="dotted-line">
+          <div></div><div></div><div></div>
+      </div> 
+       <div class="hover_actions" *ngIf="eachdata.isClickOnDottedLine" #editcontainer>
+            <ul>
+              <li style="cursor: pointer;" *ngFor="let eachtag of eachdata.tagArr | slice:3;">{{ eachtag }}</li>
+              <!-- <li style="cursor: pointer;"><a href="javascript:void(0);">Edit</a></li>
+              <li style="cursor: pointer;"><a href="javascript:void(0);">Delete</a></li> -->
+            </ul>                                        
+          </div>  
+        
+       </a> 
+    </td>
+    <!-- <td class="tags"><a class="reject">rejected</a></td> -->
+    <td class="v-edit " [class.seleted]="eachdata.isChecked"><a class="edit" (click)="editLeadFunction(eachdata)">edit</a></td>
+  </tr>  
+   
+  
+</table>
+<div class="pagination">
+ <div *ngIf="pager.pages && pager.pages.length">
+    
+    <a (click)="setPage(1)" *ngIf="pager.currentPage != 1">First</a>           
+    <a style="cursor: pointer;" (click)="setPage(pager.currentPage - 1)" title="Previous" *ngIf="pager.currentPage != 1">&laquo;</a>
+    <a (click)="setPage(page)" [ngClass]="{active:pager.currentPage === page}" *ngFor="let page of pager.pages; let i = index;">{{page}}</a>
+    <a style="cursor: pointer;" (click)="setPage(pager.currentPage + 1)" title="Next" *ngIf="pager.currentPage != pager.totalPages">&raquo;</a>
+    <a (click)="setPage(pager.totalPages)" *ngIf="pager.currentPage != pager.totalPages">Last</a> 
+    <!-- <a style="cursor: pointer;" (click)="setPage(pager.totalPages)"  *ngIf="pager.currentPage === pager.totalPages}">Last</a> -->
+            
+     </div>
+  </div>
+<!-- <div class="btn-toolbar" role="toolbar" style="margin: 0px auto;">
+   
+      <div>
+    <div class="container">
+        <div class="text-center">
+            <ul *ngIf="pager.pages && pager.pages.length" class="pagination">
+                <li [ngClass]="{disabled:pager.currentPage === 1}">
+                    <a (click)="setPage(1)">First</a>
+                </li>
+                <li [ngClass]="{disabled:pager.currentPage === 1}">
+                    <a (click)="setPage(pager.currentPage - 1)">Previous</a>
+                </li>
+                <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                    <a (click)="setPage(page)">{{page}}</a>
+                </li>
+                <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                    <a (click)="setPage(pager.currentPage + 1)">Next</a>
+                </li>
+                <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                    <a (click)="setPage(pager.totalPages)">Last</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+   
+</div> -->
+		
+		</div>
+			<!-- Visitors bottom table block -->
+
+        </div><!-- Visits wrap ends -->
+        
+      </div>
+    </div>
+    <!-- Panel Right Ends -->
+  </div>
+  <!-- Panel ends -->
+
+  <!-- Popup -->
+  <div class="model model-add_leads bx-shadow" *ngIf="isAddLead || isEditLead"> 
+      <div class="loader" *ngIf="isStartLoader"></div>
+    <a class="close" style="cursor: pointer;" (click)="isAddLead = false; isEditLead=false;clearForm();">Close</a>
+   
+     <div class="model-content">
+     <h2 *ngIf="isAddLead">Add patient Details</h2>
+     <h2 *ngIf="isEditLead">Edit patient Details</h2>
+    <div class="lt-div" style="margin: 0px 3% 0px 0px;">
+      <div class="profile_card">
+         <label for="file-upload"  class="custom-file-upload">
+        <div class="profile_img">
+            <a style="cursor: pointer;" *ngIf="imageSrc == ''||imageSrc==null||imageSrc=='undefined'"><img src="assets/css/images/profile_no_img.png" ></a>
+            <a style="cursor: pointer;" *ngIf="imageSrc!='' && imageSrc!=null && imageSrc!='undefined'"><img src="{{imageSrc}}" height="154px" width="154px" style="border-radius: 100px;"></a>
+        </div>
+         </label>
+      
+      <div class="profile_bottom"><span>
+          <label for="file-upload" class="custom-file-upload"  *ngIf="!isShowImgDeleteButt">
+              Upload Image
+          </label>
+           <div *ngIf="isShowImgDeleteButt">
+              <label for="file-upload"  class="custom-file-upload" class="upload-img">CHANGE</label>
+               <div style="float:left">
+                <span style="width: 1px;height: 40px;background-color:#0000002e;" *ngIf="isShowImgDeleteButt"></span>
+              </div>
+              <label style=" color: red;" class="upload-img" (click)="uploadImgeDelete()"> <b>X</b> DELETE</label>
+          </div>
+      <input type="file" id="file-upload" #fileInput placeholder="Upload image..." (change)="upload()" accept="image/*"/>
+        <!-- <a style="cursor: pointer;" class="upload">UPLOAD Image</a> -->
+      </span></div>
+      </div> 
+      <p style="color:red;" *ngIf="imageUploadAlert">{{imgsize}}</p>
+      <p style="color:red;" *ngIf="imageerrorAlert">{{imgerror}}</p>
+      <span *ngIf="!isAddLead">
+     <p style="margin-top: 12px;color: grey;"><b>SOURCE</b></p>
+      <p style="margin-top: 6px;"><b>{{leadForm.controls['source'].value}}</b></p>
+      </span>
+    </div>
+    <div class="rt-div" style="width: 67%;">
+      <div class="form-section"> 
+    <form [formGroup]="leadForm" (ngSubmit)="addLeads()">
+      <div class="form-section-top">        
+      <ul>
+      <li> 
+      
+      <label class="labels">First name</label>
+      <input type="text" class="input" minlength="3" maxlength="40" pattern="\S.*\S" [formControl]="leadForm.controls['firstname']" tabindex="1" required>
+      <span class="required_comments" *ngIf="leadForm.controls['firstname'].hasError('required') && leadForm.controls['firstname'].touched">{{f_name_req_comm}}</span>
+      <span class="required_comments" *ngIf="leadForm.controls['firstname'].hasError('pattern') && leadForm.controls['firstname'].touched">{{spaceComment}}</span>
+      <span class="required_comments" *ngIf="leadForm.controls['firstname'].hasError('minlength') && leadForm.controls['firstname'].touched">{{f_name_length_comm}}</span>
+      </li>
+      <li>
+      <label class="labels">Email</label> 
+      <input type="email" class="input" maxlength="40" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+[.]+[a-z]{1,4}$" [formControl]="leadForm.controls['email']" tabindex="3" required>
+      <span class="required_comments" *ngIf="leadForm.controls['email'].hasError('required') && leadForm.controls['email'].touched">{{email_required_comm}}</span>
+      <span class="required_comments" *ngIf="leadForm.controls['email'].hasError('pattern') && leadForm.controls['email'].touched">{{invalid_email_comm}}</span>
+      </li>
+      <!-- <li>
+      <label class="labels">Amount Due</label>
+      <input type="number" class="input" minlength="1" maxlength="40" [formControl]="leadForm.controls['amount_due']" required>
+      <span style="color:red" *ngIf="leadForm.controls['amount_due'].hasError('required') && leadForm.controls['amount_due'].touched">Invalid amount</span>
+      <span style="color:red" *ngIf="leadForm.controls['amount_due'].hasError('minlength') && leadForm.controls['amount_due'].touched"> amount be at least three characters in length.</span>
+      </li> -->
+      <li>
+      <label class="labels">Gender</label>
+      <span class="gender">
+       
+            <input [checked]="gender[0].checked" [formControl]="leadForm.controls['sex']" [value]="'Male'" name="rdblGender" id="rdblGender_0" type="radio" tabindex="5">
+            <label for="rdblGender_0" > Male</label>
+             <input [value]="'Female'" [checked]="gender[1].checked" [formControl]="leadForm.controls['sex']" name="rdblGender" id="rdblGender_4" type="radio" tabindex="6">
+            <label for="rdblGender_4"> Female</label>
+            </span>
+          </li>
+      <li>
+      <label class="labels">City</label>
+      <input type="text" class="input" [formControl]="leadForm.controls['city']" tabindex="8">
+      <!-- <span style="color:red" *ngIf="leadForm.controls['city'].hasError('required') && leadForm.controls['city'].touched">Invalid city</span>
+      <span style="color:red" *ngIf="leadForm.controls['city'].hasError('minlength') && leadForm.controls['city'].touched"> City be at least three characters in length.</span> -->
+      </li>
+      </ul>
+      
+      <ul>
+      <li>
+      <label class="labels">Last name</label>
+      <input type="text" class="input" [formControl]="leadForm.controls['surname']" pattern="\S*\S" tabindex="2" required>
+      <span class="required_comments" *ngIf="leadForm.controls['surname'].hasError('required') && leadForm.controls['surname'].touched">{{l_name_required_comm}}</span>
+      <span class="required_comments" *ngIf="leadForm.controls['surname'].hasError('pattern') && leadForm.controls['surname'].touched">{{spaceComment}}</span>
+      <!-- <span style="color:red" *ngIf="leadForm.controls['surname'].hasError('minlength') && leadForm.controls['surname'].touched"> lastname be at least three characters in length.</span> -->
+      </li>
+      <li>
+      <label class="labels">Phone</label>
+      <input type="number" (input)="onTypeNumValid($event.target.value)" class="input" maxlength="12" [formControl]="leadForm.controls['phone']" tabindex="4" onkeyup="if(!this.checkValidity()){this.value='e';alert('Please enter a number');};" required>
+      <span class="required_comments" *ngIf="leadForm.controls['phone'].hasError('required') && leadForm.controls['phone'].touched">{{num_required_comm}}</span>
+      <!-- <span style="color:red" *ngIf="leadForm.controls['phone'].hasError('minlength')"> Phone Number Minimum 10 characters Required.</span>
+      <span style="color:red" *ngIf="leadForm.controls['phone'].hasError('maxlength')">Phone Number Maximum 12 characters Only.</span> -->
+      <span class="required_comments" *ngIf="phoneMinlength"> Phone Number Should Be 10 Numbers.</span>
+      </li>
+      <!-- <li>
+      <label class="labels">Doctor</label> 
+      <input type="text" class="input" minlength="3" maxlength="40" [formControl]="leadForm.controls['doctor']" required>
+      <span style="color:red" *ngIf="leadForm.controls['doctor'].hasError('required') && leadForm.controls['doctor'].touched">Invalid doctor</span>
+      <span style="color:red" *ngIf="leadForm.controls['doctor'].hasError('minlength') && leadForm.controls['doctor'].touched"> doctor be at least three characters in length.</span>
+      </li> -->
+      <li>
+      <label class="labels">Date of Birth</label>
+      <div class="leads_date_cal">
+      <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" [formControl]="leadForm.controls['dob']" autoClose="true" placeHolder="dd-mm-yyyy" max="{{stopDates}}" tabindex="7"></owl-date-time>
+    </div>
+      <!-- <input type="date" class="input" [formControl]="leadForm.controls['dob']"> -->
+      <span style="color:red" *ngIf="leadForm.controls['dob'].hasError('required') && leadForm.controls['dob'].touched">Enter date of Birth</span>
+      <!-- <span style="color:red" *ngIf="leadForm.controls['city'].hasError('minlength') && leadForm.controls['city'].touched"> City be at least three characters in length.</span> -->
+      </li>
+      <li>
+      <label class="labels">Area Locality</label>
+      <input type="text" class="input" [formControl]="leadForm.controls['area']" tabindex="9">
+      <!-- <span style="color:red" *ngIf="leadForm.controls['doctor'].hasError('required') && leadForm.controls['doctor'].touched">Invalid doctor</span>
+      <span style="color:red" *ngIf="leadForm.controls['doctor'].hasError('minlength') && leadForm.controls['doctor'].touched"> doctor be at least three characters in length.</span> -->
+      </li>
+      </ul>
+      </div>
+      
+      
+      <div class="form-section-btm" style="overflow: inherit !important;"> 
+      <ul>
+      <li>
+      <label class="labels">Add Remarks</label>
+      <input type="text" class="input" maxlength="120" [formControl]="leadForm.controls['remarks']" tabindex="10">
+      </li>
+      <li>
+          <tag-input [formControl]="leadForm.controls['ctags']" [(ngModel)]="leadtags" tabindex="11">
+            <tag-input-dropdown [autocompleteItems]="autoComplete"></tag-input-dropdown>
+          </tag-input>
+      </li>
+      </ul>
+      </div>
+        
+        <br>
+      
+      <div class="actions">
+      <button class="button profile-action ripple" type="submit" tabindex="12">Submit</button><br>
+      <button class="button cancel-action" (click)="isAddLead = false;isEditLead=false;clearForm();" tabindex="13">cancel</button>
+      </div>
+    </form>
+      
+      </div>
+    </div>
+      
+     
+    
+     </div>
+    </div>
+    
+      <!-- Popup -->
+        <!-- Popup Groups for sms-->
+  <div class="model promotions-group bx-shadow no-padding PatientGroups_popup" *ngIf="isPatientGroups"> 
+    <a class="close"  (click)="isPatientGroups = false;deSeletePatientGroups()">Close</a>
+    
+     <div class="model-content">
+     
+  <h1>All Patient Groups</h1>
+  
+  <!-- let tag of leadtagsForFilter -->
+    <div class="groups x-padding bx-border-stl-3 brd-radius-5">
+    <div style="overflow-y:scroll; overflow-x:hidden; height:400px;">
+        <a class="{{tag.isSelectedclass}}"  (click)="selectPatientGroup(i);" *ngFor="let tag of leadtagsForFilter; let i = index;">{{tag.title}}</a>
+    </div>
+  </div>
+  <!-- <div class="groups x-padding bx-border-stl-3 brd-radius-5"><a style="cursor: pointer;">Hyderabad</a><a style="cursor: pointer;">Dr. Gurunatham</a><a style="cursor: pointer;">Dr. Gurunatham</a><a style="cursor: pointer;">Cardiology</a><a style="cursor: pointer;">Hyderabad</a><a class="selected" style="cursor: pointer;">Dr. Gurunatham</a><a style="cursor: pointer;">Dr. Gurunatham</a><a style="cursor: pointer;">Cardiology</a><a style="cursor: pointer;">Hyderabad</a><a style="cursor: pointer;">Dr. Gurunatham</a><a style="cursor: pointer;">Dr. Gurunatham</a><a style="cursor: pointer;">Cardiology</a><a style="cursor: pointer;">Hyderabad</a><a style="cursor: pointer;">Dr. Gurunatham</a><a style="cursor: pointer;">Dr. Gurunatham</a><a style="cursor: pointer;">Cardiology</a><a style="cursor: pointer;">Hyderabad</a><a style="cursor: pointer;">Dr. Gurunatham</a><a style="cursor: pointer;">Dr. Gurunatham</a><a class="selected" style="cursor: pointer;">Cardiology</a><a style="cursor: pointer;">Hyderabad</a><a style="cursor: pointer;">Dr. Gurunatham</a><a style="cursor: pointer;">Dr. Gurunatham</a><a style="cursor: pointer;">Cardiology</a><a style="cursor: pointer;">Hyderabad</a><a style="cursor: pointer;">Dr. Gurunatham</a><a class="selected" style="cursor: pointer;">Dr. Gurunatham</a><a style="cursor: pointer;">Cardiology</a><a style="cursor: pointer;">Hyderabad</a><a style="cursor: pointer;">Dr. Gurunatham</a><a style="cursor: pointer;">Dr. Gurunatham</a><a style="cursor: pointer;">Cardiology</a>
+  
+  </div> -->
+  
+  
+  <button class="button" (click)="addGroupsToSeceltedLeads()">Select Groups</button>
+  
+  
+     </div>
+    </div>
+    
+      <!-- Popup -->
+        <!-- alert -->
+    <div class="model model-alerts" *ngIf="isAlertPopup" style="margin-top: 275px;"> 
+                <!-- <a class="close" href="#">Close</a> -->
+                
+                <div class="model-content">
+                 <p>{{ alertMessage }}</p>           
+                <div class="btn_actions">
+                  <div class="button btn-ok" (click)="getLeads(); isAlertPopup = false;">ok</div>
+                 <!--   <div class="button btn-dismiss" (click)="isAlertPopup = false;">cancel</div> --> 
+              
+                  </div>
+                 </div>
+     </div>
+
+      <!-- delete yes or no popup -->
+      <div class="model model-alerts" *ngIf="isDeleteAlertPopup" style="border-radius: 10px;box-shadow: 0 0 5px #777;"> 
+          <!-- <a class="close" href="#">Close</a> -->
+          
+          <div class="model-content">
+           <p>Are You Want To Delete The Leads?</p>           
+          <div class="btn_actions">
+            <div class="button btn-ok" (click)="deleteAlertPopup()">Yes</div>
+            <div class="button btn-ok" (click)="isDeleteAlertPopup=false;">No</div>
+            <!-- <div class="button btn-dismiss" (click)="isAlertPopup = false;">cancel</div> -->
+        
+            </div>
+           </div>
+          </div>
+ <!--image alert-->
+ <!-- <div class="model model-alerts" *ngIf="imageUploadAlert" style="border-radius: 10px;box-shadow: 0 0 5px #777;">  -->
+    <!-- <a class="close" href="#">Close</a> -->    
+    <!-- <div class="model-content">
+     <p>The file size can not exceed 8MB.</p>           
+    <div class="btn_actions">
+      <div class="button btn-ok" (click)="imageUploadAlert = false;">OK</div>  
+      </div>
+     </div>
+    </div> -->
+
+
+
+</div>
+
+<!-- Container ends -->
+<div class="overlay" *ngIf="isAddLead || isEditLead || isStartLoader || isAlertPopup || isPatientGroups || isDeleteAlertPopup"></div>

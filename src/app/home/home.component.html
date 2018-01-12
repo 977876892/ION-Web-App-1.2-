@@ -1,0 +1,408 @@
+<div class="container">   
+  <div class="panel">
+      <div class="loader" *ngIf="isStartLoader"></div>
+<app-dashboard></app-dashboard>
+    <div class="panel-rt panel_bg__sty_1">
+ <app-header></app-header>
+  <div class="panel" *ngIf="dashboardData[0]; let eachdata">
+    <div class="panel_xs">
+      <button class="button btn_start brd-radius-5" (click)="isPromoPopupOpen = true;">Start New</button>
+      <div class="panel_box panel_box_publish brd-radius-5 xs-box-margin xs-box-padding">
+        <div class="title publish-title">Publish</div>
+        <div class="count bx-shadow-style2"><span>{{ ConvertToInt(eachdata.draft) + ConvertToInt(eachdata.ionized) }}</span></div>
+        <ul class="panel_box_list">
+          <li><span class="number">{{ eachdata.draft }}</span> new blog drafts are waiting for your inputs. <a [routerLink]="['/publish/drafts']" style="cursor: pointer;" *ngIf="eachdata.draft>0">Add now.</a></li>
+          <li><span class="number">{{ eachdata.ionized }}</span> Ionized blogs are ready for publish. <a [routerLink]="['/publish']" style="cursor: pointer;" *ngIf="eachdata.ionized>0">Review & schedule now.</a></li>
+        </ul>
+      </div>
+      <div class="panel_box panel_box_visit brd-radius-5 xs-box-margin xs-box-padding">
+        <div class="title visit-title">Visits</div>
+        <div class="count bx-shadow-style2"><span>{{ eachdata.visitcount }}</span></div>
+        <ul class="panel_box_list">
+          <li>You have  <span class="number">{{ eachdata.visitcount }}</span> patient appointments today. <a style="cursor: pointer;" [routerLink]="['/visits']" *ngIf="eachdata.visitcount>0">View now.</a></li>
+        </ul>
+      </div>
+    </div>
+    <!-- Second Col Queries-->
+    <div class="panel_xs">
+      <div class="panel_box panel_box_query brd-radius-5 xs-box-padding">
+        <div class="title query-title">Queries</div>
+        <div class="count bx-shadow-style2"><span>{{ ConvertToInt(eachdata.unanswered)  }}</span></div>
+        <ul class="panel_box_list">
+        <li>You have <span class="number">{{ eachdata.unanswered }}</span> unanswered queries. <a style="cursor: pointer;" [routerLink]="['/queries']" *ngIf="eachdata.unanswered>0">View & Reply.</a></li>
+        </ul>
+      </div>
+      <div class="panel_box panel_box_bg brd-radius-5 xs-box-margin">
+          <!-- <div class="panel-overlay-pane">
+              <div class="overlay-content">
+              <div class="overlay-title">Dr Disha Clinic</div>
+              <div class="overlay-desc">Being a happy, healthy person is much easier Life...</div>
+              </div>
+           </div> -->
+        <!-- <div class="title-ribbon">Dr Disha Clinic</div> -->
+        <div style="width: 100%; height: 500px" >
+          
+            <ngx-carousel class="banner" [inputs]="carouselBanner" (carouselLoad)="carouselBannerLoad()">
+                <ngx-item NgxCarouselItem *ngFor="let item of carouselBannerItems; let i = index;">
+                    <div class="bannerStyle" [style.background]="'url(' + item.image.url + ')'" (click)="testingFunction(item.postid)">
+                        <h1>{{item.title}}</h1>
+                    </div>    
+                </ngx-item>
+                <button NgxCarouselPrev class="leftRs">&lt;</button>
+                <button NgxCarouselNext class="rightRs">&gt;</button>
+            </ngx-carousel>
+          <!-- <carousel [sources]="imageSources" [config]="config"></carousel> -->
+        </div>       
+        <!-- <div class="panel_box_transparent"></div> -->
+        <!-- <div class="title">Lorem Ipsum is simply </div>
+        <p>Lorem Ipsum is simply Lorem Ipsum is simply</p>      -->     
+      
+    </div>
+     
+    </div>
+    <!-- Second Col ends -->
+    <!-- Last Col -->
+    <div class="panel_xs panel_xs_last">
+    
+    <div class="panel_box panel_box_h-feeds xs-box-padding" >
+        <div class="title txt-center">Hospital feeds</div>
+        <div style="overflow-y: scroll; overflow-x: hidden; position: relative; height: 600px;">
+        <ul class="panel_box_list" *ngFor="let eachfeed of dashboardFeedData; let i = index">
+        <li class="brd-radius-5">
+          <div class="feed_image"><img *ngIf="eachfeed.avatar == ''" src="assets/images/user_image.jpg" width="65" height="65" alt="Hospital Feed">
+            <img *ngIf="eachfeed.avatar != ''" src="{{ eachfeed.avatar }}" width="65" height="65" alt="Hospital Feed"></div>
+          <div class="feed_info"> <span class="lg-text">{{ eachfeed.content.split(":")[0] }}</span> {{ eachfeed.content.split(":")[1] }}
+            <div class="feed_info_stamp">{{eachfeed.since}} ago</div>
+          </div>
+          <div class="feed_actions txt-center"> 
+              <a *ngIf="eachfeed.action == 'View'" style="cursor: pointer;" class="view_link">
+                  <div>{{ eachfeed.action }}</div>
+                </a>
+                <a *ngIf="eachfeed.action == 'Reply'" routerLink="/queries/{{eachfeed.context_id}}" style="cursor: pointer;" class="view_link">
+                    <div>{{ eachfeed.action }}</div>
+                </a>
+                <a *ngIf="eachfeed.action == 'Congratulate'" style="cursor: pointer;" (click)="congaratulate(eachfeed.id)" class="view_link">
+                    <div>{{ eachfeed.action }}</div>
+                </a>
+            <a *ngIf="eachfeed.action == 'Congratulated'" style="cursor: pointer;"> <img src="assets/images/congractulation-icon.png">
+            <div>{{ eachfeed.action }}</div>
+            </a> </div>
+        </li>    
+      </ul>
+    </div>
+      </div>
+    
+    
+    
+    
+    </div>
+    <!-- last Col ends -->
+  </div>
+</div>
+
+    <!-- Panel Right Ends -->
+</div>
+<!-- Popup1 -->
+<div class="model model-promotions" *ngIf="isPromoPopupOpen"> 
+<a class="close" style="cursor: pointer;" (click)="isPromoPopupOpen = false">Close</a>
+<div class="model-titlebar">
+<span class="model-title" style="display:none;">Popup Title</span>
+</div>
+<div class="model-content model-bg gradient-1">
+ <h2>Hello Dr. {{ user.name }},
+ <span style="font-size: 44px;">What would you to the start on?</span></h2>
+
+  <div class="actions" style="width:95% !important;">
+  <a style="cursor: pointer;" routerLink="/visits/homeaddvisit" class="visit brd-radius-15 xs-bg-white new_add"><img src="assets/images/add-visits-icon.png"><br>Add Visit</a>
+  <a style="cursor: pointer;" (click) = "isSelectPromo = true; isPromoPopupOpen = false" class="promo brd-radius-15 xs-bg-white new_add" style="float: left !important;"><img src="assets/images/add-promo-icon.png"><br>Add Promo</a>
+  <a style="cursor: pointer;" (click)="isSelectAddLeads=true;this.isPromoPopupOpen=false;" class="promo brd-radius-15 xs-bg-white new_add" style="float:right !important;"><img src="assets/images/add-promo-icon.png"><br>Add Lead</a>
+  <a style="cursor: pointer;" (click) = "isSelectBlog=true; isSelectPromo = false; isPromoPopupOpen = false" class="blog brd-radius-15 xs-bg-white"><img src="assets/images/add-blog-icon.png" align="absmiddle">Start a new Blog</a>
+  
+  
+  </div> 
+ 
+
+ </div>
+</div>  
+  <!-- Popup1 -->
+  <!-- Popup2 -->
+<div class="model model-promotions" *ngIf="isSelectPromo"> 
+  <a class="close" style="cursor: pointer;" (click)="isSelectPromo = false">Close</a>
+  <div class="model-titlebar">
+  <span class="model-title" style="display:none;">Popup Title</span>
+  </div>
+  <div class="model-content model-promotions-content model-bg gradient-1">
+    <div class="v-align-center">
+    <p>Create, fregnent promotion of<br>
+   your brand, makes the patient <br>
+  remember it in need!!</p>
+  
+     <button class="button button_primary brd-radius-15" type="button" (click) = "getPromotionsCall();" style="padding: 15px 28px;font-size: 20px;"><span>Select a promo</span></button>
+   </div>
+  
+   </div>
+  </div>
+  
+    <!-- Popup2 -->
+     <!-- Popup3 -->
+<div class="model model-promotions" *ngIf="isPromoSelected"> 
+  <a class="close" style="cursor: pointer;" (click)="isPromoSelected = false;">Close</a>
+  <div class="model-titlebar">
+  <span class="model-title" style="display:none;">Popup Title</span>
+  </div>
+  <div class="model-content model-bg gradient-1 model-promotions-content">
+    <div class="v-align-center">
+    <p>Which promotion would you<br> like to start from?</p>
+
+  <div class="popular-promotions">
+    
+    <h2>{{ promotionsData[0]?.title }}</h2>
+    
+    
+    <div class="panel_promotions__list">
+      <ul>
+        <li *ngFor="let eachpromotion of promotionsData[0]?.child; let i = index" (click)="selectPromo(eachpromotion)">
+          <div class="promo-block"><img src="{{eachpromotion.avatar}}"></div>
+          <div class="promo-title" *ngIf="eachpromotion.parent_id == promotionsData[0].id"><a style="cursor: pointer;">{{ eachpromotion.title }}</a></div>
+        </li>     
+            </ul>             
+           
+          </div>
+    </div>
+
+   <a style="cursor: pointer;" class="viewmore" routerLink="/promotions/fullview">View More...</a>
+
+
+   </div>
+  
+   </div>
+  </div>
+   <!-- Popup3 -->
+ <!-- Popup select blog-->   
+  <div class="model  model-add_leads model-new-blog bx-shadow no-padding" *ngIf="isSelectBlog">
+      <a class="close" style="cursor: pointer;" (click)="isSelectBlog=false;">Close</a>
+      <div class="circle-pagination m-auto">          
+      </div>
+       <div class="model-content">
+      <div class="calender_topics topic-box">
+          <div class="calender-heading topic-box-heading">
+           Start New Blog
+          </div>
+       <div class="gradient-1 brd-radius-10 brd-radius-top-0 text-white">
+    
+    
+        <h3 class="p-t-20">Select a topic to start from your speciality ?</h3>
+           <div class="wrap-60 m-auto">
+               <button class="button btn-white brd-none brd-radius-50 btn-full m-b-20" routerLink="/publish/selecttopic" type="submit" >Yes Select the topic</button>
+                <button class="button btn-white-reverse  brd-radius-50 btn-full m-b-60" routerLink="/publish/newpost" type="submit" >No i want to start a new topic</button>
+           </div>
+    
+         </div>
+    
+    
+       </div>
+    
+       </div>
+      </div>  
+    <!-- Popup -->
+
+      <!-- addleadPopup -->
+  <div class="model model-add_leads bx-shadow" *ngIf="isSelectAddLeads"> 
+    <div class="loader" *ngIf="isStartLoader"></div>
+  <a class="close" style="cursor: pointer;" (click)="isSelectAddLeads = false;clearForm()">Close</a>
+ 
+   <div class="model-content">
+   <h2>Add patient Details</h2>
+  <div class="lt-div" style="margin: 0px 3% 0px 0px;">
+    <div class="profile_card">
+      <div class="profile_img">
+          <a style="cursor: pointer;" *ngIf="imageSrc == ''"><img src="assets/css/images/profile_no_img.png" ></a>
+          <a style="cursor: pointer;" *ngIf="imageSrc"><img src="{{imageSrc}}" height="154px" width="154px" style="border-radius: 100px;"></a>
+      </div>
+    
+    <div class="profile_bottom"><span>
+        <label for="file-upload" class="custom-file-upload"  *ngIf="!isShowImgDeleteButt">
+            Upload Image
+        </label>
+         <div *ngIf="isShowImgDeleteButt">
+            <label for="file-upload"  class="custom-file-upload" class="upload-img">CHANGE</label>
+             <div style="float:left">
+              <span style="width: 1px;height: 40px;background-color:#0000002e;" *ngIf="isShowImgDeleteButt"></span>
+            </div>
+            <label style=" color: red;" class="upload-img" (click)="uploadImgeDelete()"> <b>X</b> DELETE</label>
+        </div>
+    <input type="file" id="file-upload" #fileInput placeholder="Upload image..." (change)="upload()" accept="image/*"/>
+      <!-- <a style="cursor: pointer;" class="upload">UPLOAD Image</a> -->
+    </span></div>
+    </div> 
+    <p style="color:red;" *ngIf="imageUploadAlert">{{imgsize}}</p>
+    <p style="color:red;" *ngIf="imageerrorAlert">{{imgerror}}</p>
+   
+  </div>
+  <div class="rt-div" style="width: 67%;">
+    <div class="form-section"> 
+  <form [formGroup]="leadForm" (ngSubmit)="addLeads()">
+    <div class="form-section-top">        
+    <ul>
+    <li> 
+    
+    <label class="labels">First name</label>
+    <input type="text" class="input" minlength="3" maxlength="40" pattern="\S.*\S" [formControl]="leadForm.controls['firstname']" required>
+    <span class="required_comments" *ngIf="leadForm.controls['firstname'].hasError('required') && leadForm.controls['firstname'].touched">{{f_name_req_comm}}</span>
+    <span class="required_comments" *ngIf="leadForm.controls['firstname'].hasError('pattern') && leadForm.controls['firstname'].touched">{{spaceComment}}</span>
+    <span class="required_comments" *ngIf="leadForm.controls['firstname'].hasError('minlength') && leadForm.controls['firstname'].touched">{{f_name_length_comm}}</span>
+    </li>
+    <li>
+    <label class="labels">Email</label> 
+    <input type="email" class="input" maxlength="40" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+[.]+[a-z]{1,4}$" [formControl]="leadForm.controls['email']" required>
+    <span class="required_comments" *ngIf="leadForm.controls['email'].hasError('required') && leadForm.controls['email'].touched">{{email_required_comm}}</span>
+    <span class="required_comments" *ngIf="leadForm.controls['email'].hasError('pattern') && leadForm.controls['email'].touched">{{invalid_email_comm}}</span>
+    </li>
+    <!-- <li>
+    <label class="labels">Amount Due</label>
+    <input type="number" class="input" minlength="1" maxlength="40" [formControl]="leadForm.controls['amount_due']" required>
+    <span style="color:red" *ngIf="leadForm.controls['amount_due'].hasError('required') && leadForm.controls['amount_due'].touched">Invalid amount</span>
+    <span style="color:red" *ngIf="leadForm.controls['amount_due'].hasError('minlength') && leadForm.controls['amount_due'].touched"> amount be at least three characters in length.</span>
+    </li> -->
+    <li>
+    <label class="labels">Gender</label>
+    <span class="gender">
+     
+          <input [checked]="gender[0].checked" [formControl]="leadForm.controls['sex']" [value]="'Male'" name="rdblGender" id="rdblGender_0" type="radio">
+          <label for="rdblGender_0" > Male</label>
+           <input [value]="'Female'" [checked]="gender[1].checked" [formControl]="leadForm.controls['sex']" name="rdblGender" id="rdblGender_4" type="radio">
+          <label for="rdblGender_4"> Female</label>
+          </span>
+        </li>
+    <li>
+    <label class="labels">City</label>
+    <input type="text" class="input" [formControl]="leadForm.controls['city']">
+    <!-- <span style="color:red" *ngIf="leadForm.controls['city'].hasError('required') && leadForm.controls['city'].touched">Invalid city</span>
+    <span style="color:red" *ngIf="leadForm.controls['city'].hasError('minlength') && leadForm.controls['city'].touched"> City be at least three characters in length.</span> -->
+    </li>
+    </ul>
+    
+    <ul>
+    <li>
+    <label class="labels">Last name</label>
+    <input type="text" class="input" [formControl]="leadForm.controls['surname']" pattern="\S*\S" required>
+    <span class="required_comments" *ngIf="leadForm.controls['surname'].hasError('required') && leadForm.controls['surname'].touched">{{l_name_required_comm}}</span>
+    <span class="required_comments" *ngIf="leadForm.controls['surname'].hasError('pattern') && leadForm.controls['surname'].touched">{{spaceComment}}</span>
+    <!-- <span style="color:red" *ngIf="leadForm.controls['surname'].hasError('minlength') && leadForm.controls['surname'].touched"> lastname be at least three characters in length.</span> -->
+    </li>
+    <li>
+    <label class="labels">Phone</label>
+    <input type="number" (input)="onTypeNumValid($event.target.value)" class="input" maxlength="12" [formControl]="leadForm.controls['phone']" required>
+    <span class="required_comments" *ngIf="leadForm.controls['phone'].hasError('required') && leadForm.controls['phone'].touched">{{num_required_comm}}</span>
+    <!-- <span style="color:red" *ngIf="leadForm.controls['phone'].hasError('minlength')"> Phone Number Minimum 10 characters Required.</span>
+    <span style="color:red" *ngIf="leadForm.controls['phone'].hasError('maxlength')">Phone Number Maximum 12 characters Only.</span> -->
+    <span class="required_comments" *ngIf="phoneMinlength"> Phone Number Should Be 10 Numbers.</span>
+    </li>
+    <!-- <li>
+    <label class="labels">Doctor</label> 
+    <input type="text" class="input" minlength="3" maxlength="40" [formControl]="leadForm.controls['doctor']" required>
+    <span style="color:red" *ngIf="leadForm.controls['doctor'].hasError('required') && leadForm.controls['doctor'].touched">Invalid doctor</span>
+    <span style="color:red" *ngIf="leadForm.controls['doctor'].hasError('minlength') && leadForm.controls['doctor'].touched"> doctor be at least three characters in length.</span>
+    </li> -->
+    <li>
+    <label class="labels">Date of Birth</label>
+    <div class="leads_date_cal">
+    <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" [formControl]="leadForm.controls['dob']" autoClose="true" placeHolder="dd-mm-yyyy" max="{{stopDates}}"></owl-date-time>
+  </div>
+    <!-- <input type="date" class="input" [formControl]="leadForm.controls['dob']"> -->
+    <span style="color:red" *ngIf="leadForm.controls['dob'].hasError('required') && leadForm.controls['dob'].touched">Enter date of Birth</span>
+    <!-- <span style="color:red" *ngIf="leadForm.controls['city'].hasError('minlength') && leadForm.controls['city'].touched"> City be at least three characters in length.</span> -->
+    </li>
+    <li>
+    <label class="labels">Area Locality</label>
+    <input type="text" class="input" [formControl]="leadForm.controls['area']">
+    <!-- <span style="color:red" *ngIf="leadForm.controls['doctor'].hasError('required') && leadForm.controls['doctor'].touched">Invalid doctor</span>
+    <span style="color:red" *ngIf="leadForm.controls['doctor'].hasError('minlength') && leadForm.controls['doctor'].touched"> doctor be at least three characters in length.</span> -->
+    </li>
+    </ul>
+    </div>
+    
+    
+    <div class="form-section-btm" style="overflow: inherit !important;"> 
+    <ul>
+    <li>
+    <label class="labels">Add Remarks</label>
+    <input type="text" class="input" maxlength="120" [formControl]="leadForm.controls['remarks']">
+    </li>
+    <li>
+        <tag-input [formControl]="leadForm.controls['ctags']" [(ngModel)]="leadtags">
+          <tag-input-dropdown [autocompleteItems]="autoComplete"></tag-input-dropdown>
+        </tag-input>
+    </li>
+    </ul>
+    </div>
+      
+      <br>
+    
+    <div class="actions">
+    <button class="button profile-action ripple" type="submit">Submit</button><br>
+    <button class="button cancel-action" (click)="isSelectAddLeads = false;clearForm()">cancel</button>
+    </div>
+  </form>
+    
+    </div>
+  </div>
+    
+   
+  
+   </div>
+  </div>
+
+
+  <!-- slider popup -->
+ <div class="model model-publish bx-shadow no-padding listing_type" *ngIf="isSelectSlider">
+    <a class="close" style="cursor: pointer;" (click)="isSelectSlider=false;">Close</a>
+    <div class="model-titlebar">
+      <span class="model-title">{{sliderFullView.title}}</span>
+    </div>
+    <div class="model-content">
+      <div class="blog-right">
+        <div class="heading">Blog Comments</div>
+
+        <div class="live_chat_panel">
+          <div class="live_chat__body live_chat">
+
+            <ul>
+              <div *ngFor="let comment of blogCommentsData">
+                <li class="others" *ngIf="loginUserId==comment.userid">
+                  <p [innerHTML]="comment.comment"></p>
+                </li>
+                <li class="others" *ngIf="loginUserId!=comment.userid">
+                  <p [innerHTML]="comment.comment"></p>
+                </li>
+              </div>
+            </ul>
+
+          </div>
+   
+        </div>
+      </div>
+      <div class="blog-left">
+        <div class="blog-img"><img src="{{sliderFullView.image.url}}"></div>
+        <div style="height: 300px;width: 100%;overflow-x: hidden; overflow-y: scroll;">
+          <p [innerHTML]="sliderFullView.text"></p>
+        </div>
+      </div>
+
+    </div>
+  </div> 
+  
+    <!--  addleadPopup -->
+    <div class="model model-alerts" *ngIf="isAlertPopup" style="margin-top: 275px;"> 
+      <div class="model-content">
+       <p>{{ alertMessage }}</p>           
+      <div class="btn_actions">
+        <div class="button btn-ok" (click)="isAlertPopup = false;">ok</div>
+       <!--   <div class="button btn-dismiss" (click)="isAlertPopup = false;">cancel</div> --> 
+    
+        </div>
+       </div>
+    </div>
+   
+<div class="overlay" *ngIf="isPromoPopupOpen || isAlertPopup|| isSelectPromo || isStartLoader || isSelectBlog ||isPromoSelected || isSelectAddLeads || isSelectSlider"></div>
+</div>
