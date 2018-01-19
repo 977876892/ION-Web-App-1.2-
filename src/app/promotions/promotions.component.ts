@@ -25,6 +25,7 @@ export class PromotionsComponent implements OnInit {
   ionizedPromotionTitle="";
   showErrorForSms:boolean=false;
   currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+  smsBalance=this.currentuser.smsbalance;
    @ViewChild('fileInput') fileInput;
    imageSrc=[];
    smsTags:any=[];
@@ -350,8 +351,9 @@ notselectTags:boolean=false;
              this.showErrorForSms=true;
         }
         else{
-            console.log("error");
-            this.isSendSmspopup=true;
+          console.log(this.sendSmsTags);
+            this.getMessagesCount(this.sendSmsTags)
+            
       //     this.isStartLoader=true;
       //     this.selectedTags=[];
       //     if(this.sendSmsTags!=''){
@@ -456,7 +458,7 @@ notselectTags:boolean=false;
       this.router.navigate(['promotions']);
       this.showRequestIsTaken=!this.showRequestIsTaken;
     }
-    ionizedpromotion(title){
+    promotionfullviewimg(title){
       this.isOpenEditor=true;
      this.ionizedPromotionTitle=title;
      console.log(this.ionizedPromotionTitle);
@@ -498,4 +500,26 @@ notselectTags:boolean=false;
             })
 
      }
+          messagesCount=0;
+          getMessagesCount(tags){
+            if(tags!=''&&tags!=null)
+              {
+                  this.isStartLoader=true;
+               this.promotionService.getMessagesCount(tags).subscribe(res => {
+                    console.log(res);
+                    this.messagesCount=res.count;
+                    this.isSendSmspopup=true;
+                    },(err) => {
+                      this.isStartLoader=false;
+                    }, () => {
+                      this.isStartLoader=false;
+                    })
+              }
+                  else{
+                    this.messagesCount=0;
+                    this.isSendSmspopup=true;
+                  }
+               
+          }
+         
 }

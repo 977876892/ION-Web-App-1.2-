@@ -217,4 +217,15 @@ addPromotionService(promotionid,content,image,promotionTitle) {
      },
    );
   }
+  getMessagesCount(tags){ 
+    const headers = new Headers({'Content-Type' : 'application/X-www-form-urlencoded'});
+    let options = new RequestOptions({ headers });
+    const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+    return this.http.post(API.GET_MESSAGES_COUNT(currentuser.teamid,tags),'').map(
+     (responseData) => {
+       const key = '_body';
+       return JSON.parse(responseData[key]);
+     },
+   );
+  }
 }

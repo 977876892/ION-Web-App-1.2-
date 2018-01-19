@@ -4,35 +4,21 @@ import { Observable } from 'rxjs/Observable';
 import { Headers } from '@angular/http';
 import { API } from '../../api/api.urls';
 import 'rxjs/add/operator/map';
-import { IonServer } from '../../globals/global';
-import { ActivatedRoute, Params, Router } from '@angular/router';
 
 @Injectable()
 export class QueriesService {
 
-  constructor(private http: Http,private router:Router) { }
+  constructor(private http: Http) { }
   // Getting all queries.
   
   getAllQueries(startFrom,limit) {
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
-    if(this.router.url == '/queries/popular'){
-      console.log("/queries/popular");
-      console.log(IonServer.ION_SERVER+"/index.php/request?module=easydiscuss&action=get&resource=posts&username="+currentuser.username+"&limitstart=0&limit=15&featured=1");
-      return this.http.get(IonServer.ION_SERVER+"/index.php/request?module=easydiscuss&action=get&resource=posts&username="+currentuser.username+"&limitstart=0&limit=15&featured=1")
-      .map(
-        (responseData) => {
-            const key = '_body';
-            return JSON.parse(responseData[key]); 
-        });
-    }else{
-      return this.http.get(API.GET_ALL_QUERIES(currentuser.id,currentuser.username,startFrom,limit)).map(
-        (responseData) => {
-          const key = '_body';
-          return JSON.parse(responseData[key]);
-        },
-      );
-    }
-   
+    return this.http.get(API.GET_ALL_QUERIES(currentuser.id,currentuser.username,startFrom,limit)).map(
+      (responseData) => {
+        const key = '_body';
+        return JSON.parse(responseData[key]);
+      },
+    );
    }
 
    // Getting unanswered queris.

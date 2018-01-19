@@ -2,22 +2,45 @@
     <label class="username"><span class="name">Hello,</span><span class="honorific">Dr. </span>{{ user.name }}</label>
     <div class="rt-header__rt__block">
         <a (click)="searchCall();" style="cursor: pointer;" class="Search no-margin"><img src="assets/css/images/search-icon1.png" width="29" height="31"></a>
+        <a class="add_new" href="javascript:void(0)">ADD NEW</a>
         <a href="javascript:void(0)" class="calender" [routerLink]="['/publish/calendar']"><div class="cal-date">{{todayDate}}</div></a>
         <!-- <a style="cursor: pointer;" class="calender" [routerLink]="['/publish/calendar']">{{todayDate}}</a> -->
       <button class="button rounded ripple" (click)="logout();" type="submit">Logout</button>
     </div>
   </div>
-  <div class="model model-add_leads bx-shadow" *ngIf="isSearchPopup">
+<!-- <div class="model model-promotions" *ngIf="isPromoPopupOpen">
+<a class="close" style="cursor: pointer;" (click)="isPromoPopupOpen = false">Close</a>
+<div class="model-titlebar">
+<span class="model-title" style="display:none;">Popup Title</span>
+</div>
+<div class="model-content model-bg gradient-1">
+ <h2>Hello Dr. {{ user.name }},
+ <span style="font-size: 44px;">What would you to the start on?</span></h2>
+
+  <div class="actions" style="width:95% !important;">
+  <a style="cursor: pointer;" routerLink="/visits/homeaddvisit" class="visit brd-radius-15 xs-bg-white new_add"><img src="assets/images/add-visits-icon.png"><br>Add Visit</a>
+  <a style="cursor: pointer;" (click) = "isSelectPromo = true; isPromoPopupOpen = false" class="promo brd-radius-15 xs-bg-white new_add" style="float: left !important;"><img src="assets/images/add-promo-icon.png"><br>Add Promo</a>
+  <a style="cursor: pointer;" (click)="isSelectAddLeads=true;this.isPromoPopupOpen=false;" class="promo brd-radius-15 xs-bg-white new_add" style="float:right !important;"><img src="assets/images/add-promo-icon.png"><br>Add Lead</a>
+  <a style="cursor: pointer;" (click) = "isSelectBlog=true; isSelectPromo = false; isPromoPopupOpen = false" class="blog brd-radius-15 xs-bg-white"><img src="assets/images/add-blog-icon.png" align="absmiddle">Start a new Blog</a>
+  
+  
+  </div> 
+ 
+
+ </div>
+</div>  -->
+  <div class="model model-add_leads bx-shadow" *ngIf="isSearchPopup" style="width: 925px;top:6%;margin-left: -471px;border-radius: 5px;">
     <a class="close" href="javascript: void(0);" (click)="isSearchPopup = false;searchtext='';">Close</a>
-    <div class="panel">
+    <div class="panel" style="height: 520px !important;min-height: inherit;">
         <div class="loader" *ngIf="isStartLoader"></div>
         <div class="panel_box panel_box_search  xs-box-padding ">
             <div class="">
-                <input type="text" class="input search input-h input-full" placeholder="Search" [(ngModel)]="searchtext" (ngModelChange)="searchCall(searchtext)">
+                <input type="text" class="input search input-h input-full" placeholder="Search by patient details, speciality, query.." [(ngModel)]="searchtext" (ngModelChange)="searchCall(searchtext)">
             </div>
-            <div *ngIf="searchtext.length>4&&searchResposne.length==0">No Results Available</div>
+            <div *ngIf="isNoResult" style="margin-top:10px;">No Results Available</div>
+            <div  class="search_data">
             <div *ngFor="let searchData of searchResposne">
-            <ul class="search-panel-list">
+            <ul class="search-panel-list"> 
                 <li class="clearfix" *ngIf="searchData.type=='blog'">
                     <!-- <div class="pull-left" *ngIf="searchData.type=='blog'">
                          <div class="sp-profile-pic"><img src="assets/css/images/doctor-image.jpg" /> </div>
@@ -27,47 +50,52 @@
                          </div>
 
 
-                    </div> -->
+                    </div> --> 
                     <div class="pull-left" >
-                         <div class="sp-profile-pic"><img src="{{searchData.image}}"/> </div>
-                         <div class="sp-profile-data">
-                               <div class="sp-profile-name"><b>{{searchData.title}}</b></div>
+                         <div class="sp-profile-pic" *ngIf="searchData.image!='null' && searchData.image!='NA' && searchData.image!=''"><img src="{{searchData.image}}"/> </div>
+                         <div class="sp-profile-pic" *ngIf="searchData.image=='null' || searchData.image=='NA' || searchData.image==''"><span class="avatar avatar-r header_avatar">{{ searchData.nametag }}</span> </div>                                                                         
+                         <div class="sp-profile-data" style="margin-top: 10px;">
+                               <div class="sp-profile-name"><b style=" text-transform: capitalize;">{{searchData.title}}</b></div>
                              <!-- <span class="sp-profile-info">8979797979</span>  <span class="sp-profile-info">tawetasdfasf</span> -->
                          </div>
 
 
                     </div>
                     <div class="pull-right"> <div class="sp-profile-actions">
-                             <img src="assets/images/search_blog.png" style="height: 40px;width: 55px;"/>
-                             <div>Blogs</div>
+                             <img src="assets/images/Blogs.png"/>
+                             <div style="color:#ababab;">Blogs</div>
                          </div></div>
                 </li>
                   <li class="clearfix" *ngIf="searchData.type=='query'">
                     <div class="pull-left">
                          <div class="sp-profile-pic" *ngIf="searchData.image!='NA'"><img src="{{searchData.image}}"/> </div>
-                         <div class="sp-profile-data">
-                               <div class="sp-profile-name" *ngIf="searchData.title!='NA'"><b>{{searchData.title}} <span *ngIf="searchData.age!='NA'">,{{searchData.age}}</span> <span *ngIf="searchData.gender!='NA'">,{{searchData.gender}}</span></b></div>
+                         <div class="sp-profile-pic" *ngIf="searchData.image=='NA'"><span class="avatar avatar-r header_avatar">{{ searchData.nametag }}</span> </div>                                                
+                         <div class="sp-profile-data" style="margin-top: 10px;">
+                               <div class="sp-profile-name" *ngIf="searchData.title!='NA'"><b style=" text-transform: capitalize;">{{searchData.title}} <span *ngIf="searchData.age!='NA'">,{{searchData.age}}</span> <span *ngIf="searchData.gender!='NA'">,{{searchData.gender}}</span></b></div>
                              <span class="sp-profile-info" *ngIf="searchData.mobile!='NA'">{{searchData.mobile}}</span>  <span class="sp-profile-info" *ngIf="searchData.email!='NA'">{{searchData.email}}</span>
                          </div>
                     </div>
                     <div class="pull-right"> <div class="sp-profile-actions">
-                             <img src="assets/images/ic-queries.png" />
-                             <div>Quries</div>
+                             <img src="assets/images/quiresss_search.png" />
+                             <div style="color:#ababab;">Quries</div>
                          </div></div>
                 </li>
                   <li class="clearfix" *ngIf="searchData.type=='lead'">
                     <div class="pull-left">
-                       <div class="sp-profile-pic" *ngIf="searchData.image!='NA'"><img src="{{searchData.image}}"/> </div>
+                       <div class="sp-profile-pic">
+                         <img src="{{searchData.image}}" *ngIf="searchData.image!='NA' && searchData.image!=''"/>
+                         <span class="avatar avatar-r header_avatar" *ngIf="searchData.image=='NA' || searchData.image==''">{{ searchData.nametag }}</span>
+                      </div>                     
                          <div class="sp-profile-data">
-                               <div class="sp-profile-name" *ngIf="searchData.title!='NA'"><b>{{searchData.title}} <span *ngIf="searchData.age!='NA'">,{{searchData.age}}</span> <span *ngIf="searchData.gender!='NA'">,{{searchData.gender}}</span></b></div>
-                             <span class="sp-profile-info" *ngIf="searchData.mobile!='NA'">{{searchData.mobile}}</span>  <span class="sp-profile-info" *ngIf="searchData.email!='NA'">{{searchData.email}}</span>
-                         </div>
+                              <div><span class="sp-profile-name" *ngIf="searchData.title!='NA'"><b style=" text-transform: capitalize;float: left;margin-top: 10px;">{{searchData.title}},<span *ngIf="searchData.age!='NA'">{{searchData.age}},</span><span *ngIf="searchData.gender!='NA'">{{searchData.gender}}</span></b></span></div>
+                             <span class="sp-profile-info" *ngIf="searchData.mobile!='NA'">{{searchData.mobile}},</span><span class="sp-profile-info" *ngIf="searchData.email!='NA'">{{searchData.email}}</span>
+                        </div>
 
 
                     </div>
                     <div class="pull-right"> <div class="sp-profile-actions">
-                             <img src="assets/images/ic-patients.png" />
-                             <div>Leads</div>
+                             <img src="assets/images/patients.png" />
+                             <div style="color:#ababab;">Leads</div>
                          </div></div>
                 </li>
                   <!-- <li class="clearfix">
@@ -88,21 +116,22 @@
                          <li class="clearfix" *ngIf="searchData.type=='visit'">
                     <div class="pull-left">
                         <div class="sp-profile-pic" *ngIf="searchData.image!='NA'"><img src="{{searchData.image}}"/> </div>
-                         <div class="sp-profile-data">
-                               <div class="sp-profile-name" *ngIf="searchData.title!='NA'"><b>{{searchData.title}} <span *ngIf="searchData.age!='NA'">,{{searchData.age}}</span> <span *ngIf="searchData.gender!='NA'">,{{searchData.gender}}</span></b></div>
+                        <div class="sp-profile-pic" *ngIf="searchData.image=='NA'"><span class="avatar avatar-r header_avatar">{{ searchData.nametag }}</span> </div>
+                         <div class="sp-profile-data" style="margin-top: 10px;">
+                               <div class="sp-profile-name" *ngIf="searchData.title!='NA'"><b style=" text-transform: capitalize;">{{searchData.title}} <span *ngIf="searchData.age!='NA'">,{{searchData.age}}</span> <span *ngIf="searchData.gender!='NA'">,{{searchData.gender}}</span></b></div>
                              <span class="sp-profile-info" *ngIf="searchData.mobile!='NA'">{{searchData.mobile}}</span>  <span class="sp-profile-info" *ngIf="searchData.email!='NA'">{{searchData.email}}</span>
                          </div>
 
                     </div>
                     <div class="pull-right"> <div class="sp-profile-actions" style="margin-right: 10px">
-                             <img src="assets/images/visits_search.png" style="height: 40px;width: 44px;"/>
-                             <div>Visits</div>
+                             <img src="assets/images/visitz.png" style="height: 40px;width: 44px;"/>
+                             <div style="color:#ababab;">Visits</div>
                          </div></div>
                 </li>
             </ul>
             </div>
 
-
+  </div>
 
         </div>
 

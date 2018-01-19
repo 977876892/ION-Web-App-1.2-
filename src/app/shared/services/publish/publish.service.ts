@@ -30,46 +30,47 @@ createTheBlogService(createBlogForm,tags) {
       var format = require('date-fns/format');
       var published_date='',published_time='',finalpublished='';
       let body = new FormData();
-     console.log(createBlogForm);
+      console.log(createBlogForm);
+      console.log(createBlogForm.createdTime);
       const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
       var newDate=new Date();
       var created_date=format(newDate, ['YYYY-MM-DD HH:mm:ss']);
-      if(createBlogForm.createdDate=='' ||createBlogForm.createdDate==null)
-        {
-            finalpublished='';
-        }
-    else{
-             published_date=format(createBlogForm.createdDate, ['YYYY-MM-DD']);
-             published_time=format(createBlogForm.createdTime, ['HH:mm:ss']);
-             finalpublished=published_date+" "+published_time;
-    }
-            console.log(published_date);
-            console.log(published_time);
-    console.log(published_date+" "+published_time);
-    body.append('image', createBlogForm.image);
-    body.append('groupTags', '');
-    body.append('write_content_hidden', createBlogForm.content);
-    body.append('publish_up',finalpublished);
-    body.append('send_notification_emails',"1");
-    body.append('copyrights','');
-    body.append('created',created_date);
-    body.append('write_content',createBlogForm.content);
-    body.append('copyrights','');
-    body.append('published',createBlogForm.status);
-    body.append('subscription','');
-    body.append('title',createBlogForm.title);
-    body.append('content',createBlogForm.content);
-    body.append('tags',tags);
-    body.append('frontpage','1');
-    body.append('allowcomment','1');
-    body.append('category_id',createBlogForm.type);
-    body.append('publish_down','0000-00-00 00:00:00');
-    body.append('blogpassword','');
-    body.append('robots','');
-    body.append('excerpt','');
-    body.append('permalink','');
-    body.append('key',currentuser.auth);
-    body.append('topic_id',createBlogForm.topicId);
+    //   if(createBlogForm.createdDate=='' ||createBlogForm.createdDate==null)
+    //     {
+    //         finalpublished='';
+    //     }
+    // else{
+      published_date=format(createBlogForm.createdDate, ['YYYY-MM-DD']);
+      published_time=format(createBlogForm.createdTime, ['HH:mm:ss']);
+      finalpublished=published_date+" "+published_time;
+    // }
+      console.log(published_date);
+      console.log(published_time);
+      console.log(published_date+" "+published_time);
+      body.append('image', createBlogForm.image);
+      body.append('groupTags', '');
+      body.append('write_content_hidden', createBlogForm.content);
+      body.append('publish_up',finalpublished);
+      body.append('send_notification_emails',"1");
+      body.append('copyrights','');
+      body.append('created',created_date);
+      body.append('write_content',createBlogForm.content);
+      body.append('copyrights','');
+      body.append('published',createBlogForm.status);
+      body.append('subscription','');
+      body.append('title',createBlogForm.title);
+      body.append('content',createBlogForm.content);
+      body.append('tags',tags);
+      body.append('frontpage','1');
+      body.append('allowcomment','1');
+      body.append('category_id',createBlogForm.type);
+      body.append('publish_down','0000-00-00 00:00:00');
+      body.append('blogpassword','');
+      body.append('robots','');
+      body.append('excerpt','');
+      body.append('permalink','');
+      body.append('key',currentuser.auth);
+      body.append('topic_id',createBlogForm.topicId);
    return this.http.post(API.CREATE_NEW_BLOG(), body).map(
      (responseData) => {
        const key = '_body';
@@ -93,15 +94,15 @@ updateBlogService(blogData,tags) {
      var created_date=format(newDate, ['YYYY-MM-DD HH:mm:ss']);
      //var published_date=format(blogData.createdDate, ['YYYY-MM-DD']);
      //var published_time=format(blogData.createdTime, ['HH:mm:ss']);
-      if(blogData.createdDate=='' ||blogData.createdDate==null)
-        {
-             finalpublished='';
-        }
-    else{
+    //   if(blogData.createdDate=='' ||blogData.createdDate==null)
+    //     {
+    //          finalpublished='';
+    //     }
+    // else{
              published_date=format(blogData.createdDate, ['YYYY-MM-DD']);
              published_time=format(blogData.createdTime, ['HH:mm:ss']);
              finalpublished=published_date+" "+published_time;
-    }
+   // }
      console.log(created_date);
      console.log(published_time);
      console.log(published_date);
@@ -115,7 +116,6 @@ updateBlogService(blogData,tags) {
       '&publish_up=' +  finalpublished +
       '&copyrights=' +
       '&send_notification_emails=1'  +
-      '&created=' + created_date +
       '&write_content=' + encodeURIComponent(blogData.content) +
       '&subscription=1' +
       '&title=' + blogData.title +

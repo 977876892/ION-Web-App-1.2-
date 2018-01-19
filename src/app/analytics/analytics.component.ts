@@ -788,6 +788,7 @@ export class AnalyticsComponent implements OnInit {
           //day change
           public showDate=false;
           public dateChange(dateChange){
+              this.isStartLoader=true;
               this.showNoDailyVisits=false;
               this.showNoMonthlyVisits=false;
               this.showNoYearlyData=false;
@@ -895,7 +896,7 @@ export class AnalyticsComponent implements OnInit {
                                                       if(tmp[k].request_status.localeCompare("accepted")==0){
                                                           acceptCount=tmp[k].request_status_count;
                                                       } 
-                                                      if(tmp[k].request_status.localeCompare("cancelled")==0){
+                                                      if(tmp[k].request_status.localeCompare("canceled")==0){
                                                           cancelledCount=tmp[k].request_status_count;
                                                       }
                                                       
@@ -908,12 +909,12 @@ export class AnalyticsComponent implements OnInit {
                                           if(z<=12){
                                                 this.visitsDailyBarChartLabels[i]=z+"AM";
                                                 this.visitDailyBarChartData[0].data[i]=acceptCount;
-                                                this.visitDailyBarChartData[1].data[i]=acceptCount;
+                                                this.visitDailyBarChartData[1].data[i]=cancelledCount;
                                           }
                                           else{
                                                 this.visitsDailyBarChartLabels[i]=z-12+"PM";
                                                 this.visitDailyBarChartData[0].data[i]=acceptCount;
-                                                this.visitDailyBarChartData[1].data[i]=acceptCount;
+                                                this.visitDailyBarChartData[1].data[i]=cancelledCount;
                                           } 
                                       i++;
                                     }
@@ -924,9 +925,11 @@ export class AnalyticsComponent implements OnInit {
                           if(this.showDailyBarChart||this.showDailyLineChart)
                             {
                               this.showNoDailyVisits=false;
+                              this.isStartLoader=false;
                             }
                             else{
                               this.showNoDailyVisits=true;
+                              this.isStartLoader=false;
                             }
                                      
                         })
@@ -975,6 +978,7 @@ export class AnalyticsComponent implements OnInit {
             }
                console.log(selectedMonth);
                console.log(selectedYear);
+               this.isStartLoader=true;
               this.showDate=false;
               this.showDailyLineChart=false;
               this.showDailyBarChart=false;
@@ -1071,10 +1075,12 @@ export class AnalyticsComponent implements OnInit {
                         {
                           this.showMonthlyBarChart=false;
                           this.showNoMonthlyVisits=true;
+                          this.isStartLoader=false;
                         }
                         else{
                           this.showMonthlyBarChart=true;
                           this.showNoMonthlyVisits=false;
+                          this.isStartLoader=false;
                         }
                        
                 })
@@ -1099,6 +1105,7 @@ export class AnalyticsComponent implements OnInit {
                 selectYear=year;
               }
                console.log(selectYear);
+              this.isStartLoader=true;
               this.showDate=false;
               this.showDailyLineChart=false;
               this.showDailyBarChart=false;
@@ -1132,6 +1139,7 @@ export class AnalyticsComponent implements OnInit {
                                 else{
                                       var visistYearwise,month;
                                       visistYearwise=visistYearwiseLineReport.data;
+                                     // console.log(visistYearwise);
                                       for(var x=0;x<12;x=x+1){
                                           
                                           if(x==0){month="Jan"}if(x==1){month="Feb"}if(x==2){month="Mar"}if(x==3){month="Apr"}
@@ -1141,8 +1149,11 @@ export class AnalyticsComponent implements OnInit {
                                           {
                                               if(typeof visistYearwise[j].sdate !="undefined" && parseInt(visistYearwise[j].sdate)==(x+1))
                                               {
+                                                console.log(j+"if");
+                                                console.log(visistYearwise[j].monthly_count);
                                                   this.visitYearlyLineChartLabels[x]=month;
                                                   this.visitYearlyLineChartData[0].data[x]=visistYearwise[j].monthly_count;
+                                                  break;
                                               }
                                               else{
                                                   this.visitYearlyLineChartLabels[x]=month;
@@ -1173,7 +1184,7 @@ export class AnalyticsComponent implements OnInit {
                   (visistYearwiseBarReport: any) => {
                     var month,colObj,visistYearwise;
                     visistYearwise=visistYearwiseBarReport.data;
-                    //console.log(visistYearwiseBarReport);
+                    console.log(visistYearwiseBarReport);
                     for(var x=0;x<12;x++){
                         var acceptCount=0,cancelledCount=0;
                       for(var j=0;j<visistYearwise.length;j++){
@@ -1198,6 +1209,7 @@ export class AnalyticsComponent implements OnInit {
                                 this.visitsYearlyBarChartLabels[x]=month;
                                 this.visitYearlyBarChartData[0].data[x]=visistYearwise[j].request_status_accept_count;
                                 this.visitYearlyBarChartData[1].data[x]=visistYearwise[j].request_status_cancel_count;
+                                break;
                           }
                           else{
                                 this.visitsYearlyBarChartLabels[x]=month;
@@ -1215,9 +1227,11 @@ export class AnalyticsComponent implements OnInit {
                         }
                           if(this.showYearlyLineChart||this.showYearlyBarChart)
                             {
+                              this.isStartLoader=false;
                               this.showNoYearlyData=false;
                             }
                             else{
+                              this.isStartLoader=false;
                               this.showNoYearlyData=true;
                             }
                     

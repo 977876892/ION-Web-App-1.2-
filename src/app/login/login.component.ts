@@ -64,7 +64,8 @@ export class LoginComponent implements OnInit {
                         categoryid: loginUserResponse.parent_category_id,
                         publishid:loginUserResponse.publishid,
                         smsSenderId:commonDetails.description[0].sender_id,
-                        userGroup:(loginUserResponse.groups.split(","))[0]
+                        userGroup:(loginUserResponse.groups.split(","))[0],
+                        smsbalance:commonDetails.description[0].smsbalance
                       }));
                     this.router.navigate(['home']);
                 }, (err) => {

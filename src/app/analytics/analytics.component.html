@@ -10,7 +10,7 @@
               <div *ngIf="websiteAnalytics">
                   <div *ngIf="shownoWebSiteAnalytics">No Website Analytics</div>
                   <div *ngIf="!shownoWebSiteAnalytics">
-                    <div class="wrap-60 margin-auto">
+                    <div class="wrap-60 margin-auto" >
                             <h2 class="t-head txt-center m-b-30">Your Website Rank </h2>
                             <div class="table-responsive">
                                     <table class="table table-bordered">
@@ -62,7 +62,7 @@
                                     </table>
                                 </div>
                         </div>
-                        <div class="table-responsive" *ngIf="showUserEngagementLS" style="overflow-x: scroll; overflow-y: hidden">
+                        <div class="table-responsive" *ngIf="showUserEngagementLS" style="overflow-x: scroll; overflow-y: hidden;margin-left: -102px;">
                             <table class="table table-bordered">
                                 <tbody>
                                 <tr>
@@ -88,14 +88,14 @@
                                 </tbody>
                             </table>
                         </div>
-
+                     <div  class="analytics_headings">
                       <h2 class="t-head txt-center m-b-30">Trend Of User Visits</h2>
                       <div class="txt-center m-b-20">
                           <input [checked]="true" type="radio" class="radio-styled "  value="0" name="estimated" (click)="getEstimatedDaily()"  ><label for="LastMonth">Day-Wise</label>
                            <input type="radio" class="radio-styled" value="1" name="estimated" (click)="getEstimatedMonthly()" ><label for="Last6Month"> Month-Wise</label>
                       </div>
-
-                      <div style="width:400px !important; margin-left: 200px;" *ngIf="showDailyLine">
+                    </div>
+                      <div style="width:400px !important; margin-left: 90px;" *ngIf="showDailyLine">
                             <canvas baseChart width="100" height="100"
                                         [datasets]="lineChartDataForDaily"
                                         [labels]="lineChartLabelsForDaily"
@@ -104,9 +104,9 @@
                                         [legend]="lineChartLegend"
                                         [chartType]="lineChartType"
                                         (chartHover)="chartHovered($event)"
-                                        (chartClick)="chartClicked($event)"></canvas>
+                                        (chartClick)="chartClicked($event)"></canvas>  
                       </div>
-                      <div style="width:400px !important;" *ngIf="showMonthly">
+                      <div style="width:400px !important;margin-left: 90px;" *ngIf="showMonthly">
                             <canvas baseChart width="100" height="100"
                                         [datasets]="lineChartDataForMonthly"
                                         [labels]="lineChartLabelsForMonthly"
@@ -116,14 +116,17 @@
                                         [chartType]="lineChartType"
                                         (chartHover)="chartHovered($event)"
                                         (chartClick)="chartClicked($event)"></canvas>
+                                       
                       </div>
                       <br />
+                      <div  class="analytics_headings">
                       <h2 class="t-head txt-center m-b-30">Total Visitors - Age vs Genders</h2>
                       <div class="txt-center m-b-20">
                           <input [checked]="true" type="radio" class="radio-styled " value="0" name="ageAndGender" (click)="lastThreeMonthsUsersBasedOnAgeAndGender()"  > <label for="LastMonth">Last 3 Months</label>
                            <input type="radio" class="radio-styled " value="1" name="ageAndGender" (click)="lastSixMonthsUsersBasedOnAgeAndGender()"><label for="Last6Month"> Last 6 Months</label>
                       </div>
-                      <div style="display: block" *ngIf="showThreeBar">
+                    </div>
+                      <div class="analytics-gra" *ngIf="showThreeBar">
                             <canvas baseChart
                                 [datasets]="lastThreeMonthsAgeAndGender"
                                 [labels]="barChartLabels"
@@ -132,13 +135,14 @@
                                 [chartType]="barChartType"></canvas>
                       </div>
                       <br />
-
+                      <div  class="analytics_headings">
                       <h2 class="t-head txt-center m-b-30">Source Of Visitors</h2>
                       <div class="txt-center m-b-20">
                           <input [checked]="true" type="radio" class="radio-styled " value="0" name="social" (click)="lastThreeMonthsFromSocial()"  > <label for="LastMonth">Last 3 Months</label>
                            <input type="radio" class="radio-styled " value="1" name="social" (click)="lastSixMonthsFromSocial()"><label for="Last6Month"> Last 6 Months</label>
                       </div>
-                      <div style="display: block" *ngIf="showSocilal">
+                    </div>
+                      <div class="analytics-gra" *ngIf="showSocilal">
                             <canvas baseChart
                                 [datasets]="socialVisitors"
                                 [labels]="sourceOfVisitorsLabels"
@@ -147,13 +151,14 @@
                                 [legend]="barChartLegend"
                                 [chartType]="barChartType"></canvas>
                       </div>
-
+                        <div class="analytics_headings">
                       <h2 class="t-head txt-center m-b-30">Top  5 Pages</h2>
                       <div class="txt-center m-b-20">
                           <input [checked]="true" type="radio" class="radio-styled " value="0" name="toppages" (click)="topPagesLastMonth()" > <label for="LastMonth">Last 3 Months</label>
                            <input type="radio" class="radio-styled " value="1" name="toppages" (click)="topPagesLastThreeMonths()"><label for="Last6Month"> Last 6 Months</label>
                       </div>
-                      <div class="table-responsive" *ngIf="showTopPages" style="overflow-x: scroll; overflow-y: hidden">
+                    </div>
+                      <div class="table-responsive " *ngIf="showTopPages" style="overflow-x: scroll; overflow-y: hidden;margin-left: -102px;">
                             <table class="table table-bordered">
                                 <tbody>
                                 <tr>
@@ -178,12 +183,14 @@
                             </table>
                         </div>
                      <br />
+                     <div class="analytics_headings">
                     <h2 class="t-head txt-center m-b-30">Top Keywords In Google Search</h2>
                       <div class="txt-center m-b-20">
                           <input [checked]="true" type="radio" class="radio-styled " value="0" name="keywords" (click)="lastMonthKeywords()"> <label for="LastMonthkeywords">Last Month</label>
                            <input type="radio" class="radio-styled" value="1" name="keywords" (click)="lastThreeMonthsKeywords()"><label for="Last3Monthkeywords"> Last 3 Months</label>
                       </div>
-                      <div class="table-responsive" *ngIf="keywords" >
+                    </div>
+                      <div class="table-responsive analytics-gra" *ngIf="keywords" >
                             <table class="table table-bordered">
                                 <tbody>
                                 <tr>
@@ -203,8 +210,10 @@
                             </table>
                         </div>
                         <br />
+                        <div  class="analytics_headings">
                         <h2 class="t-head txt-center m-b-30">Users From Top Cities</h2>
-                        <div class="table-responsive" *ngIf="showCitites" >
+                    </div>
+                        <div class="table-responsive analytics-gra" *ngIf="showCitites" >
                               <table class="table table-bordered">
                                   <tbody>
                                   <tr>
@@ -229,8 +238,8 @@
               <!--publish analytics-->
               <div *ngIf="showPublishAnalytics">
                   <div *ngIf="showNoBlogsAvailable">No Blogs Data Available</div>
-                    <h2 class="t-head txt-center m-b-30" *ngIf="showBlogsBarChart">Published Blogs</h2>
-                      <div style="display: block" *ngIf="showBlogsBarChart">
+                    <h2 class="t-head txt-center m-b-30 analytics_headings" *ngIf="showBlogsBarChart">Published Blogs Count By Month</h2>
+                      <div style="display: block;margin-left: -68px;" *ngIf="showBlogsBarChart">
                       <canvas baseChart
                           [datasets]="blogsBarChartData"
                           [labels]="blogsBarChartLabels"
@@ -240,8 +249,8 @@
                       </div>
                       <br><br>
 
-                      <h2 class="t-head txt-center m-b-30" *ngIf="showBlogTable">Blogs</h2>
-                      <div class="table-responsive" *ngIf="showBlogTable">
+                      <h2 class="t-head txt-center m-b-30 analytics_headings" *ngIf="showBlogTable">Blogs</h2>
+                      <div class="table-responsive analytics-gra" *ngIf="showBlogTable">
                             <table class="table table-bordered">
                                 <tbody>
                                 <tr>
@@ -278,8 +287,8 @@
                 <!--publish analytics-->
                 <div *ngIf="showQueryAnalytics">
                     <div *ngIf="showNoQuestionsDataAvailable">No Questions Data Avalable</div>
-                    <h2 class="t-head txt-center m-b-30" *ngIf="showQuestionByCategory">All Answered And UnAnswered Questions Count By Category</h2>
-                        <div class="table-responsive" *ngIf="showQuestionByCategory">
+                    <h2 class="t-head txt-center m-b-30 analytics_headings" *ngIf="showQuestionByCategory">All Answered And UnAnswered Questions Count By Category</h2>
+                        <div class="table-responsive" *ngIf="showQuestionByCategory" style="margin-left: -169px;">
                                 <table class="table table-bordered">
                                     <tbody>
                                     <tr>
@@ -302,8 +311,8 @@
                             </div>
 
                           <br><br>
-                          <h2 class="t-head txt-center m-b-30" *ngIf="showQuestionsCountByMonth">All Questions Count By Month(Last One Year)</h2>
-                          <div class="table-responsive" *ngIf="showQuestionsCountByMonth">
+                          <h2 class="t-head txt-center m-b-30 analytics_headings" *ngIf="showQuestionsCountByMonth">All Questions Count By Month(Last One Year)</h2>
+                          <div class="table-responsive" *ngIf="showQuestionsCountByMonth"  style="margin-left: -169px;">
                                 <table class="table table-bordered">
                                     <tbody>
                                     <tr>
@@ -321,6 +330,7 @@
                 </div>
                 <!--visit analytics-->
                 <div *ngIf="showVisitAnalytics">
+                    <div class="analytics_headings">
                         <h2 class="t-head txt-center m-b-30">Visits Analytics</h2>
                  <div class="txt-center m-b-20">
                     <input type="radio" class="radio-styled" value="0" name="visits" (click)="dateChange()" [checked]="true" ><label for="bydate">By Date</label>
@@ -328,14 +338,15 @@
                     <input type="radio" class="radio-styled" value="2" name="visits" (click)="yearChanged()" > <label for="ByYear">By year</label>
                     <input type="radio" class="radio-styled" value="3" name="visits" (click)="revenueChanged()"> <label for="ByRevenue">By Doctor</label>
                    </div>
+                </div>
                     <br><br>
                     <!-- <input type="date" [ngModel] ="dt | date:'yyyy-MM-dd'" (ngModelChange)="dt = $event;dateChange(dt)" > -->
-                    <div  style="width: 31% !important;">
+                    <div  style="width: 31% !important;margin-left: 158px;">
                          <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" [(ngModel)]="selectedDate" autoClose="true" placeHolder="dd-mm-yyyy" *ngIf="showDate" (onSelect)="dateChange(selectedDate)"></owl-date-time>
                     </div>
                     <br />
                     <div *ngIf="showNoDailyVisits">No Data Available</div>
-                   <h2 class="t-head txt-center m-b-30" *ngIf="showDailyLineChart">Trend Of Patient Visits</h2> 
+                   <h2 class="t-head txt-center m-b-30 analytics_headings" *ngIf="showDailyLineChart">Trend Of Patient Visits</h2> 
                     <div style="width:600px !important;" *ngIf="showDailyLineChart">
                           <canvas baseChart width="100" height="100"
                                   [datasets]="visitDailyLineChartData"
@@ -345,21 +356,28 @@
                                   [legend]="lineChartLegend"
                                   [chartType]="lineChartType"
                                   (chartHover)="chartHovered($event)"
-                                  (chartClick)="chartClicked($event)"></canvas>
+                                  (chartClick)="chartClicked($event)"></canvas><br>
+                                   <div style="width:39px;height:15px;background-color:#5bb2ec;float:left;"></div>
+                                  &#160;&#160;<p style="float:left;font-size: 11px;"><b>&#160;&#160; Accepted</b></p>
                     </div>
-                    <h2 class="t-head txt-center m-b-30" *ngIf="showDailyBarChart">Patient Visits - Accepted vs Cancelled</h2>
-                    <div style="display: block" *ngIf="showDailyBarChart">
+                    <br />
+                    <h2 class="t-head txt-center m-b-30 analytics_headings" *ngIf="showDailyBarChart">Patient Visits - Accepted vs Cancelled</h2>
+                    <div style="display: block;margin-left: -102px;" *ngIf="showDailyBarChart">
                           <canvas baseChart
                                   [datasets]="visitDailyBarChartData"
                                   [colors]="cancelledAndAcceptedColor"
                                   [labels]="visitsDailyBarChartLabels"
                                   [options]="barChartOptions"
                                   [legend]="barChartLegend"
-                                  [chartType]="barChartType"></canvas>
+                                  [chartType]="barChartType"></canvas><br>
+                                   <div style="width:39px;height:15px;background-color:#5bb2ec;float:left;"></div>
+                                  &#160;&#160;<p style="float:left;font-size: 11px;"><b>&#160;&#160; Accepted</b></p> <br>
+                                  <div style="width:39px;height:15px;background-color:#fd819c;float:left;"></div>
+                                 <p style="float:left;font-size: 11px;"><b>&#160;&#160; Cancelled</b></p>
                         
                     </div>
                    
-                    <div *ngIf="showMonthlyDrop">
+                    <div *ngIf="showMonthlyDrop" style="margin-left: 80px;">
                             <select class="drp-down xs-fill-wt" style="width: 30%;"  (change)="monthChanged(selectedMonth.value,selectedYear.value)"  #selectedMonth>
                                     <option *ngFor="let c of months" [value]="c.code" [selected]="c.code == defaultMon">{{c.name}}</option>
                             </select>
@@ -380,9 +398,11 @@
                                   [chartType]="lineChartType"
                                   (chartHover)="chartHovered($event)"
                                   (chartClick)="chartClicked($event)"></canvas>
+                                   <div style="width:39px;height:15px;background-color:#5bb2ec;float:left;"></div>
+                                  &#160;&#160;<p style="float:left;font-size: 11px;"><b>&#160;&#160; Accepted</b></p>
                       </div>
-                    <h2 class="t-head txt-center m-b-30" *ngIf="showMonthlyBarChart">Patient Visits - Accepted vs Cancelled</h2>
-                      <div style="display: block" *ngIf="showMonthlyBarChart">
+                    <h2 class="t-head txt-center m-b-30 analytics_headings" *ngIf="showMonthlyBarChart">Patient Visits - Accepted vs Cancelled</h2>
+                      <div style="display: block;margin-left: -102px;" *ngIf="showMonthlyBarChart">
                               <canvas baseChart
                                   [datasets]="visitMonthlyBarChartData"
                                   [colors]="cancelledAndAcceptedColor"
@@ -390,22 +410,21 @@
                                   [options]="barChartOptions"
                                   [legend]="barChartLegend"
                                   [chartType]="barChartType"></canvas>
+                                  <div style="width:39px;height:15px;background-color:#5bb2ec;float:left;"></div>
+                                  &#160;&#160;<p style="float:left;font-size: 11px;"><b>&#160;&#160; Accepted</b></p> <br>
                                   <div style="width:39px;height:15px;background-color:#fd819c;float:left;"></div>
                                  <p style="float:left;font-size: 11px;"><b>&#160;&#160; Cancelled</b></p>
-                                  <br>
-                                  <div style="width:39px;height:15px;background-color:#5bb2ec;float:left;"></div>
-                                  &#160;&#160;<p style="float:left;font-size: 11px;"><b>&#160;&#160; Accepted</b></p>
+                                 
+                                  
                         </div>
-                                              
                         
-
                         <div *ngIf="showYearlyDrop">
-                            <select class="drp-down xs-fill-wt" style="width: 30%;"  (change)="yearChanged(selectYear.value)" #selectYear>
+                            <select class="drp-down xs-fill-wt" style="width: 30%;margin-left: 158px;"  (change)="yearChanged(selectYear.value)" #selectYear>
                                 <option *ngFor="let year of years" [value]="year.code" [selected]="year.code == curentYear">{{year.name}}</option>
                             </select>
                         </div>
                         <div *ngIf="showNoYearlyData">No Data Available</div> 
-                        <h2 class="t-head txt-center m-b-30" *ngIf="showYearlyLineChart">Trend Of Patient Visits</h2>
+                        <h2 class="t-head txt-center m-b-30 analytics_headings" *ngIf="showYearlyLineChart">Trend Of Patient Visits</h2>
                         <div style="width:600px !important;" *ngIf="showYearlyLineChart">
                               <canvas baseChart width="100" height="100"
                                   [datasets]="visitYearlyLineChartData"
@@ -415,28 +434,34 @@
                                   [legend]="lineChartLegend"
                                   [chartType]="lineChartType"
                                   (chartHover)="chartHovered($event)"
-                                  (chartClick)="chartClicked($event)"></canvas>
-                        </div>
-                        <h2 class="t-head txt-center m-b-30" *ngIf="showYearlyBarChart">Patient Visits - Accepted vs Cancelled</h2>
-                        <div style="display: block" *ngIf="showYearlyBarChart">
+                                  (chartClick)="chartClicked($event)"></canvas><br>
+                                  <div style="width:39px;height:15px;background-color:#5bb2ec;float:left;"></div>
+                                  &#160;&#160;<p style="float:left;font-size: 11px;"><b>&#160;&#160; Accepted</b></p>
+                        </div><br>
+                        <h2 class="t-head txt-center m-b-30 analytics_headings" *ngIf="showYearlyBarChart">Patient Visits - Accepted vs Cancelled</h2>
+                        <div style="display: block;margin-left: -108px;" *ngIf="showYearlyBarChart">
                                 <canvas baseChart
                                   [datasets]="visitYearlyBarChartData"
                                   [labels]="visitsYearlyBarChartLabels"
                                   [colors]="cancelledAndAcceptedColor"
                                   [options]="barChartOptions"
                                   [legend]="barChartLegend"
-                                  [chartType]="barChartType"></canvas>
+                                  [chartType]="barChartType"></canvas><br>
+                                  <div style="width:39px;height:15px;background-color:#5bb2ec;float:left;"></div>
+                                  &#160;&#160;<p style="float:left;font-size: 11px;"><b>&#160;&#160; Accepted</b></p> <br>
+                                  <div style="width:39px;height:15px;background-color:#fd819c;float:left;"></div>
+                                 <p style="float:left;font-size: 11px;"><b>&#160;&#160; Cancelled</b></p>
                         </div>
                         <div *ngIf="showNoRevenueAndVistsAvailable">No Data Available</div>        
-                        <h2 class="t-head txt-center m-b-30" *ngIf="showByRevenue">Doctor Wise Revenue</h2>        
-                        <div class="analytics-revenue" style="display: block" *ngIf="showByRevenue">
+                        <h2 class="t-head txt-center m-b-30 analytics_headings" *ngIf="showByRevenue">Doctor Wise Revenue</h2>        
+                        <div class="analytics-revenue" style="display: block;margin-left: -144px;" *ngIf="showByRevenue">
                             <canvas baseChart
                                   [data]="doctorWiseRevenueData"
                                   [labels]="doctorWiseRevenueLabels"
                                   [chartType]="doughnutChartType"></canvas>
                         </div>
                                 <div class="table-responsive" *ngIf="showByRevenue">
-                                    <table class="table table-bordered">
+                                    <table class="table table-bordered" style="margin-left: -102px;">
                                         <tbody>
                                         <tr>
                                             <td>Name </td>
@@ -449,14 +474,14 @@
                                         </tbody>
                                     </table>
                                 </div>
-                        <h2 class="t-head txt-center m-b-30" *ngIf="showByRevenue">Doctor Wise visits</h2>
-                        <div style="display: block" *ngIf="showByVisits">
+                        <h2 class="t-head txt-center m-b-30 analytics_headings" *ngIf="showByRevenue">Doctor Wise visits</h2>
+                        <div style="display: block;margin-left: -144px;" *ngIf="showByVisits">
                             <canvas baseChart
                                   [data]="doctorWiseVisitsData"
                                   [labels]="doctorWiseVisitsLabels"
                                   [chartType]="doughnutChartType"></canvas>
-                        </div>
-                                <div class="table-responsive" *ngIf="showByRevenue">
+                        </div><br>
+                                <div class="table-responsive" *ngIf="showByRevenue" style="margin-left: -102px;">
                                     <table class="table table-bordered">
                                         <tbody>
                                         <tr>

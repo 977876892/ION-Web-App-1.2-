@@ -88,6 +88,7 @@
         <td class="status xs-pad-10" *ngIf="eachdata.request_status == 'Review'"><span class="review_full">{{ eachdata.request_status }}</span></td>
         <td class="v-amount xs-pad-10">{{ eachdata.booking_deposit }}</td>
         <td class="v-edit xs-pad-10" (click)="visitEdit(eachdata.id);"><a style="cursor: pointer;" class="edit">edit</a></td>
+         <td class="v-delete xs-pad-10" (click)="showDeleteAlert(eachdata.id);"><a style="cursor: pointer;" class="edit">edit</a></td> 
   </tr>
   
   </table>
@@ -159,7 +160,7 @@
         <ul>
         <li>
         <label class="labels">SELECT SPECIALITY</label>
-        <select class="drp-down xs-fill-wt" (change)="getDoctors(categeryID.value)" [formControl]="visitForm.controls['category']" #categeryID required>
+        <select class="drp-down xs-fill-wt" (change)="getDoctors(categeryID.value)" [formControl]="visitForm.controls['category']" #categeryID required tabindex="1">
           <option [selected]="true" value="">Select a speciality</option>
           <option *ngFor="let eachcategeory of visitCategeoryData" [value]="eachcategeory.id_categories">
                 {{eachcategeory.name}}
@@ -171,7 +172,7 @@
         <li>
          <label class="labels">SELECT DATE</label>
           <!-- <date-picker [formControl]="visitForm.controls['startdate']" format="L" required></date-picker> -->
-          <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" [formControl]="visitForm.controls['startdate']" autoClose="true" (onSelect)="getDoctorTimeSlots(doctorID.value, selectedDate.value)"  required #selectedDate placeHolder="dd-mm-yyyy" min="{{stopDates}}"></owl-date-time>
+          <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" [formControl]="visitForm.controls['startdate']" autoClose="true" (onSelect)="getDoctorTimeSlots(doctorID.value, selectedDate.value)"  required #selectedDate placeHolder="dd-mm-yyyy" min="{{stopDates}}" tabindex="3"></owl-date-time>
           <!-- <input type="date" class="input xs-fill-wt" (change)="getDoctorTimeSlots(doctorID.value, selectedDate.value)" [formControl]="visitForm.controls['startdate']" required #selectedDate> -->
           <span class="booking_error" *ngIf="visitForm.controls['startdate'].hasError('required') && visitForm.controls['startdate'].touched">Date Is Required</span>
           <span class="booking_error" *ngIf="visitForm.controls['startdate'].hasError('minlength') && visitForm.controls['startdate'].touched"> Please Select Date.</span>
@@ -186,7 +187,7 @@
           </li> -->
           <li>
               <label class="labels">APPOINTMENT STATUS</label>
-               <select class="drp-down xs-fill-wt" [formControl]="visitForm.controls['request_status']" required>
+               <select class="drp-down xs-fill-wt" [formControl]="visitForm.controls['request_status']" required tabindex="5">
                    <option [selected]="true" value="">Select Status</option>
                    <!-- <option *ngFor="let status of status_fields" [value]="status.id" >
                        {{status.value}}
@@ -203,7 +204,7 @@
         <ul>
             <li>
                 <label class="labels">SELECT DOCTOR</label>
-                <select class="drp-down xs-fill-wt" (change)="getDoctorTimeSlots(doctorID.value, selectedDate.value)" [formControl]="visitForm.controls['res_id']" #doctorID required>
+                <select class="drp-down xs-fill-wt" (change)="getDoctorTimeSlots(doctorID.value, selectedDate.value)" [formControl]="visitForm.controls['res_id']" #doctorID required tabindex="2">
                   <option [selected]="true" value="">Select a doctor</option>
                   <option *ngFor="let eachdoctor of visitDoctorsData" [value]="eachdoctor.id_resources" >
                         {{eachdoctor.name}}
@@ -214,7 +215,7 @@
                 </li>
         <li>
         <label class="labels">SELECT TIME SLOT</label>
-        <select class="drp-down xs-fill-wt" [formControl]="visitForm.controls['starttime']" required (change)="timechange()">
+        <select class="drp-down xs-fill-wt" [formControl]="visitForm.controls['starttime']" required (change)="timechange()" tabindex="4">
             <option [selected]="true" value="">Select time slot</option>
             <option *ngFor="let eachtimeslot of timeSlotsData" [value]="eachtimeslot.id" [disabled]="eachtimeslot.booked!='Available' || eachtimeslot.isDisabled">
                 <!-- {{eachtimeslot.startendtime}}({{eachtimeslot.booked}}) -->
@@ -247,7 +248,7 @@
         </li> -->
         <li>
         <label class="labels">AMOUNT PAID</label>
-          <input type="number" class="input xs-fill-wt visits-bk-apmt-ip" [formControl]="visitForm.controls['booking_deposit']" required>
+          <input type="number" class="input xs-fill-wt visits-bk-apmt-ip" [formControl]="visitForm.controls['booking_deposit']" required tabindex="6">
           <span class="booking_error" *ngIf="visitForm.controls['booking_deposit'].hasError('required') && visitForm.controls['booking_deposit'].touched">Amount Is Required</span>
 
         </li>
@@ -263,7 +264,7 @@
         <ul>
         <li>
         <label class="labels">FIRST NAME</label>
-          <input type="text" class="input xs-fill-wt visits-bk-apmt-ip" minlength="3" maxlength="40" pattern="\S.*\S" [formControl]="visitForm.controls['firstname']" required>
+          <input type="text" class="input xs-fill-wt visits-bk-apmt-ip" minlength="3" maxlength="40" pattern="\S.*\S" [formControl]="visitForm.controls['firstname']" required tabindex="7">
           <span class="booking_error" *ngIf="visitForm.controls['firstname'].hasError('required') && visitForm.controls['firstname'].touched">Firstname Required</span>
           <span class="booking_error" *ngIf="visitForm.controls['firstname'].hasError('minlength') && visitForm.controls['firstname'].touched"> Firstname be at least three characters in length.</span>
           <span class="booking_error" *ngIf="visitForm.controls['firstname'].hasError('pattern') && visitForm.controls['firstname'].touched">{{spaceComment}}</span>
@@ -272,15 +273,15 @@
         <li>
             <label class="labels">GENDER</label>
             <div class="gender visits-bk-apmt-asl">
-                <input [checked]="gender[0].checked" [formControl]="visitForm.controls['sex']" value="Male" name="rdblGender" id="rdblGender_0" type="radio">
+                <input [checked]="gender[0].checked" [formControl]="visitForm.controls['sex']" value="Male" name="rdblGender" id="rdblGender_0" type="radio" tabindex="9">
                 <label for="rdblGender_0"> Male</label>
-                <input [checked]="gender[1].checked" [formControl]="visitForm.controls['sex']" value="Female" name="rdblGender" id="rdblGender_1" type="radio">
+                <input [checked]="gender[1].checked" [formControl]="visitForm.controls['sex']" value="Female" name="rdblGender" id="rdblGender_1" type="radio" tabindex="10">
                 <label for="rdblGender_1"> Female</label>
             </div>
           </li>
             <li>
                 <label class="labels">PHONE</label>
-                <input type="number" (input)="onTypeNumValid($event.target.value)" class="input xs-fill-wt visits-bk-apmt-ip"  minlength="10" maxlength="12" [formControl]="visitForm.controls['phone']" required onkeyup="if(!this.checkValidity()){this.value='e';alert('Please enter a number');};">
+                <input type="number" (input)="onTypeNumValid($event.target.value)" class="input xs-fill-wt visits-bk-apmt-ip"  minlength="10" maxlength="12" [formControl]="visitForm.controls['phone']" required onkeyup="if(!this.checkValidity()){this.value='e';alert('Please enter a number');};" tabindex="12">
                 <span class="booking_error" *ngIf="visitForm.controls['phone'].hasError('required') && visitForm.controls['phone'].touched">Phone Number is Required</span>
                 <!-- <span style="color:red" *ngIf="phoneEmpty"> Phone Number is Required</span> -->
                 <span class="booking_error" *ngIf="phoneMinlength"> Phone Number Should Be 10 Numbers.</span>
@@ -307,7 +308,7 @@
         <ul>
         <li>
         <label class="labels">LAST NAME</label>
-        <input type="text" class="input xs-fill-wt visits-bk-apmt-ip" [formControl]="visitForm.controls['lastname']" pattern="\S*\S"  required>
+        <input type="text" class="input xs-fill-wt visits-bk-apmt-ip" [formControl]="visitForm.controls['lastname']" pattern="\S*\S"  required tabindex="8">
         <span class="booking_error" *ngIf="visitForm.controls['lastname'].hasError('required') && visitForm.controls['lastname'].touched">Lastname Required</span>
         <!-- <span style="color:red" *ngIf="visitForm.controls['lastname'].hasError('minlength') && visitForm.controls['lastname'].touched"> Lastname be at least three characters in length.</span> -->
         <span class="booking_error" *ngIf="visitForm.controls['lastname'].hasError('pattern') &&  visitForm.controls['lastname'].touched">{{spaceComment}}</span>
@@ -315,7 +316,7 @@
         <li class="visits-dob">
             <label class="labels">DATE OF BIRTH</label>
              <!-- <ng-datepicker [formControl]="visitForm.controls['dob']"></ng-datepicker>  -->
-             <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" [formControl]="visitForm.controls['dob']" (onSelect)="dobSelected(visitForm.controls['dob'].value)" autoClose="true" placeHolder="dd-mm-yyyy" max="{{stopDates}}">
+             <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" [formControl]="visitForm.controls['dob']" (onSelect)="dobSelected(visitForm.controls['dob'].value)" autoClose="true" placeHolder="dd-mm-yyyy" max="{{stopDates}}"  tabindex="11">
              </owl-date-time>
             <!-- <input type="text" type="date" class="input xs-fill-wt" minlength="5" maxlength="40" [formControl]="visitForm.controls['dob']"> -->
             <!--<span style="color:red" *ngIf="visitForm.controls['dob'].hasError('required') && visitForm.controls['dob'].touched">Invalid date of birth</span>
@@ -324,7 +325,7 @@
         </li>
         <li>
             <label class="labels">EMAIL</label>
-              <input type="email" class="input xs-fill-wt visits-bk-apmt-ip" maxlength="40" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+[.]+[a-z]{1,4}$" [formControl]="visitForm.controls['email']" required>
+              <input type="email" class="input xs-fill-wt visits-bk-apmt-ip" maxlength="40" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+[.]+[a-z]{1,4}$" [formControl]="visitForm.controls['email']" required tabindex="13">
               <span class="booking_error" *ngIf="visitForm.controls['email'].hasError('required') && visitForm.controls['email'].touched">Email is required</span>
               <span class="booking_error" *ngIf="visitForm.controls['email'].hasError('pattern') && visitForm.controls['email'].touched">Invalid email</span>
             </li>
@@ -345,7 +346,7 @@
         <ul>
         <li>
         <label class="labels">ADD REMARKS</label>
-        <input type="text" class="input xs-fill-wt visits-bk-apmt-ip" maxlength="120" [formControl]="visitForm.controls['comments']">
+        <input type="text" class="input xs-fill-wt visits-bk-apmt-ip" maxlength="120" [formControl]="visitForm.controls['comments']"  tabindex="14">
         </li>
         </ul>
         </div>
@@ -362,7 +363,7 @@
               <div class="form-section-btm" *ngIf="isAddVisit">
                   <ul>
                   <li>
-                    <tag-input [formControl]="visitForm.controls['tags']">
+                    <tag-input [formControl]="visitForm.controls['tags']"   tabindex="15">
                       <tag-input-dropdown [autocompleteItems]="autoComplete">
                       </tag-input-dropdown>
                     </tag-input>
@@ -372,8 +373,8 @@
 
  
         <div class="actions" *ngIf="!isEditVisit">
-        <button class="button profile-action ripple" type="submit" (click)="addVisit()">ADD APPOINTMENT</button> &#160;&#160;
-        <button class="button cancel-action" (click)="isAddVisit = false;closeAddAndEditVisit();" style="margin-top: 1px;">cancel</button>
+        <button class="button profile-action ripple" type="submit" (click)="addVisit()"  tabindex="16">ADD APPOINTMENT</button> &#160;&#160;
+        <button class="button cancel-action" (click)="isAddVisit = false;closeAddAndEditVisit();" style="margin-top: 1px;"  tabindex="17">cancel</button>
         </div>
 
 
@@ -383,8 +384,9 @@
               <div class="actions">
                   <button class="button profile-action ripple" type="submit" (click)="visitUpdate()">Update</button>&#160;&#160;
                   <button class="button cancel-action" (click)="isEditVisit=false;closeAddAndEditVisit();" style="margin-top: 1px;">cancel</button>
-                  </div>
+            </div>
           </div>
+          <div style="color:red;font-size:12px;text-align: center;margin-top: 10px;" *ngIf="isModifyData">Please Modify The Data.</div>
           </div>
         </form>
       </div>
@@ -395,21 +397,21 @@
         <!-- Popup patient details-->
   <div class="model model-profile-view bx-shadow no-padding" *ngIf="isShowPatientDetails">
     <a class="close" style="cursor: pointer;" (click)="isShowPatientDetails = false;">Close</a>
-    <div class="model-titlebar">
+    <div class="model-titlebar" style="height: 62px;line-height: 62px;">
     <span class="model-title"> PATIENT DETAILS</span>
     </div>
      <div class="model-content">
 
      <div class="profile-view">
 
-  <table class="profile-table" width="80%" cellpadding="0" cellspacing="0">
+  <table class="profile-table" width="80%" cellpadding="0" cellspacing="0" style="margin-top: -19px;">
   <tbody>
   <tr>
-    <td class="profile-img" *ngIf="patientDetailsData.image == ''"><img src="assets/css/images/profile_no_img.png" style="width:120px;height: 120px; margin-top: 25px;border-radius: 100%;"></td>
-  <td class="profile-img" *ngIf="patientDetailsData.image"><img src="{{patientDetailsData.image}}" style="width:120px;height: 120px; margin-top: 25px;border-radius: 100%;"></td>
+    <td class="profile-img" *ngIf="patientDetailsData.image == ''"><img src="assets/css/images/profile_no_img.png" style="width:120px;height: 120px; margin-top: 25px;border-radius: 100%;margin-right: 15px;"></td>
+  <td class="profile-img" *ngIf="patientDetailsData.image"><img src="{{patientDetailsData.image}}" style="width:120px;height: 120px; margin-top: 25px;border-radius: 100%;margin-right: 15px;"></td>
   <td class="profile-info">
   <div>
-  <h3><b>{{ patientDetailsData.name }}</b></h3>
+  <h3 style="font-size: 25px;"><b>{{ patientDetailsData.name }}</b></h3>
   <p class="phone"><b>{{ patientDetailsData.mobile }}</b></p>
   <p class="email"><b>{{ patientDetailsData.email }}</b></p>
   </div>
@@ -420,13 +422,13 @@
 
   </table>
 
-  <div class="appointment-block bx-border-stl-2">
-  <div class="heading"><b>Appointment Details</b></div>
+  <div class="appointment-block bx-border-stl-2" style="padding: 0px;"> 
+  <div class="heading" style="top:-25px;"><b>APPOINTMENT DETAILS</b></div>
 
   <table class="profile-table saved-profile no-margin" width="100%" cellpadding="0" cellspacing="0">
   <tbody>
   <tr>
-  <td class="profile_data  txt-center">
+  <td class="profile_data  txt-center" style="padding: 0px 0px 6px 0px;">
   <label class="labels date txt-center">{{ patientDetailsData.display_startdate }} </label>
   <label class="labels time txt-center">{{ patientDetailsData.display_starttime }}</label>
   </td>
@@ -435,10 +437,10 @@
   <tr>
    <td class="profile_data txt-center">
    <label class="doc_details">{{ patientDetailsData.resname }}</label><br><br>
-   <label class="accept_full" *ngIf='patientDetailsData.request_status=="accepted"'>Accepted</label>
-   <label class="new_full" *ngIf='patientDetailsData.request_status=="new"'>New</label>
-   <label class="review_full" *ngIf='patientDetailsData.request_status=="Review"'>Review</label>
-   <label class="rejected_full" *ngIf='patientDetailsData.request_status=="canceled"'>Cancelled</label>
+   <label class="accept_full" *ngIf='patientDetailsData.request_status=="accepted"'>ACCEPTED</label>
+   <label class="new_full" *ngIf='patientDetailsData.request_status=="new"'>NEW</label>
+   <label class="review_full" *ngIf='patientDetailsData.request_status=="Review"'>REVIEW</label>
+   <label class="rejected_full" *ngIf='patientDetailsData.request_status=="canceled"'>CANCELLED</label>
 
   </td>
   </tr>
@@ -448,7 +450,7 @@
   </div>
 
 
-  <table class="profile-table saved-profile" width="70%" cellpadding="0" cellspacing="0">
+  <table class="profile-table saved-profile" width="70%" cellpadding="0" cellspacing="0" style="margin: -20px 60px;">
   <tbody>
   <tr>
   <td>
@@ -513,7 +515,7 @@
        <!-- Popup print one -->
   <div class="model model-add_leads bx-shadow model-popup" *ngIf="isPrintClicked"> 
     <a class="close" href="javascript:void(0);" (click)="isPrintClicked=false;visitDownloadForm.reset();showTodayOrTomorrowError=false;
-    showBetweenError=false;">Close</a>
+    showBetweenError=false;fromdate='';fromDateEmpty=true;">Close</a>
    
      <div class="model-content">
       <div class="appointment-block bx-border-stl-2">
@@ -539,7 +541,7 @@
                   <span class="flt-div flt-gender pull-left" >
                       <input type="radio" [formControl]="visitDownloadForm.controls['selectDuration']" value="1"/>
                       <label></label>  </span>
-                      <div class="input-wrap pull-left print12 dow_print_back">
+                      <div class="input-wrap pull-left print12 dow_print_back" style="width: auto;">
                          <a href="javascript:void(0);" class="text-link visits-download-date">
                             <!-- <ng-datepicker [(ngModel)]="selectedDateValue"></ng-datepicker> -->
                             <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" autoClose="true" placeHolder="dd-mm-yyyy"
@@ -551,7 +553,7 @@
                           <a href="javascript:void(0);" class="text-link visits-download-date" style="margin-left: 32px !important;">
                             <!-- <ng-datepicker [(ngModel)]="selectedDateValue"></ng-datepicker> -->
                             <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" autoClose="true" placeHolder="dd-mm-yyyy"
-                            [formControl]="visitDownloadForm.controls['toDate']" (onSelect)="not_select_date_error_msg(selectedDate.value)" #selectedDate></owl-date-time>
+                            [formControl]="visitDownloadForm.controls['toDate']" (onSelect)="not_select_date_error_msg(selectedDate.value)" #selectedDate min="{{fromdate}}" [disabled]="fromDateEmpty"></owl-date-time>
                             <!-- sep 1, 2017
                           <span><img src="assets/css/images/calender-icon.png" /> </span> -->
                         </a>
@@ -599,9 +601,9 @@
                             </option>       
                         </select> 
               </div>
-                       <div class="wrap-48 pull-left generate"><a class="btn btn-black text-uppercase btn-block btn-lg btn-regular brd-radius-50 align-center" (click)="showPrintScreen();">Generate Report</a> </div>
+                       <div class="wrap-48 pull-left generate"><a class="btn btn-black text-uppercase btn-block btn-lg btn-regular brd-radius-50 align-center" (click)="showPrintScreen();" style="cursor: pointer;">Generate Report</a> </div>
                   </div>
-              </div>
+              </div> 
   
       </div>  
     </form>
@@ -618,9 +620,9 @@
     
       <!-- Popup end-->
        <!-- Popup Print report 2-->
-  <div class="model bx-shadow isPrinting" *ngIf="isPrinting"> 
+  <div class="model bx-shadow isPrinting" *ngIf="isPrinting" style="width: auto;"> 
     <a class="close" (click)="isPrinting = false;visitDownloadForm.reset();excelOrPdf='excel'">Close</a>
-   
+   <span *ngIf="filteredVisits.length != 0">
      <div class="model-content brd-radius-5 bx-border-stl-2">
          <div class="table-data m-b-40" id="printSectionId" style="overflow-x: inherit !important;">
       
@@ -653,13 +655,14 @@
               </table>
              </div>
     </div>
-      <div class="wrap-80 m-auto print_Details">
+  </span>
+      <div class="wrap-80 m-auto print_Details" style="width:700px;">
             <div class="appointment-block bx-border-stl-2">
-        <div class="heading">DOWNLOAD & PRINT DETAIL</div>
+        <div class="heading" *ngIf="filteredVisits.length != 0">DOWNLOAD & PRINT DETAIL</div>
   <div class="form-section">
       <div class="form-section-top">
-          
-              <div class="">
+        <span *ngIf="filteredVisits.length == 0" style="color:red;">No Visits Available For Print Or Download.</span>
+              <div class="" *ngIf="filteredVisits.length != 0">
                 <div style="float:left;">
                     <span class="flt-div flt-gender">
                         <input [checked]="true" type="radio" class="dow_ra" value="excel" [(ngModel)]="excelOrPdf"/>
@@ -675,8 +678,8 @@
                       
                 </div>
                   <div class="clearfix">
-                      <div class="wrap-48 pull-left p1"><a (click)="downloadFilteredVisits()" style="background-color:#33cccc;" class="btn btn-black text-uppercase btn-block btn-lg btn-regular brd-radius-50 align-center">Download</a> </div>                      
-                       <div class="wrap-48 pull-left p1"><a (click)="printToCart();" class="btn btn-black text-uppercase btn-block btn-lg btn-regular brd-radius-50 align-center">Print Report</a> </div>                       
+                      <div class="wrap-48 pull-left p1"><a (click)="downloadFilteredVisits()" style="background-color:#33cccc;cursor: pointer;" class="btn btn-black text-uppercase btn-block btn-lg btn-regular brd-radius-50 align-center">Download</a> </div>                      
+                       <div class="wrap-48 pull-left p1"><a (click)="printToCart();" class="btn btn-black text-uppercase btn-block btn-lg btn-regular brd-radius-50 align-center" style="cursor: pointer;">Print Report</a> </div>                       
                   </div>
               </div>
   
@@ -692,6 +695,8 @@
      
     
      </div>
+    
+   
     </div>
     
       <!-- Popup end -->
@@ -702,12 +707,25 @@
           <div class="model-content">
            <p>{{ alertMessage }}</p>           
           <div class="btn_actions">
-            <div class="button btn-ok" (click)="isAlertPopup = false;">ok</div>
+            <div class="button btn-ok" (click)="isAlertPopup = false;getVisits();">ok</div>
            
         
             </div>
            </div>
           </div>
+          <div class="model model-alerts" *ngIf="isDeleteAlert" style="margin-top: 275px;"> 
+          <!-- <a class="close" href="javascript:void(0);">Close</a> -->
+          
+          <div class="model-content">
+           <p>Are you Want to Delete the Appointment?</p>           
+          <div class="btn_actions">
+            <div class="button btn-ok" (click)="deleteAppointment()">Yes</div>
+             <div class="button btn-ok" (click)="isDeleteAlert = false;">No</div>
+        
+            </div>
+           </div>
+          </div>
+      
             <!--image alert-->
  <!-- <div class="model model-alerts" *ngIf="imageUploadAlert" style="border-radius: 10px;box-shadow: 0 0 5px #777;top:367px;">  -->
     <!-- <a class="close" href="javascript:void(0);">Close</a> -->    
@@ -720,4 +738,4 @@
     </div> -->
 </div>
 <!-- Container ends -->
-<div class="overlay" *ngIf="isAddVisit || isPrinting || isPrintClicked || imageUploadAlert || isEditVisit || isShowPatientDetails || isStartLoader || isAlertPopup || isAddVisitLoader"></div>
+<div class="overlay" *ngIf="isAddVisit || isPrinting || isPrintClicked || imageUploadAlert || isEditVisit || isShowPatientDetails || isStartLoader || isAlertPopup || isAddVisitLoader||isDeleteAlert"></div>

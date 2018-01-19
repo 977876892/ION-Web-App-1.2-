@@ -40,11 +40,11 @@
           <h1 class="txt-black">Your Ionized promotion <span>(Download to use)</span></h1>
           <div class="panel_promotions__grid" *ngFor="let eachblog of ionizedBlogData; let i = index">
             <div class="grid">
-              <div class="grid_x_small bx-shadow brd-radius-10" style="cursor:pointer;">
-                <div class="promo_img"> <img src="{{eachblog.image.url}}">
+              <div class="grid_x_small bx-shadow brd-radius-10">
+                <div class="promo_img"> <img src="{{eachblog.image.url}}" (click)="promotionfullviewimg(eachblog.title)" style="cursor:pointer;">
                   <div class="promo_download" (click)="downLoadImage(eachblog.image.url)"><a style="cursor: pointer;"><Img src="assets/css/images/download-icon.png"></a></div>
                 </div>
-                <div class="promot_details"> <span class="promo_title">{{ eachblog.title }}</span>
+                <div class="promot_details"> <span class="promo_title">{{ eachblog.title }}</span> 
                   <button class="button btn_small button_seconday ripple" (click)="publishThePromotion(eachblog)"><span>Publish</span></button>
                 </div>
               </div>
@@ -88,7 +88,7 @@
         <div class="panel_promotions__top gradient-2">
 
 
-          <label class="labels">{{promotionTitle}}</label>
+          <label class="labels"><b>{{promotionTitle}}</b></label>
           <!-- <textarea class="textarea brd-radius-15"></textarea> -->
           <img src="{{promotionImage}}">
 
@@ -98,8 +98,8 @@
         <!-- promotional top block ends-->
         <div class="panel_promotions__btm xs-bg-white">
         	<div class="panel_promotions__demo_lt">
-            <h2>Design Brief:</h2>
-            <textarea class="textarea bg-grey brd-radius-15" style="width:400px !important;" placeholder="Write an idea about your requirement and what kind of text you want in the poster.." [(ngModel)]="aboutImages"></textarea>
+            <h2><b>Design Brief:</b></h2>
+            <textarea class="textarea bg-grey brd-radius-15" style="width:400px !important;font-weight:bold;" placeholder="Write an idea about your requirement and what kind of text you want in the poster.." [(ngModel)]="aboutImages"></textarea>
             </div>
 			      <div class="panel_promotions__demo_lt xs-width-fixed">
             <!-- <h2>Where do you want to post?</h2>
@@ -113,7 +113,7 @@
 
             <input type="text" class="input" placeholder="Any Others">
              -->
-            <h2 class="sub-h2">Add photos</h2>
+            <h2 class="sub-h2"><b>Add photos</b></h2>
 
 
             <!-- <div class="add_icon"><img src="assets/images/add-icon-2.png" width="36" height="37"></div> -->
@@ -151,7 +151,7 @@
 
           <div class="promotions_create">
 
-          <h1 class="txt-center">Create your promotional SMS</h1>
+          <h1 class="txt-center"><b>Create your promotional SMS</b></h1>
           <div class="promotions_input">
 
             <textarea placeholder="Write your text here.." [(ngModel)]="smsText" class="textarea brd-radius-5" (ngModelChange)="showErrorForSmsContent=false;smsTextChange(smsText)"></textarea>
@@ -159,16 +159,16 @@
           </div>
 
           <div class="promotions_send_block">
-            <h2>Send to</h2>
+            <h2><b>Send to</b></h2>
             <div class="info_details">
                 <div class="info_titles">
-                    <h2 class="info_titles_label">Add Groups</h2>
-                    <div class="search info_details_groups" >
+                    <h2 class="info_titles_label"><b>Add Groups</b></h2>
+                    <div class="search info_details_groups" *ngIf="selectedTags.length==0">
                         <input type="text" class="input search_input" (click)="getPatientGroups();">
                     </div>
                 </div>
 
-                <div class="groups x-xlose-btn x-padding bx-border-stl-3 brd-radius-5" *ngIf="selectedTags.length>0" style="width: 68% !important;margin-right: 8px !important;margin-top:5px;">
+                <div class="groups x-xlose-btn x-padding bx-border-stl-3 brd-radius-5" *ngIf="selectedTags.length>0" (click)="getPatientGroups();" style="width: 68% !important;margin-right: 8px !important;margin-top:-15px;">
                     <a style="cursor: pointer;" *ngFor="let tag of selectedTags">{{tag}}</a>
                     <!-- <a style="cursor: pointer;">Dr. Gurunatham</a><a style="cursor: pointer;">Dr. Gurunatham</a><a style="cursor: pointer;">Cardiology</a></div>
                     -->
@@ -176,14 +176,14 @@
             </div> 
             <div class="info_details">
                 <div class="info_titles">
-                    <h2 class="info_titles_label">Enter Patient Numbers</h2>
+                    <h2 class="info_titles_label"><b>Enter Patient Numbers</b></h2>
                     <textarea [(ngModel)]="phoneNumbers" class="textarea brd-radius-5 info_details_nums" (ngModelChange)="showErrorForSms=false;" style="background-color: inherit !important;border: 1px solid #d4d4d4;"></textarea>
                 </div>
                 <!-- <div class="groups x-xlose-btn x-padding bx-border-stl-3 brd-radius-5"><a style="cursor: pointer;">Hyderabad</a><a style="cursor: pointer;">Dr. Gurunatham</a><a style="cursor: pointer;">Dr. Gurunatham</a><a style="cursor: pointer;">Cardiology</a></div> -->
             </div>
           </div>
 
-           <button class="button btn-sms" (click)="sendToAll()">Send</button> 
+           <button class="button btn-sms" (click)="sendToAll()"><b>Send</b></button> 
           <!-- <button class="button btn-sms" (click)="showAlertPopup()">Send</button> -->
             <span style="color:red" *ngIf="showErrorForSmsContent">Content Required</span>
              <span style="color:red" *ngIf="showErrorForSms">Group or Phone Number is Required</span>
@@ -215,14 +215,14 @@
   </div>
   <!-- Panel ends -->
   <!-- Popup Groups for sms-->
-  <div class="model promotions-group bx-shadow no-padding PatientGroups_popup" *ngIf="isPatientGroups">
+  <div class="model promotions-group bx-shadow no-padding" *ngIf="isPatientGroups" style="margin-left: -384px !important;top: 15%;border-radius: 20px;">
     <a class="close" style="cursor: pointer;" (click)="deSelectPatientgroups();isPatientGroups = false;">Close</a>
 
      <div class="model-content">
 
   <h1>All Patient Groups</h1>
   <div class="groups x-padding bx-border-stl-3 brd-radius-5">
-    <div style="overflow:auto;height:400px;">
+    <div class="patient_tag">
         <a class="{{tag.isSelectedclass}}" style="cursor: pointer;" (click)="selectPatientGroup(i);" *ngFor="let tag of smsTags; let i = index;">{{tag.title}}</a>
     </div>
   </div>
@@ -233,7 +233,7 @@
   </div> -->
 
 
-  <button class="button" (click)="seceltedGroups()" >Select Groups</button>
+  <button class="button" (click)="seceltedGroups()" style="border-radius: 10px;padding: 10px;">Select Groups</button>
   <p *ngIf="notselectTags" style="color:red;">Please Select One Groups</p>
 
      </div>
@@ -316,7 +316,8 @@
     <div class="model model-alerts" *ngIf="isSendSmspopup" style="margin-top:200px;">
                 <!-- <a class="close" href="#">Close</a> -->
                 <div class="model-content">
-                 <p>No of Messages are Ready To Deliver Is:200</p>
+                 <p>Total Receipts:{{messagesCount}}</p>
+                 <p>Current SMS Balance:{{smsBalance}}</p>
                 <div class="btn_actions">
                   <div class="button btn-ok" (click)="isSendSmspopup = false;sendSmsToUsers();">send</div>
                    <div class="button btn-dismiss" (click)="isSendSmspopup = false;">cancel</div>
@@ -326,7 +327,7 @@
 
 
           <!-- Popup For Editor to Start New Blog-->
-  <div class="model model-publish bx-shadow no-padding" *ngIf="isOpenEditor" style="width: 800px !important;height: 400px;">
+  <div class="model model-publish bx-shadow no-padding" *ngIf="isOpenEditor" style="width: 800px !important;height: 400px;top: 20% !important;margin-left: -427px;">
       <a class="close" style="cursor: pointer;" (click)="isOpenEditor = false;">Close</a>
       <div class="model-titlebar xs-fill-style2" style="background-color:#33cccc !important;">
         {{ionizedPromotionTitle}}
@@ -334,7 +335,7 @@
          <div class="model-content">
            <img src="https://s3-ap-southeast-2.amazonaws.com/geg-gug-webapp/images/career/regular/Hospital_Administrator.png" alt="">
        </div>
-      </div>
+ </div>
 
       <div class="model model-alerts" *ngIf="imageUploadAlert" style="border-radius: 10px;box-shadow: 0 0 5px #777;">
           <!-- <a class="close" href="#">Close</a> -->
@@ -347,4 +348,4 @@
           </div>
 </div>
 <!-- Container ends -->
-<div class="overlay" *ngIf="isPatientGroups || imageUploadAlert || isStartLoader || showRequestIsTaken || isAlertPopup || isSendSmspopup"></div>
+<div class="overlay" *ngIf="isPatientGroups || imageUploadAlert || isStartLoader || showRequestIsTaken || isAlertPopup || isSendSmspopup || isOpenEditor"></div>

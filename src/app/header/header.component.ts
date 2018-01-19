@@ -11,6 +11,7 @@ import { SearchService } from '../shared/services/search/search.service';
 export class HeaderComponent implements OnInit {
   isSearchPopup: boolean = false;
   isStartLoader: boolean = false;
+  isNoResult:boolean=false;
   isShowHeader=false;
   searchResposne:any=[];
   todayDate=new Date().getDate();
@@ -50,6 +51,10 @@ searchCall(searchtext) {
               console.log(searchTextResponse);
               this.searchResposne=searchTextResponse.description;
               this.isStartLoader=false;
+              this.isNoResult=false;
+              if(this.searchResposne.length == 0){
+                this.isNoResult=true;
+              }
           }, (err) => {
             this.isStartLoader = false;
           }, () => {

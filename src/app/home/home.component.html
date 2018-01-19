@@ -40,25 +40,24 @@
               </div>
            </div> -->
         <!-- <div class="title-ribbon">Dr Disha Clinic</div> -->
-        <div style="width: 100%; height: 500px" >
-          
+        <div style="width: 101%; height: 500px" >
             <ngx-carousel class="banner" [inputs]="carouselBanner" (carouselLoad)="carouselBannerLoad()">
                 <ngx-item NgxCarouselItem *ngFor="let item of carouselBannerItems; let i = index;">
                     <div class="bannerStyle" [style.background]="'url(' + item.image.url + ')'" (click)="testingFunction(item.postid)">
                         <h1>{{item.title}}</h1>
-                    </div>    
+                    </div>
                 </ngx-item>
                 <button NgxCarouselPrev class="leftRs">&lt;</button>
                 <button NgxCarouselNext class="rightRs">&gt;</button>
             </ngx-carousel>
           <!-- <carousel [sources]="imageSources" [config]="config"></carousel> -->
-        </div>       
+        </div>
         <!-- <div class="panel_box_transparent"></div> -->
         <!-- <div class="title">Lorem Ipsum is simply </div>
-        <p>Lorem Ipsum is simply Lorem Ipsum is simply</p>      -->     
-      
+        <p>Lorem Ipsum is simply Lorem Ipsum is simply</p>      -->
+
     </div>
-     
+
     </div>
     <!-- Second Col ends -->
     <!-- Last Col -->
@@ -66,15 +65,15 @@
     
     <div class="panel_box panel_box_h-feeds xs-box-padding" >
         <div class="title txt-center">Hospital feeds</div>
-        <div style="overflow-y: scroll; overflow-x: hidden; position: relative; height: 600px;">
+        <div class="home_hospital_feeds">
         <ul class="panel_box_list" *ngFor="let eachfeed of dashboardFeedData; let i = index">
         <li class="brd-radius-5">
           <div class="feed_image"><img *ngIf="eachfeed.avatar == ''" src="assets/images/user_image.jpg" width="65" height="65" alt="Hospital Feed">
             <img *ngIf="eachfeed.avatar != ''" src="{{ eachfeed.avatar }}" width="65" height="65" alt="Hospital Feed"></div>
-          <div class="feed_info"> <span class="lg-text">{{ eachfeed.content.split(":")[0] }}</span> {{ eachfeed.content.split(":")[1] }}
+          <div class="feed_info"> <span class="lg-text home--hosp-fld__txt">{{ eachfeed.content.split(":")[0] }}</span> {{ eachfeed.content.split(":")[1] }}
             <div class="feed_info_stamp">{{eachfeed.since}} ago</div>
           </div>
-          <div class="feed_actions txt-center"> 
+          <div class="feed_actions txt-center">
               <a *ngIf="eachfeed.action == 'View'" style="cursor: pointer;" class="view_link">
                   <div>{{ eachfeed.action }}</div>
                 </a>
@@ -87,14 +86,14 @@
             <a *ngIf="eachfeed.action == 'Congratulated'" style="cursor: pointer;"> <img src="assets/images/congractulation-icon.png">
             <div>{{ eachfeed.action }}</div>
             </a> </div>
-        </li>    
+        </li>
       </ul>
     </div>
       </div>
-    
-    
-    
-    
+
+
+
+
     </div>
     <!-- last Col ends -->
   </div>
@@ -103,7 +102,7 @@
     <!-- Panel Right Ends -->
 </div>
 <!-- Popup1 -->
-<div class="model model-promotions" *ngIf="isPromoPopupOpen"> 
+<div class="model model-promotions" *ngIf="isPromoPopupOpen">
 <a class="close" style="cursor: pointer;" (click)="isPromoPopupOpen = false">Close</a>
 <div class="model-titlebar">
 <span class="model-title" style="display:none;">Popup Title</span>

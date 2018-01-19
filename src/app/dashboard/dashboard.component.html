@@ -12,29 +12,34 @@
               <ul>
                 <li routerLink="/home" routerLinkActive="active"> 
                 <a class="active" style="cursor: pointer;">
-                <img src="assets/images/home.png" width="42" height="38"><br>
-                <span>Home</span>
+                <img src="assets/images/home.png" width="42" height="38" [hidden]="router.url.includes('home')">
+                <img src="assets/images/home_active.png"  [hidden]="!router.url.includes('home')">
+                <br>
+                <span [ngClass]="{'menu_color_cha':router.url.includes('home')}">Home</span>
                 </a> 
                 </li>
                 
                 <li routerLink="/publish" routerLinkActive="active">
                 <a class="active ripple" style="cursor: pointer;">
-                <img src="assets/images/publish.png" width="24" height="33"><br>
-                <span>publish</span>
+                <img src="assets/images/publish.png" width="24" height="33" [hidden]="router.url.includes('publish')">
+                <img src="assets/images/Publish_active.png"  [hidden]="!router.url.includes('publish')"><br>
+                <span [ngClass]="{'menu_color_cha':router.url.includes('publish')}">publish</span>
                 </a>
                 </li>
                 
                 <li routerLink="/visits" routerLinkActive="active" >
                 <a class="active ripple" style="cursor: pointer;">
-                <img src="assets/images/visits.png" width="42" height="42"><br>
-                <span>Visits</span>
+                <img src="assets/images/visits.png" width="34" height="40" [hidden]="router.url.includes('visits')">
+                <img src="assets/images/visits_active.png"  [hidden]="!router.url.includes('visits')"><br>
+                <span [ngClass]="{'menu_color_cha':router.url.includes('visits')}">Visits</span>
                 </a>
                 </li>
                 
                 <li routerLink="/queries" routerLinkActive="active" >
                 <a class="active ripple" style="cursor: pointer;">
-                <img src="assets/images/queries.png" width="36" height="36"><br>
-                <span>Queries</span>
+                <img src="assets/images/queries.png" width="36" height="36" [hidden]="router.url.includes('queries')">
+                <img src="assets/images/Queires_active.png" [hidden]="!router.url.includes('queries')"><br>
+                <span [ngClass]="{'menu_color_cha':router.url.includes('queries')}">Queries</span>
                 </a> 
                 </li>
                 <li  class="more_nav"  *ngIf="!isLoadMore">
@@ -47,29 +52,37 @@
               </li>
                 <li routerLink="/leads" routerLinkActive="active" *ngIf="isLoadMore && currentuser.userGroup==17">
                   <a class="active ripple" style="cursor: pointer;">
-                  <img src="assets/images/Leads-1.png" width="35" height="31"><br>
-                  <span>Leads</span>
+                  <img src="assets/images/Leads-1.png" width="35" height="31" *ngIf="!router.url.includes('leads')">
+                  <img src="assets/images/leads_active.png" width="35" height="31" *ngIf="router.url.includes('leads')">
+                  <br>
+                  <span [ngClass]="{'menu_color_cha':router.url.includes('leads')}">Leads</span>
                   </a>
                 </li>
               
                 
                 <li routerLink="/promotions" routerLinkActive="active" *ngIf="isLoadMore">
                 <a class="active ripple" style="cursor: pointer;">
-                <img src="assets/images/promotions.png" width="35" height="31"><br>
-                <span>Promotions</span>
+                <img src="assets/images/promotions.png" width="35" height="31" *ngIf="!router.url.includes('promotions')">
+                <img src="assets/images/promotions_active.png"  *ngIf="router.url.includes('promotions')">
+                <br>
+                <span [ngClass]="{'menu_color_cha':router.url.includes('promotions')}">Promotions</span>
                 </a>
                 </li>
                 <li routerLink="/analytics" routerLinkActive="active" *ngIf="isLoadMore && currentuser.userGroup==17">
                   <a class="active ripple" style="cursor: pointer;">
-                  <img src="assets/images/analytics.png" width="47" height="40"><br>
-                  <span>Analytics</span>
+                  <img src="assets/images/analytics.png" width="47" height="40" *ngIf="!router.url.includes('analytics')">
+                  <img src="assets/images/analytics_active.png" width="47" height="40" *ngIf="router.url.includes('analytics')">
+                  <br>
+                  <span [ngClass]="{'menu_color_cha':router.url.includes('analytics')}">Analytics</span>
                   </a>
                </li>              
 
                 <li routerLink="/settings" routerLinkActive="active" *ngIf="isLoadMore">
                 <a class="active ripple" style="cursor: pointer;">
-                <img src="assets/images/settings.png" width="35" height="35"><br>
-                <span>Settings</span>
+                <img src="assets/images/settings.png" width="35" height="35" *ngIf="!router.url.includes('settings')">
+                <img src="assets/images/settings_active.png"  *ngIf="router.url.includes('settings')">
+                <br>
+                <span [ngClass]="{'menu_color_cha':router.url.includes('settings')}">Settings</span>
                 </a>
                 </li>
                

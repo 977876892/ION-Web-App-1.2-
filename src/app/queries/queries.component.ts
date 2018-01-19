@@ -106,7 +106,6 @@ querieEditOrDelete(event: any) {
     if (localStorage.getItem('user') == '' || localStorage.getItem('user')==null) {
       this.router.navigate(['login']);
     } else {
-      
       this.getCategories();
       this.route.params.forEach((params: Params) => {
         this.getQueriesBasedOnUrlStauts();
@@ -116,28 +115,29 @@ querieEditOrDelete(event: any) {
         }
       });
     }
-
-     
   }
    getQueriesBasedOnUrlStauts(){
+     console.log("venkat");
       if (this.router.url == '/queries') {
         this.queriesTab='unanswered';
         this.querieTypeText = 'unanswered';
-        this.getAllUnansweredQueries();
         this.startFrom=0;
+        this.getAllUnansweredQueries();
       }
       else if (this.router.url == '/queries/answered') {
         this.queriesTab='answered';
         this.querieTypeText = 'answered';
-        this.getAllAnsweredQueries();
         this.startFrom=0;
+        this.getAllAnsweredQueries();
+      
       }
       else if (this.router.url == '/queries/popular') {
         console.log("popular");
         this.queriesTab='popular';
         this.querieTypeText = 'popular';
-        this.getQueries();
         this.startFrom=0;
+        this.getQueries();
+        
       }
     }
 
@@ -198,10 +198,10 @@ querieEditOrDelete(event: any) {
     }, (err) => {
 
     }, () => {
-      this.isStartLoader = false;
       this.queriesData.forEach((eachData) => {
         eachData.isClickOnDottedLine = false;
       });
+       this.isStartLoader = false;
     });
 }
 
@@ -333,7 +333,7 @@ answerAQuerie(replyData, qId) {
 // adding querie template
 addQuerieTemplate(tempData) {
   this.isStartLoader = true;
-  this.quriesService.addQuerieReplyTemplate(tempData).subscribe(
+  this.quriesService.addQuerieReplyTemplate(btoa(tempData)).subscribe(
     (qResponse: any) => {
       console.log(qResponse);
       this.isAddtoQuickReply=false;
@@ -495,8 +495,8 @@ querieEditClick(querieData) {
  }
  // updatePatientQuerie
  updatePatientQuerie() {
-   this.quriesService.editQuerieService(this.singleQuerieData.id, this.patientQuerieForm.value.subject,
-     this.patientQuerieForm.value.querie).subscribe(
+   this.quriesService.editQuerieService(this.singleQuerieData.id, btoa(this.patientQuerieForm.value.subject),
+     btoa(this.patientQuerieForm.value.querie)).subscribe(
      (updatedResponse: any) => {
        console.log(updatedResponse);
        this.isQuerieEdit = false;
@@ -517,7 +517,9 @@ querieEditClick(querieData) {
      });
  }
 selectedQuery="";
+showNoTemplatesAvailable=false;
  getQuerieTemplates(eachquerie) {
+   this.showNoTemplatesAvailable=false;
    this.showQueries(eachquerie);
    this.selectedQuery=eachquerie;
  this.isStartLoader = true;
@@ -538,6 +540,10 @@ selectedQuery="";
    (queriesResponse: any) => {
      console.log(queriesResponse);
      this.querieTemplatesData = queriesResponse.description;
+     if(this.querieTemplatesData.length==0)
+      {
+        this.showNoTemplatesAvailable=true;
+      }
    }, (err) => {
 
    }, () => {
@@ -581,9 +587,9 @@ cancelQuickReply(){
 
 quickReplySave(content,editId){
   //console.log(editId);
- 
+ //content=content.replace(/&/g, "%26");
  this.isStartLoader = true;
-  this.quriesService.quickReplyUpdateService(content,editId).subscribe(res=>{
+  this.quriesService.quickReplyUpdateService(btoa(content),editId).subscribe(res=>{
      console.log("success");
      this.isEditClick=false;
 

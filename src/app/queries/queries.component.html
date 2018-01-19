@@ -20,6 +20,9 @@
               <button class="button excel-icon rounded ripple txt-uppercae" (click)="downloadQuries()" style="color: black;">Export</button>
             </div>
             <div class="chat__body" style="height: 594px;;width: 100%;overflow-x: hidden; overflow-y: scroll;" *ngIf="queriesData">
+              <div *ngIf="(queriesData | fullTextSearch : 'title,content': searchQuery).length === 0">
+                  No Queries Found
+                </div>
               <ul>
                 <li class="{{eachquerie.activeclass}}" *ngFor="let eachquerie of queriesData | fullTextSearch : 'title,content': searchQuery; let i = index">
                   <div class="chat__desc">
@@ -56,14 +59,22 @@
               <span class="chat_user__age">{{ userDispalyData.age }}</span> 
               <span class="chat_user__sex"></span> 
               <span class="chat_user__icon1" style="cursor: pointer;" (click) = "$event.stopPropagation(); isShowTransferQuery = !isShowTransferQuery"><img src="assets/css/images/steta-icon.png" width="34" height="36" ></span>  -->
-              <div class="chat_user__name">{{ userDispalyData.poster_name }}</div> 
+              <div class="chat_user__name">
+                 <div class="chat_user__name_title" title="{{userDispalyData.poster_name}}">{{ userDispalyData.poster_name }}</div>
+                
+                 <div>
+                   <span></span>
+                  <span class="chat_user__age">{{ userDispalyData.age }}</span> 
+                  <span *ngIf="userDispalyData.gender!=''||userDispalyData.gender!=null" class="chat_user__sex">
+                  <span *ngIf="userDispalyData.gender=='' || userDispalyData.gender==null" class="patient_no_gender"></span>
+                  <span *ngIf="userDispalyData.gender=='Male'||userDispalyData.gender=='male'" class="patient_gender_true">M</span>
+                 <span *ngIf="userDispalyData.gender=='Female'||userDispalyData.gender=='female'" class="patient_gender_true">F</span>
+               </span>
+              </div>
+              </div> 
+              
               <div class ="chat_user__name-1">
-              <span class="chat_user__age">{{ userDispalyData.age }}</span> 
-               <span *ngIf="userDispalyData.gender!=''||userDispalyData.gender!=null" class="chat_user__sex">
-               <span *ngIf="userDispalyData.gender=='' || userDispalyData.gender==null" class="patient_no_gender"></span>
-               <span *ngIf="userDispalyData.gender=='Male'||userDispalyData.gender=='male'" class="patient_gender_true">M</span>
-              <span *ngIf="userDispalyData.gender=='Female'||userDispalyData.gender=='female'" class="patient_gender_true">F</span>
-            </span> 
+              
               <!-- <span class="chat_user__sex" *ngIf="(userDispalyData.gender!=''||userDispalyData.gender!=null)">{{userDispalyData.gender}}</span>
               <span class="chat_user__sex" *ngIf="userDispalyData.gender!=''||userDispalyData.gender!=null">{{userDispalyData.gender}}</span>  -->
               <span class="chat_user__icon1" (click)="$event.stopPropagation(); isShowUser=false; isShowTransferQuery = !isShowTransferQuery"><img src="assets/css/images/transfer.png" width="34" height="36" style="cursor: pointer;"></span> 
@@ -252,14 +263,16 @@
                           <p></p>
                       </div> -->
                         <ul>
+                          <div *ngIf="showNoTemplatesAvailable">No Templates Are Available</div>
                           <div *ngFor="let eachtemplate of querieTemplatesData; let i = index">
                               <li ngClass="{{eachtemplate.activeclass}}" (click)="showTemplates(i);" *ngIf="eachtemplate.isShown">
-                                  {{ eachtemplate.content }}
+                                  <!-- {{ eachtemplate.content }} -->
+                                  <p [innerHTML]="eachtemplate.content"></p>
                                   <i class="delete" (click)="deleteQuerieTemplate(eachtemplate.id);"></i>
                                   <i class="edit" (click)="quickReplyEdit(eachtemplate)"></i>
                                   </li>
                                   <li *ngIf="isEditClick && editId == eachtemplate.id">
-                                      <textarea style=" width:100%;border: 1px solid #bbb;border-radius: 7px;" [(ngModel)]="editContent"></textarea>
+                                      <textarea style=" width:100%;border: 1px solid #bbb;border-radius: 7px;" [(ngModel)]="editContent" style="resize: none;width: 100%;"></textarea>
                                       <button style="position: absolute;top: 55px;right: 60px;cursor: pointer;float: left;background-color: #33cccc;padding: 3px;color: white;border-radius: 3px;" (click)="quickReplySave(editContent,editId)">Save</button>
                                       <button style="position: absolute;top: 55px;right: 0px;cursor: pointer;float: left;background-color: #ba1a47;padding: 3px;color: white;border-radius: 3px;" (click)="isEditClick = false;cancelQuickReply()">Cancel</button>
                                 </li>
@@ -285,7 +298,7 @@
                      </label>
                      </div>
                      <div class="options">
-                    <button class="button submit brd-radius-10 ripple" type="button" (click)="answerAQuerie(templateData, questionId);">Reply Query</button>
+                    <button class="button submit brd-radius-10 ripple" type="button" (click)="answerAQuerie(templateData, questionId);" [disabled]="querieTemplatesData.length==0">Reply Query</button>
                      
                      </div>
                      </div>
@@ -322,7 +335,7 @@
         <ul>
         <li>
         <label class="labels" style="font-weight: bold;">EDIT CONTENT</label>
-        <textarea class="input" pattern="\S.*\S" [formControl]="patientQuerieForm.controls['querie']" required style="background-color:inherit !important;height: 65px;"></textarea>
+        <textarea class="input" pattern="\S.*\S" [formControl]="patientQuerieForm.controls['querie']" required style="background-color:inherit !important;height: 65px;resize: none;"></textarea>
         <!-- <input type="text" [formControl]="patientQuerieForm.controls['querie']" class="input" pattern="\S.*\S" required style="background-color:inherit !important;height: 65px;"> -->
         <span style="color:red" *ngIf="patientQuerieForm.controls['querie'].hasError('pattern') && patientQuerieForm.controls['querie'].touched">{{spaceComment}}</span>
         

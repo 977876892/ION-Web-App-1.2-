@@ -37,7 +37,6 @@ export class SettingsComponent implements OnInit {
   email:string;
   mobile:string;
   aboutme:string;
-  repwdIsRequired="";
   role:string;
   profile_pic:string;
   item= new Users();
@@ -53,9 +52,8 @@ export class SettingsComponent implements OnInit {
   dropdownSettings = {};
   isStartLoader=false;
   imgerror="Choose Only Image.";
-  plzSelectGroup="";
-pwdNotMatch="";
-pwdIsRequired="";
+  isGroupsRequied:boolean=false;
+  pwdNotMatch:boolean=false;
   imageSrc='';
   pic="";
   userDetails:any=[];
@@ -196,7 +194,7 @@ console.log(this.userDetails);
   
   clickedOnDottedLine(id) {
     console.log(id);
-    this.isDeleteButtonClick=true;
+    this.isDeleteButtonClick=!this.isDeleteButtonClick;
     this.userMangement_select_card_delete=id;
   }
   userCardDelete(){
@@ -248,7 +246,8 @@ console.log(this.userDetails);
         categoryid:this.userDetails.categoryid,
         publishid:this.userDetails.publishid,
         smsSenderId:this.userDetails.smsSenderId,
-        userGroup:this.userDetails.userGroup
+        userGroup:this.userDetails.userGroup,
+        smsbalance:this.userDetails.smsbalance
       }));
       this.isStartLoader = false; 
      this.isShowImgDeleteButt=false;
@@ -474,11 +473,11 @@ groupClick(group)
 {
     console.log(group);
     this.userDetailsForm.value.groups=group;
-    this.plzSelectGroup="";
+    this.isGroupsRequied=false;
 }
  
 addNewUser(){
-   console.log(this.userDetailsForm.value.groups);
+  // console.log(this.userDetailsForm.value.password);
   // console.log(this.userDetailsForm.value.reTypePassword);
 
   var categeries="";
@@ -487,114 +486,65 @@ addNewUser(){
             categeries=categeries+cat.id+",";
     }
         console.log(categeries);
+
         //console.log(ids);
         //this.userDetailsForm.value.groups=ids;
-      
+        if(this.userDetailsForm.value.groups=='' ||this.userDetailsForm.value.groups==null){
+          this.isGroupsRequied=true;
+        }
         this.userDetailsForm.value.categories=categeries;
-        
-                if(this.userDetailsForm.valid && this.userDetailsForm.value.password != '' && this.userDetailsForm.value.reTypePassword != '' && this.userDetailsForm.value.groups !='' && this.userDetailsForm.value.groups !=null)
+        if(this.userDetailsForm.value.password == this.userDetailsForm.value.reTypePassword){
+          this.pwdNotMatch=false;
+          console.log(this.pwdNotMatch);
+          console.log("true");
+                if(this.userDetailsForm.valid && !this.isGroupsRequied)
                   {
-                    this.plzSelectGroup="";
-                    this.pwdIsRequired="";
-                    this.repwdIsRequired="";
-                    if(this.userDetailsForm.value.password == this.userDetailsForm.value.reTypePassword ){
-                            this.isStartLoader=true;
-                            this.settingsService.addNewUserService(this.userDetailsForm.value)
-                             .subscribe(
-                              data => {console.log(data);
-                                this.isStartLoader=true;
-                                this.isAlertPopup=true;
+                      this.isStartLoader=true;
+                      this.settingsService.addNewUserService(this.userDetailsForm.value)
+                 .subscribe(
+                        data => {console.log(data);
+                          this.isStartLoader=true;
+                          this.isAlertPopup=true;
 
-                                if(data.message=="Username in use. Please Give Another Username.")
-                                  {
-                                    this.alertMessage="Username in use.";
-                                  }else if(data.message=="This email address is already registered.")
-                                    {
-                                      this.alertMessage="This email address is already registered. Please Give Another Gamil.";
-                                    }
-                                    else{
-                                          this.imageSrc="";
-                                          this.alertMessage="User Added Successfully."
-                                          this.closeUserPopUp();
-                                          this.getUserData();
-                                          this.pwdIsRequired="";
-                                          this.repwdIsRequired="";
-                                          this.pwdNotMatch="";
-                                          this.plzSelectGroup="";
-                                          console.log("success");
-                                    }
-                              },
-                              err => console.log(err),
-                        );
-                          
-                        }
-                        else{
-                          this.pwdNotMatch="Password does not match";
-                          this.pwdIsRequired="";
-                          this.repwdIsRequired="";
-                          this.plzSelectGroup="";
-                        }
-                    }
+                          if(data.message=="Username in use. Please Give Another Username.")
+                            {
+                               this.alertMessage="Username in use.";
+                            }else if(data.message=="This email address is already registered.")
+                              {
+                                this.alertMessage="This email address is already registered. Please Give Another Gamil.";
+                              }
+                              else{
+                                    this.imageSrc="";
+                                    this.alertMessage="User Added Successfully."
+                                    this.closeUserPopUp();
+                                    this.getUserData();
+                                    console.log("success");
+                              }
+                         },
+                        err => console.log(err),
+                  );
+                  }
                   else{
-                    if(this.userDetailsForm.value.password == '' ){
-                      this.pwdIsRequired="Please Enter The Password.";
-                    }
-                    if(this.userDetailsForm.value.reTypePassword == '' ){
-                      this.repwdIsRequired="Please Enter The Password.";
-                    }
-                    this.pwdNotMatch="";
-                    if(this.userDetailsForm.value.groups==null || this.userDetailsForm.value.groups == ''){
-                      this.plzSelectGroup="Please Select Group.";
-                      console.log(this.userDetailsForm.value.groups)
-                    }
-                   
                       this.validateAllFormFields(this.userDetailsForm);
                     }
-                    
-          
-        
+          }
+          else{
+                this.pwdNotMatch=true;
+                 console.log(this.pwdNotMatch);
+          console.log("false");
+         // this.isShowUserPopup=true;
+          }
         
          
- }
- adduserPwd(password){
-console.log(password);
-    if(this.userDetailsForm.value.password != ''){
-      this.pwdIsRequired="";
-    }
-    else{
-      this.pwdNotMatch="";
-      this.pwdIsRequired="Please Enter The Password.";
-    }
-    
- }
- adduserRePwd(password){
-  console.log(password);
-  if(this.userDetailsForm.value.reTypePassword != ''){
-    this.repwdIsRequired="";
-  }
-  else{
-    this.pwdNotMatch="";
-    this.repwdIsRequired="Please Enter The Password.";
-  }
-  if(this.userDetailsForm.value.password == this.userDetailsForm.value.reTypePassword ){
-    this.pwdNotMatch="";
-  }
-  else{
-    this.pwdNotMatch="Password does not match";
-   if(this.userDetailsForm.value.reTypePassword == ''){
-    this.repwdIsRequired="Please Enter The Password.";
-    this.pwdNotMatch="";
-   }
-  }
  }
   updateUser(){
     if(this.userDetailsForm.value.password != this.userDetailsForm.value.reTypePassword){
        console.log("false");
-       this.pwdNotMatch="Password does not match";
+       this.pwdNotMatch=true;
 
      }
      else{
-        this.pwdNotMatch="";
+        this.pwdNotMatch=false;
         var ids="",categeries="";
          for(let groups of this.userGroups)
           {
@@ -655,7 +605,7 @@ selectedIds=[];
       this.isShowImgDeleteButt=false;
       this.isAddUser=false;
       this.userDetailsForm.reset();
-      this.plzSelectGroup="";
+      this.isGroupsRequied=false;
       this.selectedItems=[];
       for(let user of this.userGroups)
               user.checked=false;     
@@ -744,9 +694,9 @@ selectedIds=[];
   // this.imageUploadAlert = false;
  // console.log(this.userDetailsForm.controls['image'].value);
 }
-// passwordchanges(){
-//   this.pwdNotMatch=false;
-// }
+passwordchanges(){
+  this.pwdNotMatch=false;
+}
 isScrolled: boolean = false;
   isNoRecords: boolean = false;
   windowBottom:any="";

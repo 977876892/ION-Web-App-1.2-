@@ -198,10 +198,10 @@
 		<table class="visits-table-data" cellpadding="0" cellspacing="0" width="100%">
   <tr class="titles">
 	<th>
-	<label>
+	<!-- <label>
 	<input name="1" value="true" id="1" class="checkbox" type="checkbox">
 	<span>&nbsp;</span>
-    </label>
+    </label> -->
 	</th>
 	<th class="t-avatar">avatar</th>
     <th>Name</th>
@@ -415,8 +415,9 @@
       </li> -->
       <li>
       <label class="labels">Date of Birth</label>
-      <div class="leads_date_cal">
-      <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" [formControl]="leadForm.controls['dob']" autoClose="true" placeHolder="dd-mm-yyyy" max="{{stopDates}}" tabindex="7"></owl-date-time>
+      <div class="leads_date_cal" style="position:relative;">
+      <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" [formControl]="leadForm.controls['dob']" autoClose="true" placeHolder="dd-mm-yyyy" max="{{stopDates}}" tabindex="7" ></owl-date-time>
+      <img src="assets/images/calender_icon.png" class="lead_calender_img">
     </div>
       <!-- <input type="date" class="input" [formControl]="leadForm.controls['dob']"> -->
       <span style="color:red" *ngIf="leadForm.controls['dob'].hasError('required') && leadForm.controls['dob'].touched">Enter date of Birth</span>

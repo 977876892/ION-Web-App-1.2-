@@ -91,7 +91,7 @@ constructor(private router: Router,private leadsService: LeadsService,private au
      const OneSignal = window['OneSignal'] || [];
     OneSignal.push(['init', {
       appId: 'ef7de815-6fae-466b-8f5b-ea582555a873',
-      notificationClickHandlerMatch: 'orign',
+      notificationClickHandlerMatch: 'focus',
       autoRegister: true,
       allowLocalhostAsSecureOrigin: true,
       notifyButton: {
@@ -112,7 +112,8 @@ constructor(private router: Router,private leadsService: LeadsService,private au
         });
       });
     });
-      OneSignal.push(['sendTag', 'userid', currentuser.id]); 
+      //OneSignal.push(['sendTag', 'userid', currentuser.id]); 
+      OneSignal.push(['sendTags', {'userid': currentuser.id,'group':currentuser.publishid,'teamid':currentuser.teamid}]); 
     }
    
     

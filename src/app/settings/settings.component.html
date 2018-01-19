@@ -28,6 +28,7 @@
         display: inline-block;
         border: 1px solid #ccc;
         border-radius: 4px;
+        font-weight: 550;
         box-sizing: border-box;
     }
     
@@ -49,6 +50,7 @@
         height:50px;
         text-align: justify;
         color: #bbb;
+       
         padding-bottom: 15px !important;
     }
     
@@ -221,7 +223,7 @@
         <div class="panel-rt panel-rt__extend" *ngIf="showContactus">
                 <app-header></app-header>
                 <div class="loader" *ngIf="isStartLoader"></div>
-                 <div class="panel_box panel_box_contact  xs-box-padding panel_shadow" >
+                 <div class="panel_box panel_box_contact panel_shadow" style="padding: 50px 0px 50px 20px;">
                 <div class="wrap-90 m-auto">
                 <div class="clearfix">
                     <div class="contact_logo">
@@ -229,14 +231,15 @@
                             <img src="assets/images/ion_support.png" class="logo-rounded img-responsive" />
                         </div>
                     </div>
+                    <div class="contact_form_arrow"></div>
                      <div class="contact_form panel_shadow">
-                  <h5>Ask Your Query Or Report Any Issue:</h5>
-                  <textarea placeholder="Type your query here" class="contact_text m-b-60 input-full" cols="6" rows="10" [(ngModel)]="query_des"  required (ngModelChange)="query_text(query_des)"></textarea>
+                  <h5 style="font-weight: 510;">Ask Your Query or Report an issue:</h5>
+                  <textarea placeholder="Type your query here" class="contact_text m-b-60 input-full" cols="6" rows="10" [(ngModel)]="query_des"  required (ngModelChange)="query_text(query_des)" style="border: none;"></textarea>
                   <span style="color:red" *ngIf="queryBoxAlert"> Please Enter Your Query. </span>                                        
                   <div class="clearfix">
                       <div class="wrap-48 setting_contact_sele">
-                         <select class="drp-down brd-radius-5 h-40" style="height: 45px !important;">
-                             <option>select</option>
+                         <select class="drp-down brd-radius-5 h-40 minimal" style="height: 45px !important;font-weight: 510;    background-color: #edf1f1 !important;">
+                             <option>Query Type</option>
                          </select>
 
                       </div>
@@ -249,12 +252,12 @@
 
               </div>
                 
-                      <div class="wrap-40 pull-left" style="width: 42% !important;">
+                      <div class="wrap-40 pull-left" style="width: 40% !important;">
                           <a class="btn btn-main button-large btn-block clearfix contact-btn">
                               <span class="pull-left">
                                   <img class="contact-btn-img" src="assets/images/icon-call.png" /></span>
                               <span class="pull-left">
-                                  <div>Need help? call us now</div>
+                                  <div>Need help? Call Us Now</div>
                                   <b>+919876543210</b>
                               </span>
                           </a>
@@ -262,10 +265,10 @@
                       <div class="wrap-40 pull-right" style="margin-right:53px !important">
                             <a class="btn btn-main button-large btn-block clearfix contact-btn">
                               <span class="pull-left">
-                                  <img class="contact-btn-img" src="assets/images/icon-chat.png" /></span>
+                                  <img class="contact-btn-img" src="assets/images/icon-chat.png" style="margin-left: 54px;margin-right: -12px;"/></span>
                                 
                               <span class="pull-left btn-large-lh" style="margin-top: 4px;margin-left: 38px;">
-                                  <div>chat assist Now &nbsp;&nbsp; ></div>
+                                  <div>Chat with us! &nbsp;&nbsp;&nbsp; ></div>
                                   <div>+919876543210</div>
 
                               </span>
@@ -325,12 +328,12 @@
                     <div class="wrap-40 pull-left" style="width: 33%;">
                     <h2 class="wrap-h2">Your ION <br> Subscription Plan</h2>
                  </div>
-                    <div class="wrap-50 pull-left panel_box panel_shadow brd-radius-15" style="width: 50%;">
+                    <div class="wrap-50 pull-left panel_box panel_shadow brd-radius-15" style="width: 50%;border-top-right-radius: 10px !important;border-top-left-radius: 10px !important;">
                         <div class="subscribe_head">
                             <ul class="subscription-list">
                                 <li class="clearfix">
                                     <div class="side-line wrap-40 text-uppercase pull-left" style="width: 136px;">Subscription duration</div>
-                                    <div class="pull-left text-uppercase l-h-2">
+                                    <div class="pull-left text-uppercase">
                                         <!-- <span class="">{{subscriptionDetails.subscription}}</span>
                                         &nbsp;
                                         <span class="sub-lh">To</span> &nbsp;
@@ -341,7 +344,7 @@
                                                       <span class="">{{subscriptionStart[0]}}</span><br>
                                                        <p style="margin-top: 8px;">{{subscriptionStart[1]}}</p>
                                                   </td>
-                                                  <td style="padding: 0px 10px 10px 15px;">
+                                                  <td style="padding: 0px 20px 10px 20px;">
                                                       <br>
                                                       <span class="sub-lh">To</span> &nbsp;
                                                   </td>
@@ -352,27 +355,25 @@
                                               </tr>
                                           </table>
                                          
-                                        
-                                        
-                                            
                                     </div>
       
                                 </li>
+                               
                                 <li class="clearfix">
                                     <div class="side-line wrap-40 text-uppercase pull-left" style="width: 136px;">Total Credits Left</div>
-                                    <div class="pull-left l-h-2"><span class="font-2em">{{subscriptionDetails.credits_left}}</span> &nbsp; <span class="text-uppercase" >credits left</span></div>
+                                    <div class="pull-left l-h-2"><div class="font-2em" style="float:left;">{{subscriptionDetails.credits_left}}</div> &nbsp; <div  style="float:left;font-size: 11px;margin-top: -7px;margin-left: 7px;" class="text-uppercase" >credits <div style="margin-top: -16px;"> left</div></div></div>
       
                                 </li>
                             </ul>
                         </div>
-                       <div class="subscribe_content"><ul class="subscription-list">
+                       <div class="subscribe_content"><ul class="subscription-list" style="padding-left: 28px;padding-top: 0px;">
                             <li class="clearfix">
-                                <div class="side-line wrap-40 text-uppercase pull-left l-h-2">Total sms left</div>
+                                <div class="side-line wrap-40 text-uppercase pull-left l-h-2">Total sms <div style="margin-top: -8px;"> left</div></div>
                                 <div class="pull-left l-h-2"><span class="font-2em">{{subscriptionDetails.smsbalance}}</span> &nbsp; <span class="text-uppercase">
                                     sms</span></div>
                             </li>
                             <li class="clearfix">
-                                <div class="side-line wrap-40 text-uppercase pull-left l-h-2">Total Emails Sent</div>
+                                <div class="side-line wrap-40 text-uppercase pull-left l-h-2">Total Emails <div style="margin-top: -8px;"> Sent</div></div>
                                 <div class="pull-left l-h-2"><span class="font-2em">{{subscriptionDetails.email_sent}}</span> &nbsp; <span class="text-uppercase">
                                     EMAILS</span></div>
                             </li>
@@ -433,13 +434,13 @@
                                  <img src="{{user.avatar}}" id="all-user-list-img" *ngIf="user.avatar != 'http://staging.getion.in/'" class="img-responsive" alt="">
                              </li>
                              <li class="setting_user_40">
-                                 <h2 style="color:#33cccc;"><b>{{user.firstname}}</b></h2>
+                                 <h2 style="color:#33cccc;text-transform: capitalize;"><b>{{user.firstname}}</b></h2>
                                  <!-- <p style="font-size:14px;">By Doctor</p> -->
                                  <!-- <p style="font-size:12px;">children</p> -->
 
                              </li>
                              <li (click)="openUserDialog(user.id)" class="setting_user_10">
-                                 <b>></b>
+                                 <img src="assets/css/images/add_user_arrow.png" alt="">
                              </li>
                          </ul>
                          <div class="dropdown pull-right open">
@@ -448,7 +449,7 @@
                                   <div></div>
                                   <div></div>
                                 </a>
-                                <ul class="dropdown-menu" *ngIf="isDeleteButtonClick && userMangement_select_card_delete == user.id" #editcontainer>
+                                <ul class="dropdown-menu" *ngIf="isDeleteButtonClick && userMangement_select_card_delete == user.id" #editcontainer style="margin: 3px 15px 0;">
                                   <li><a style="cursor: pointer;" (click)="userCardDelete();">Delete</a></li>
                                 </ul>
                               </div>
@@ -465,7 +466,7 @@
                                <p>Email</p>
                            </li>
                            <li class="setting_user_data">
-                               <p>{{user.firstname}}</p>
+                               <p style="text-transform: capitalize;">{{user.firstname}}</p>
                                <br>
                                <p *ngIf="user.group_id == 10">Doctor</p>
                                <p *ngIf="user.group_id == 17">Business Head</p>
@@ -516,15 +517,15 @@
                         </label>
                   
                     <div class="profile_bottom" style="border-top: 2px #f6f6f6 solid;height: 42px;line-height: 42px;font-size: 15px;font-weight: 400;text-transform: uppercase;"><span>
-                        <label for="file-upload" class="custom-file-upload" *ngIf="!isShowImgDeleteButt">
+                        <label for="file-upload" class="custom-file-upload" *ngIf="!isShowImgDeleteButt && userDetailsForm.controls['image'].value==''||userDetailsForm.controls['image'].value=='http://staging.getion.in/'">
                             Upload Image
                         </label>
-                         <div *ngIf="isShowImgDeleteButt">
-                              <label for="file-upload"  class="custom-file-upload" class="user-upload-img">CHANGE</label>
+                         <div *ngIf="isShowImgDeleteButt || userDetailsForm.controls['image'].value!='' && userDetailsForm.controls['image'].value!='http://staging.getion.in/'" >
+                              <label for="file-upload"  class="custom-file-upload" class="user-upload-img" style="padding: 0px;line-height: 40px;width: 93px;">CHANGE</label>
                              <div style="float:left">
                               <span style="width: 1px;height: 40px;background-color:#0000002e;" ></span>
                             </div>
-                              <label style=" color: red;" class="user-upload-img" (click)="uploadImgeDelete()"> <b>X</b> DELETE</label>
+                              <label style=" color: red;line-height: 40px;width: 93px;padding: 0px;" class="user-upload-img" (click)="uploadImgeDelete()"> <b>X</b> DELETE</label>
                         </div>
                     <input type="file" id="file-upload" #fileInput placeholder="Upload image..." (change)="upload()" accept="image/*"/>
                         <!-- <a class="upload">UPLOAD Image</a> -->
@@ -534,7 +535,7 @@
                      <!-- <img src="https://www.doctoralliance.com/images/doctor_face2.jpg" style="width:90px;height:90px;border-radius:100%;display:table;margin:0 auto;position: relative;top: 10px;" class="img-responsive" alt="">  -->
               </div>
               <div class="setting_user_popup">
-                 <a class="close" style="cursor: pointer;" (click)="isShowUserPopup = false;closeUserPopUp();pwdNotMatch='';pwdIsRequired='';plzSelectGroup='';repwdIsRequired='';">Close</a>
+                 <a class="close" style="cursor: pointer;" (click)="isShowUserPopup = false;closeUserPopUp();">Close</a>
                     <table style="width:100%;" class="popup_input">
                         <tr>
                             <td>
@@ -574,34 +575,31 @@
                                     <td>
                                         PASSWORD
                                          <br>
-                                        <input type="password" placeholder="Password" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['password']" (input)="adduserPwd($event.target.value)">  <br>
-                                         <!-- <span style="color:red" *ngIf="userDetailsForm.controls['password'].hasError('required') && userDetailsForm.controls['password'].touched"> Please Enter The Password. </span>  -->
-                                         <span style="color:red;margin-right: 75px;" *ngIf="isAddUser">{{pwdNotMatch}}</span>                                         
-                                         <span style="color:red;margin-left: -75px;" *ngIf="isAddUser">{{pwdIsRequired}}</span>                                         
+                                        <input type="password" placeholder="Password" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['password']" required (input)="passwordchanges()">  <br>
+                                         <span style="color:red" *ngIf="userDetailsForm.controls['password'].hasError('required') && userDetailsForm.controls['password'].touched"> Please Enter The Password. </span>                                        
                                     </td>
                                     <td>
                                             RETYPE PASSWORD
                                         <br>
-                                        <input type="password" placeholder="Retype Password" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['reTypePassword']" (input)="adduserRePwd($event.target.value)">  <br>
-                                         <!-- <span style="color:red" *ngIf="userDetailsForm.controls['reTypePassword'].hasError('required') && userDetailsForm.controls['reTypePassword'].touched"> Please Enter The Re Type Password. </span> -->
-                                         <span style="color:red;margin-right: 75px;" *ngIf="isAddUser">{{pwdNotMatch}}</span>                                         
-                                         <span style="color:red;margin-left: -75px;" *ngIf="isAddUser">{{repwdIsRequired}}</span>
+                                        <input type="password" placeholder="Retype Password" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['reTypePassword']" required (input)="passwordchanges()">  <br>
+                                         <span style="color:red" *ngIf="userDetailsForm.controls['reTypePassword'].hasError('required') && userDetailsForm.controls['reTypePassword'].touched"> Please Enter The Re Type Password. </span>
                                     </td>
+
                             </tr>
-                             
+                              <span style="color:red;margin-right: 75px;" *ngIf="isAddUser&&pwdNotMatch">Passwords Are Not Matched</span>
                             <tr *ngIf="!isAddUser">
                                     <td>
                                         PASSWORD
                                          <br>
-                                        <input type="password" placeholder="Password" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['password']"  required>  <br>
-                                        <span style="color:red" *ngIf="userDetailsForm.controls['password'].hasError('required') && userDetailsForm.controls['password'].touched"> Please Enter The Password. </span>
+                                        <input type="password" placeholder="Password" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['password']" (input)="passwordchanges()">  <br>
+                                        <!-- <span style="color:red" *ngIf="userDetailsForm.controls['password'].hasError('required') && userDetailsForm.controls['password'].touched"> Please Enter The Password. </span> -->
                                         
                                     </td>
                                     <td>
                                             RETYPE PASSWORD
                                         <br>
-                                        <input type="password" placeholder="Retype Password" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['reTypePassword']" required>  <br>
-                                        <span style="color:red" *ngIf="userDetailsForm.controls['reTypePassword'].hasError('required') && userDetailsForm.controls['reTypePassword'].touched"> Please Enter The Re Type Password. </span>
+                                        <input type="password" placeholder="Retype Password" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['reTypePassword']" (input)="passwordchanges()">  <br>
+                                        <!-- <span style="color:red" *ngIf="userDetailsForm.controls['reTypePassword'].hasError('required') && userDetailsForm.controls['reTypePassword'].touched"> Please Enter The Re Type Password. </span> -->
                                         
                                     </td>
 
@@ -609,7 +607,7 @@
                              <span style="color:red;margin-right: 75px;" *ngIf="!isAddUser&&pwdNotMatch">Passwords Are Not Matched</span>
                     </table>
                         <div class="setting_user_groups">
-                            <h4 style="font-size: 17px;color:#bbb;">GROUPS</h4><br>
+                            <h4 style="font-size: 17px;color:#bbb;font-weight: 400;">GROUPS</h4><br>
                             <span class="gender" *ngFor="let groups of userGroups">
                                  <!-- <input [checked]="groups.checked" [formControl]="userDetailsForm.controls['groups']" [value]="groups.value" name="rdblGender" id="rdblGender_0" type="radio" (click)="groupClick(groups.value)">
                                 <label for="rdblGender_0">  {{groups.name}}</label> -->
@@ -626,8 +624,7 @@
 
                                 </span> 
 
-                                <div  style="margin-top: 15px;font-size: 17px;">
-                                    <span style="color:red"> {{plzSelectGroup}} </span></div>
+                             
                                           
                            <!-- <div *ngFor="let option of userGroups;let i =index;" class="row">
                                 <div class="col-md-4">
@@ -639,9 +636,10 @@
                             <input type="checkbox" value="17" name="options"  (change)="updateCheckedOptions(option, $event)"> Business Head  
                         </div> -->
                         </div>
-                       
+                        <div *ngIf="isGroupsRequied" style="margin-top: 15px;">
+                         <span style="color:red"> Please Select Group. </span></div>
                     <br><br><br><br>
-                    <angular2-multiselect [data]="allcategoryname" [(ngModel)]="selectedItems" [settings]="dropdownSettings" (onSelect)="onItemSelect($event)" (onDeSelect)="OnItemDeSelect($event)" (onSelectAll)="onSelectAll($event)" (onDeSelectAll)="onDeSelectAll($event)"></angular2-multiselect>                     
+                    <div  style="margin-top: -50px;"><angular2-multiselect [data]="allcategoryname" [(ngModel)]="selectedItems" [settings]="dropdownSettings" (onSelect)="onItemSelect($event)" (onDeSelect)="OnItemDeSelect($event)" (onSelectAll)="onSelectAll($event)" (onDeSelectAll)="onDeSelectAll($event)"></angular2-multiselect> </div>                    
                     <table style="width:100%;margin-top:15px;" class="popup_input">
                         <!-- <tr>
                             <td>
@@ -687,7 +685,7 @@
                                     <button style="width:90%;height:37px;background-color:#33cccc;cursor: pointer;border-radius:50px;color:white;" (click)="updateUser()" *ngIf="!isAddUser"><b>UPDATE</b></button>
                                 </td>
                                 <td>
-                                    <button style="width:90%;height:37px;background-color:#555;cursor: pointer;border-radius:50px;color:white;" (click)="closeUserPopUp();pwdNotMatch='';pwdIsRequired='';plzSelectGroup='';repwdIsRequired='';"><b>CANCEL</b></button>
+                                    <button style="width:90%;height:37px;background-color:#555;cursor: pointer;border-radius:50px;color:white;" (click)="closeUserPopUp()"><b>CANCEL</b></button>
                                 </td>
                             </tr>
                     </table>

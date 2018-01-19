@@ -12,12 +12,12 @@ export class VisitsService {
 
   // Get all visits cservice
   getVisitsListService(current_date) {
-    console.log(current_date)
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
     return this.http.get(API.GET_VISITS_LIST(currentuser.username, currentuser.pwd,current_date)).map(
       (responseData) => {
-        console.log(responseData['_body']);
+        //console.log(responseData['_body']);
         const key = '_body';
+        console.log(responseData[key]);
         return JSON.parse(responseData[key]);
       });
   }
@@ -93,6 +93,14 @@ getTimeSlotsService(resId, tsDate) {
        // GET_APPOINTMENTS_BETWEEN_DATES(resId, startDate,days,docotor_id, username, pwd)
          const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
           return this.http.get(API.GET_APPOINTMENTS_BETWEEN_DATES(resId, startDate,days, currentuser.username, currentuser.pwd)).map(
+            (responseData) => {
+              const key = '_body';
+              return JSON.parse(responseData['_body']);
+            });
+      }
+      deleteAppointment(id){
+        const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+          return this.http.get(API.DELETE_APPOINTMENT(currentuser.username, currentuser.pwd,id)).map(
             (responseData) => {
               const key = '_body';
               return JSON.parse(responseData['_body']);

@@ -32,6 +32,9 @@ export class VisitsComponent implements OnInit {
   tags:string="";
   isShowPatientDetails: boolean = false;
   isShowImgDeleteButt: boolean = false;
+  visitNoUpdateSub:any[];
+  visitUpdateDetail:any[];
+  isModifyData:boolean=false;
   phoneZeroComm:boolean=false;
   imageerrorAlert:boolean=false;
   patientDetailsData: any = {};
@@ -100,7 +103,7 @@ export class VisitsComponent implements OnInit {
       this.router.navigate(['login']);
        
     } else {
-     this.getVisits();
+     //this.getVisits();
      this.getLeadTags();
     }
     // if(localStorage.getItem("user")!='')
@@ -222,10 +225,16 @@ this.numLength=numValue.length;
 select_duration_error_msg(){
   this.showTodayOrTomorrowError=false;
 }
+fromdate="";
+fromDateEmpty=true;
 not_select_date_error_msg(){
    if(this.visitDownloadForm.value.fromDate != '' && this.visitDownloadForm.value.toDate != ''){
      this.showBetweenError=false;
    }
+    var fromdate=this.visitDownloadForm.value.fromDate;
+    console.log(fromdate);
+    this.fromdate=fromdate.getFullYear()+"-"+(fromdate.getMonth()+1)+"-"+fromdate.getDate();
+    this.fromDateEmpty=false;
 }
 
 // add a visit call
@@ -309,7 +318,7 @@ addVisit() {
                 this.alertMessage = 'Visit added successfully.';
                 this.isAddVisit = false;
                 this.closeAddAndEditVisit();
-                this.getVisits();
+                //this.getVisits();
             }
           }, (err) => {
        
@@ -334,7 +343,14 @@ addVisit() {
 // patient details func
 patientDetails(pid) {
   this.isShowPatientDetails = true;
-  this.patientEditDetails(pid);
+   for (const eachentry of this.visitsTempData) {
+     for (const eachdata of eachentry[1]) {
+      if(eachdata.id === pid) {
+        console.log(eachdata.birthday);
+        eachdata.birthday=this.format(eachdata.birthday, ['DD/MM/YYYY']);
+        this.patientDetailsData = eachdata;
+      }}}
+  //this.patientEditDetails(pid);
 }
 
 addVisitPopup() {
@@ -716,6 +732,7 @@ patientEditDetails(pid) {
             dob: eachdata.birthday,
             ce_id:eachdata.ce_id
           });
+          this.visitUpdateDetail= this.visitForm.value;
         }
       
         }, (err) => {
@@ -730,6 +747,15 @@ patientEditDetails(pid) {
 }
 // UPDATE VISITS
 visitUpdate() { 
+  this.visitNoUpdateSub= this.visitForm.value;
+  console.log(this.visitNoUpdateSub);
+  console.log(this.visitUpdateDetail);
+  if(this.visitNoUpdateSub === this.visitUpdateDetail){
+    this.isModifyData=true;
+  }
+  else{
+    this.isModifyData=false;
+  }
   
   this.visitForm.value.comments=this.visitForm.value.comments.replace(/&/g, "%26");
   console.log(this.visitForm.value.comments);
@@ -761,7 +787,7 @@ visitUpdate() {
     // console.log(this.visitForm.value.request_status);
    
     
-    if(this.visitForm.value.request_status!="" && this.visitForm.value.starttime.toString().includes(":") && this.visitForm.value.res_id!='' && this.visitForm.value.category!=''  && !this.phoneMinlength && !this.phoneZeroComm &&this.visitForm.valid) {
+    if(this.visitForm.value.request_status!="" && this.visitForm.value.starttime.toString().includes(":") && this.visitForm.value.res_id!='' && this.visitForm.value.category!=''  && !this.phoneMinlength && !this.phoneZeroComm &&this.visitForm.valid && !this.isModifyData) {
       console.log("update visit");
       console.log(this.visitForm.value);
       
@@ -783,9 +809,9 @@ visitUpdate() {
                     this.isAddVisitLoader=false;
                     this.isAlertPopup = true;
                     this.alertMessage = 'Visit updated successfully.';
-                      this.isEditVisit = false;
-                      this.closeAddAndEditVisit();
-                      this.getVisits();
+                    this.isEditVisit = false;
+                    this.closeAddAndEditVisit();
+                      //this.getVisits();
                       
                   }
                 }, (err) => {
@@ -865,6 +891,8 @@ clearForm() {
     console.log(this.select_column);
     console.log(this.visitDownloadForm.value);
     console.log(this.visitDownloadForm.value);
+    this.fromdate="";
+    this.fromDateEmpty=true;
     if(this.visitDownloadForm.value.selectDuration==0||this.visitDownloadForm.value.selectDuration==''||this.visitDownloadForm.value.selectDuration==null)
       {
           if(this.visitDownloadForm.value.today=='' ||this.visitDownloadForm.value.today==null)
@@ -900,7 +928,8 @@ clearForm() {
       {
           if(this.excelOrPdf=='pdf')
           {
-              var doc = new jsPDF('p','pt');
+              var pdfsize = 'a4';
+              var pdf = new jsPDF('p','pt',pdfsize);
               var col = [];
         
                 this.select_column.forEach(column=>{
@@ -911,8 +940,29 @@ clearForm() {
                 })
                 console.log(col);
                 console.log(this.filteredVisits);
-                doc.autoTable(col, this.filteredVisits);
-                doc.save('visits.pdf');
+                pdf.autoTable(col, this.filteredVisits, {
+                      startY: 60,
+                      drawHeaderRow: function(row, data) {
+                        row.height = 30;
+                      },
+                      drawRow: function(row, data) {
+                        if (row.index === 0) return false;
+                      },
+                      margin: {
+                        top: 60
+                      },
+                      styles: {
+                        overflow: 'linebreak',
+                        fontSize: 10,
+                        tableWidth: 'auto',
+                        columnWidth: 'auto',
+                      },
+                      columnStyles: {
+                        1: {
+                          columnWidth: 'auto'
+                        }
+    }});
+                pdf.save('visits.pdf');
           }
           else{
              var sqlquery="";
@@ -1012,6 +1062,7 @@ dobSelected(dob){
     this.visitForm.reset();
     this.isShowImgDeleteButt=false;
     this.phoneZeroComm=false;
+    this.isModifyData=false;
     this.gender=[{checked:true},{checked:false}];
   }
   filteredVisits:any=[];
@@ -1051,12 +1102,15 @@ dobSelected(dob){
      this.visitsService.getAppintmentsBetweenDates(data.selecedDoctor,fromDate,diff_date).subscribe(res => {
       console.log(res);
       this.filteredVisits=res.data;
-      this.filteredVisits.forEach(visit=>{
-        console.log(visit);
-      })
+        this.filteredVisits.forEach(visit=>{
+          console.log(visit);
+        })
+        this.isPrinting = true;
+        
+      
       console.log(this.filteredVisits);
       this.isPrintClicked = false;
-      this.isPrinting = true;
+     
       },(err) => {
         console.log(err);
       }, () => {
@@ -1075,5 +1129,24 @@ dobSelected(dob){
       }, () => {
       })
   }
+    deleteId="";
+    isDeleteAlert=false;
+    showDeleteAlert(id){
+        this.isDeleteAlert=true;
+        this.deleteId=id;
+    }
+    deleteAppointment(){
+      this.isDeleteAlert=false;
+      this.isStartLoader=true;
+       this.visitsService.deleteAppointment(this.deleteId).subscribe(res => {
+         this.isAlertPopup=true;
+         this.alertMessage="Appointment Deleted Successfully.";
+      console.log(res);
+      },(err) => {
+        console.log(err);
+      }, () => {
+        this.isStartLoader = false;
+      })
+    }
 
 }
