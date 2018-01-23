@@ -155,7 +155,7 @@
                         
                        <div class="flt flt-group bx-border brd-radius-5">
                        <div class="heading">Groups</div>
-                      <div class="flt-div" style="overflow-y:scroll; height:170px; overflow-x:hidden; position:relative;">
+                      <div class="flt-div" style="overflow-y:scroll; height:145px; overflow-x:hidden; position:relative;">
                           <label *ngFor="let eachtag of leadtagsForFilter; let j = index;">
                           <input name="publish" value="{{eachtag.title}}" class="checkbox" type="checkbox" [checked]="eachtag.isChecked" (change)="changeTagClick(eachtag)" [hidden]="true" >
                           <span style="text-transform: capitalize;">{{eachtag.title}}</span>
@@ -327,13 +327,13 @@
          </label>
       
       <div class="profile_bottom"><span>
-          <label for="file-upload" class="custom-file-upload"  *ngIf="!isShowImgDeleteButt">
+          <label for="file-upload" class="custom-file-upload"  *ngIf="!isShowImgDeleteButt && imageSrc ==''|| imageSrc=='http://staging.getion.in/'">
               Upload Image
           </label>
-           <div *ngIf="isShowImgDeleteButt">
+           <div *ngIf="isShowImgDeleteButt || imageSrc !='' && imageSrc !='http://staging.getion.in/'">
               <label for="file-upload"  class="custom-file-upload" class="upload-img">CHANGE</label>
                <div style="float:left">
-                <span style="width: 1px;height: 40px;background-color:#0000002e;" *ngIf="isShowImgDeleteButt"></span>
+                <span style="width: 1px;height: 40px;background-color:#0000002e;" *ngIf="isShowImgDeleteButt || imageSrc !='' && imageSrc !='http://staging.getion.in/'"></span>
               </div>
               <label style=" color: red;" class="upload-img" (click)="uploadImgeDelete()"> <b>X</b> DELETE</label>
           </div>
@@ -417,7 +417,7 @@
       <label class="labels">Date of Birth</label>
       <div class="leads_date_cal" style="position:relative;">
       <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" [formControl]="leadForm.controls['dob']" autoClose="true" placeHolder="dd-mm-yyyy" max="{{stopDates}}" tabindex="7" ></owl-date-time>
-      <img src="assets/images/calender_icon.png" class="lead_calender_img">
+      <!-- <img src="assets/images/calender_icon.png" class="lead_calender_img"> -->
     </div>
       <!-- <input type="date" class="input" [formControl]="leadForm.controls['dob']"> -->
       <span style="color:red" *ngIf="leadForm.controls['dob'].hasError('required') && leadForm.controls['dob'].touched">Enter date of Birth</span>
@@ -491,13 +491,14 @@
     
       <!-- Popup -->
         <!-- alert -->
-    <div class="model model-alerts" *ngIf="isAlertPopup" style="margin-top: 275px;"> 
+    <div class="model model-alerts" *ngIf="isAlertPopup || isAlertPopupError" style="margin-top: 275px;"> 
                 <!-- <a class="close" href="#">Close</a> -->
                 
                 <div class="model-content">
                  <p>{{ alertMessage }}</p>           
                 <div class="btn_actions">
-                  <div class="button btn-ok" (click)="getLeads(); isAlertPopup = false;">ok</div>
+                  <div class="button btn-ok" (click)="getLeads(); isAlertPopup = false;" *ngIf="isAlertPopup">ok</div>
+                  <div class="button btn-ok" (click)="isAlertPopupError = false;" *ngIf="isAlertPopupError">ok</div>
                  <!--   <div class="button btn-dismiss" (click)="isAlertPopup = false;">cancel</div> --> 
               
                   </div>
@@ -534,4 +535,4 @@
 </div>
 
 <!-- Container ends -->
-<div class="overlay" *ngIf="isAddLead || isEditLead || isStartLoader || isAlertPopup || isPatientGroups || isDeleteAlertPopup"></div>
+<div class="overlay" *ngIf="isAddLead || isEditLead || isStartLoader || isAlertPopupError || isAlertPopup || isPatientGroups || isDeleteAlertPopup"></div>

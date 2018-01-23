@@ -62,8 +62,8 @@
         <app-dashboard (eventType)="onEventChanged($event)"></app-dashboard>
 
         <!-- Profile start-->
-        
-        <div class="panel-rt panel-rt__extend" *ngIf="showProfile">
+        <!-- panel-rt panel-rt__extend panel_bg__sty_3 -->
+        <div class="panel-rt panel-rt__extend panel_bg__sty_3" *ngIf="showProfile">
                 <app-header></app-header>
             <!-- edit profile -->
             <div class="loader" *ngIf="isStartLoader"></div>
@@ -73,26 +73,27 @@
                 <div style="padding: 10px 15px;background-color: #d9edf7;border-bottom: 1px solid transparent;border-top-right-radius: 3px;border-top-left-radius: 3px;border-color: #bce8f1;">
                     <h3 style="color: #31708f;"><b> {{item.fname}} {{item.lname}} </b></h3>
                 </div>
-                <div class="setting_profile_detail_R">
+                <div class="setting_profile_detail_R"> 
                     <!-- <img id="setting_profile_photo" alt="User Pic" src="{{item.profile_pic}}" class="img-circle img-responsive"> -->
                     <div class="lt-div">
                         <div class="profile_card">
                           <div class="profile_img">
                             <!-- <a *ngIf="imageSrc == ''"><img src="assets/css/images/profile_no_img.png" ></a> -->
-                            <a  *ngIf="imageSrc == ''"><img src="{{item.profile_pic}}" height="154px" width="154px" style="border-radius: 100px;"></a>
-                            <a  *ngIf="imageSrc"><img src="{{imageSrc}}" height="154px" width="154px" style="border-radius: 100px;"></a>
+                            <a><img src="{{item.profile_pic}}" height="154px" width="154px" style="border-radius: 100px;" *ngIf="item.profile_pic!=''&&item.profile_pic!='http://staging.getion.in/'&&item.profile_pic!=null"></a>
+                            <a ><img src="assets/css/images/profile_no_img.png" height="154px" width="154px" style="border-radius: 100px;" *ngIf="item.profile_pic==''||item.profile_pic=='http://staging.getion.in/'||item.profile_pic==null"></a>
+                            <!-- <a  *ngIf="imageSrc"><img src="{{imageSrc}}" height="154px" width="154px" style="border-radius: 100px;" *ngIf="item.profile_pic!=''&&item.profile_pic!='http://staging.getion.in/'&&item.profile_pic!=null && imageSrc != ''"></a> -->
                          
                         </div>
                         
                         <div class="profile_bottom"><span>
-                            <label for="file-upload"  class="custom-file-upload" *ngIf="!isShowImgDeleteButt">
+                            <label for="file-upload"  class="custom-file-upload" *ngIf="!isShowImgDeleteButt && item.profile_pic ==''||item.profile_pic=='http://staging.getion.in/'" >
                                 Upload Image
                             </label>
                              
-                            <div *ngIf="isShowImgDeleteButt">
+                            <div *ngIf="isShowImgDeleteButt || item.profile_pic !='' && item.profile_pic !='http://staging.getion.in/'">
                               <label for="file-upload"  class="custom-file-upload" class="upload-img">CHANGE</label>
                              <div style="float:left">
-                              <span style="width: 1px;height: 40px;background-color:#0000002e;" *ngIf="isShowImgDeleteButt"></span>
+                              <span style="width: 1px;height: 40px;background-color:#0000002e;" *ngIf="isShowImgDeleteButt || item.profile_pic !='' && item.profile_pic !='http://staging.getion.in/'"></span>
                             </div>
                               <label style=" color: red;" class="upload-img" (click)="uploadprofilepicDelete()"> <b>X</b> DELETE</label>
                             </div>
@@ -440,7 +441,7 @@
 
                              </li>
                              <li (click)="openUserDialog(user.id)" class="setting_user_10">
-                                 <img src="assets/css/images/add_user_arrow.png" alt="">
+                                 <img src="assets/css/images/add_user_arrow.png" alt=""> 
                              </li>
                          </ul>
                          <div class="dropdown pull-right open">

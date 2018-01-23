@@ -24,7 +24,8 @@ require('jspdf-autotable');
 export class VisitsComponent implements OnInit {
   format = require('date-fns/format');
   today=new Date();
-  stopDates=this.today.getFullYear()+"-"+(this.today.getMonth()+1)+"-"+this.today.getDate();
+  stopDates=this.format(this.today, ['YYYY-MM-DD']);
+  //stopDates=this.today.getFullYear()+"-"+(this.today.getMonth()+1)+"-"+this.today.getDate();
   visitsData: any = [];
   isStartLoader;
   isAddVisit: boolean = false;
@@ -324,11 +325,11 @@ addVisit() {
        
           }, () => {
             this.isAddVisitLoader=false;
-           // this.isStartLoader = false;
-           if(this.router.url == '/visits/homeaddvisit')
-            {
-              this.router.navigate(['/visits']);
-            }
+          // this.isStartLoader = false;
+          //  if(this.router.url == '/visits/addvisit')
+          //   {
+          //     this.router.navigate(['/visits']);
+          //   }
            this.clearForm();
           });
           //console.log('form submitted');
@@ -888,6 +889,7 @@ clearForm() {
   showBetweenError=false;
   
   showPrintScreen() {
+
     console.log(this.select_column);
     console.log(this.visitDownloadForm.value);
     console.log(this.visitDownloadForm.value);
@@ -915,7 +917,7 @@ clearForm() {
                 return;
             }
       }
-          console.log("venkat");
+    
       this.showTodayOrTomorrowError=false;
       this.showBetweenError=false;   
       this.getAppintmentsBetweenDates(this.visitDownloadForm.value);    
@@ -1057,6 +1059,10 @@ dobSelected(dob){
                })
         }
   closeAddAndEditVisit(){
+    if(this.router.url == '/visits/addvisit')
+    {
+      this.router.navigate(['/visits']);
+    }
     this.visitDoctorsData=[];
     this.timeSlotsData=[];
     this.visitForm.reset();
@@ -1106,7 +1112,8 @@ dobSelected(dob){
           console.log(visit);
         })
         this.isPrinting = true;
-        
+        this.isStartLoader = false;
+     
       
       console.log(this.filteredVisits);
       this.isPrintClicked = false;

@@ -143,9 +143,9 @@
     width: 306px !important;
     margin: -7px 0px 0px -7px;
 }
-.generate{
-    width:45% !important;
-    margin-left: 30px;
+.generate {
+    width:44% !important;
+    margin-left: 9%;
 }
 .print_Details{
     margin-top: 44px;
@@ -338,7 +338,7 @@ font-weight: 400;
     list-style-type: disc !important;
     margin-left: 25px;
     margin-bottom: 10px;
-} 
+}
 .listing_type ol {
     list-style-type:decimal !important;
     margin-left: 25px;
@@ -376,7 +376,7 @@ font-weight: 400;
 
 .promotion-cards {
     text-align: center;
-    margin-bottom: 12% !important;
+    margin-bottom: 20px !important;
 }
 
 .promotions-sup-head {
@@ -631,7 +631,7 @@ position: relative;
     background: #33CCCC;
     border-radius: 10px;
     float: right;
-    top: 36%;    
+    top: 36%;
     transform: translateY(-50%);
     right: -100px;
     padding: 50px 15px 0px;
@@ -641,7 +641,7 @@ position: relative;
     width: 100% !important;
 }
 .nav-info__panel_calender_load_more{
-    top: 36%;    
+    top: 36%;
 }
 .select_duration_comm{
     width:50%;
@@ -695,9 +695,11 @@ font-size: 12px !important;
 }
 .patient_detail_pop{
     right: -23px !important;
+    top: 74px;
 }
 .transfer_pop{
     right: -33px !important;
+    top: 74px;
 }
 .patient_no_gender{
     padding: 10px !important;
@@ -707,15 +709,17 @@ font-size: 12px !important;
 }
 .chat_user__name{
 width:69%;
-margin-left: 7px;
+/* margin-left: 7px; */
 float: left;
 /* white-space: nowrap;
 overflow:hidden !important;
 text-overflow: ellipsis; */
 }
 .chat_user__name-1{
-    width:31%;
     display: inline;
+    float: right;
+    height: inherit;
+    padding-right: 17px;
 }
 .new_add{
     width: 25% !important;
@@ -783,6 +787,9 @@ text-overflow: ellipsis; */
     -webkit-transform: translateY(-50%);
 }
 .visits_main .table-data tr.titles ::after{
+    content: '' !important;
+}
+.leads_main .table-data tr.titles ::after{
     content: '' !important;
 }
 .fr-command.fr-btn+.fr-dropdown-menu .fr-dropdown-wrapper .fr-dropdown-content ul.fr-dropdown-list {
@@ -912,9 +919,9 @@ right: 0px;
     font-weight: 600;
 }
 .home_hospital_feeds{
-    overflow-y: scroll; 
+    overflow-y: scroll;
     overflow-x: hidden;
-     position: relative; 
+     position: relative;
      height: 600px;
      margin: 5px 0px 5px 0px;
 }
@@ -965,7 +972,9 @@ right: 0px;
     line-height: 1.6em;
 }
 
-.publish_ .calender-heading .owl-calendar-control, .topic-content .owl-calendar-control {
+.publish_ .calender-heading .owl-calendar-control,
+.topic-content .owl-calendar-control,
+.calender_widget .owl-calendar-control {
     border-radius: 5px;
     background-color: #fff;
     margin-bottom: 10px;
@@ -1062,7 +1071,11 @@ right: 0px;
     flex-grow: 1;
 }
 
-.ng2-tag-input[_ngcontent-c4], .ng2-tag-input.ng2-tag-input--focused[_ngcontent-c4] {
+.pub-draft__pop-ion-tags .ng2-tag-input[_ngcontent-c4],
+.pub-draft__pop-ion-tags .ng2-tag-input[_ngcontent-c8],
+.pub-draft__pop-ion-tags .ng2-tag-input--focused,
+.pub-draft__pop-ion-tags .ng2-tag-input.ng2-tag-input--focused[_ngcontent-c4],
+.pub-draft__pop-ion-tags .ng2-tag-input.ng2-tag-input--focused[_ngcontent-c8] {
     border-bottom: unset !important;
 }
 
@@ -1146,4 +1159,99 @@ select.minimal {
     display: inline-block;
     position: relative;
  }
-  
+
+.fr-toolbar.fr-desktop.fr-top.fr-basic.fr-sticky-off {
+    background: #f5f5f5;
+}
+
+.pub-draft__pop--edtr-its-a {
+    width: 100%;
+}
+
+.pub--draft__pop--edtr-its-opts {
+    width: 96%;
+    display: flex;
+}
+
+.pub--draft__pop--edtr-its-opts a {
+    flex-grow: 1;
+}
+
+.button.pub--btn-top__save-btn.btn-save.active:before {
+    border-top-color: #33CCCC !important;
+}
+
+.pub--ol__tool-tip .tool-tip {
+    width: 100% !important;
+    bottom: 30px !important;
+    padding-bottom: 15px !important;
+}
+
+.pub--plan__cln {
+    text-align: center;
+}
+
+.vie--view__appt-heading {
+    padding: 5px 30px !important;
+}
+
+.vis--view__appt-acpt {
+    padding: 5px 25px !important;
+    font-size: 14px !important;
+}
+
+.vis--down-pop__heading {
+    padding: 5px 30px !important;
+}
+
+.que--edit__edit-pat-que li:not(last-child) {
+    margin-bottom: 1.5em !important;
+}
+
+.chat__body li.active .chat__timings span {
+    color: #ffffff;
+}
+
+.que--nav__menu li {
+    padding: 20px 5px !important;
+    text-align: center;
+    word-wrap: break-word;
+}
+
+.live_chat__body li.others {
+    border-top-left-radius: 7px !important;
+    border-top-right-radius: 7px !important;
+    border-bottom-left-radius: 7px !important;
+    border-bottom-right-radius: unset !important;
+}
+
+.live_chat__body li.user {
+    border-top-left-radius: 7px !important;
+    border-top-right-radius: 7px !important;
+    border-bottom-left-radius: unset !important;
+    border-bottom-right-radius: 7px !important;
+}
+
+.user__status_pop .que--popular__pat-details tr {
+    line-height: initial !important;
+    height: 30px;
+}
+
+.user__status_pop .que--popular__pat-details td.labels {
+    font-weight: 700;
+}
+
+.panel_promotions__list .promo-title {
+    text-align: center;
+}
+ .setting_profile_detail_R .profile_card .profile_bottom span{
+    display: inline-block;
+    position: relative;
+ }
+ .xs-fill-styl4{
+    background: linear-gradient(to right, rgba(18, 235, 213, 1) 0%, rgba(50, 205, 205, 1) 100%);
+ }
+ .no_visit_printscreen{
+    margin-left: -357px !important;
+    top: 30% !important;
+ }

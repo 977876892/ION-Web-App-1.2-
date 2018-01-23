@@ -500,16 +500,21 @@ querieEditClick(querieData) {
      (updatedResponse: any) => {
        console.log(updatedResponse);
        this.isQuerieEdit = false;
-       this.isAlertPopup = true;
+      
        this.alertMessage = updatedResponse.description;
-       this.queriesData.forEach(query => {
-         if(this.singleQuerieData.id==query.id)
-          {
-            console.log(query);
-            query.content=this.patientQuerieForm.value.querie;
-            query.title=this.patientQuerieForm.value.subject;
-          }
-       });
+       if(updatedResponse.status=="ok")
+        {
+            this.isAlertPopup = true;
+            this.queriesData.forEach(query => {
+            if(this.singleQuerieData.id==query.id)
+              {
+                console.log(query);
+                query.content=this.patientQuerieForm.value.querie;
+                query.title=this.patientQuerieForm.value.subject;
+              }
+          });
+        }
+       
      }, (err) => {
  
      }, () => {

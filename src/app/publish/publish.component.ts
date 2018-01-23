@@ -18,10 +18,13 @@ declare var $: any;
   styleUrls: ['./publish.component.css']
 })
 export class PublishComponent implements OnInit {
-  format = require('date-fns/format');
+  //format = require('date-fns/format');
   topicsDate=new Date();
+  //today=new Date();
+  format = require('date-fns/format');
   today=new Date();
-  stopDates=this.today.getFullYear()+"-"+(this.today.getMonth()+1)+"-"+this.today.getDate();
+  //stopDates=this.today.getFullYear()+"-"+(this.today.getMonth()+1)+"-"+this.today.getDate();
+  stopDates=this.format(this.today, ['YYYY-MM-DD']);
   isStartLoader;
   isPageStartLoader;
   publishedData: any = [];
@@ -737,7 +740,7 @@ nextMonth(){
 showCalendar=false;
 getCalendarEventsByMonth(month,defaultdate) {
   
-   PublishComponent.showDraft=false;
+  PublishComponent.showDraft=false;
   PublishComponent.showIonize=false;
   PublishComponent.showPublished=false;
   PublishComponent.showIonized=false;
@@ -764,7 +767,7 @@ getCalendarEventsByMonth(month,defaultdate) {
       
       calendarResponse.forEach((resdata) => {
       
-      var tempObj = {"4":"publish_cale_status publish_s_ionizing","3":"publish_cale_status publish_s_draft","2":"publish_cale_status","1":"publish_cale_status publish_s_Online","0":"publish_cale_status publish_s_ionized"};
+      var tempObj = {"4":"publish_cale_status publish_s_ionizing","3":"publish_cale_status publish_s_draft","2":"publish_cale_status publish_s_Online","1":"publish_cale_status publish_s_Online","0":"publish_cale_status publish_s_ionized"};
        
           this.calendarEventsData.push({postid: resdata.postid, title: resdata.title, start: resdata.publish_up,className:tempObj[resdata.published],state:resdata.published,author:resdata.author,category:resdata.category});
      });
@@ -780,7 +783,7 @@ getCalendarEventsByMonth(month,defaultdate) {
     //     },
     //     events: this.calendarEventsData
     //   };
-    console.log(this.calendarEventsData);
+    //console.log(this.calendarEventsData);
     //console.log(defaultdate+"-12");
      this.calendarOptions = {
        editable: true,
@@ -796,7 +799,6 @@ getCalendarEventsByMonth(month,defaultdate) {
            let elemPos = $(this).offset();
            event.offsetTop = elemPos.top;
            event.offsetLeft = elemPos.left;
-
            PublishComponent.calenderOverEvent(event);
         },
         eventMouseout: function(event, jsEvent, view) {
@@ -985,6 +987,7 @@ getTrendingTopicsByMonth(date) {
           for(let data of topics)
           {
                 data.selectedDate="0000-00-00";
+                data.isdateselected=true;
           }
         if (this.trendingTopicsData.hasOwnProperty(key)) {
           this.trendingTopicsData[key].isTrendTitleChecked = false;
@@ -1003,10 +1006,12 @@ checkedTrendingTopic(ikey, jindx, ischecked) {
       if(ischecked) {
        // this.trendingTopicsData[ikey][jindx].ischecked = true;
         console.log(this.trendingTopicsData[ikey][jindx]);
+        (this.trendingTopicsData[ikey][jindx]).isdateselected=false;
         const topicObj = {ikey : this.trendingTopicsData[ikey][jindx]};
         this.selectedTrendTopics.push(topicObj);
       } else {
         // this.trendingTopicsData[ikey][jindx].ischecked = false;
+        (this.trendingTopicsData[ikey][jindx]).isdateselected=true;
         const index = this.deepIndexOf(this.selectedTrendTopics, ikey);
         this.selectedTrendTopics.splice(index, 1);
     }
@@ -1279,20 +1284,19 @@ createTheBlog(blogStatus){
               this.noofdays=diff_date+1;
               
               if(blogStatus==2)
-                {
-                      this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['DD MMMM, YYYY']);
-                      this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh.mm A']);
-                }
+              {
+                    this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['DD MMMM, YYYY']);
+                    this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh.mm A']);
+              }
               else if(blogStatus==1){
-                      this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['DD MMMM, YYYY']);
-                      this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh.mm A']);
+                    this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['DD MMMM, YYYY']);
+                    this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh.mm A']);
               }
               else if(blogStatus==4 ||blogStatus==3)
-                {
-                     this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['MMM DD YYYY']);
-                      this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh.mm A']);
-            
-                }
+              {
+                    this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['MMM DD YYYY']);
+                    this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh.mm A']);
+              }
                 this.showRequestIsTaken=true;
                 this.getPublishedBlogs(0,20);
               //this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['YYYY-MM-DD']);
@@ -1938,15 +1942,20 @@ blogTopicClick(key) {
         this.timeChange(this.createdDate);
          this.blogViewData = blogResponse;
        console.log(this.blogViewData);
-    })
-      if(blog.tags.length!=0)
+       if(blogResponse.tags.length!=0)
           {
             blog.tags.forEach(tag=>{
                 this.blogTags.push(tag.title);
             })
           }
+    })
+      
     //this.postionizeorpublish=blog;
     this.isPublishNow = true;
+    PublishComponent.showDraft=false;
+    PublishComponent.showIonize=false;
+    PublishComponent.showPublished=false;
+    PublishComponent.showIonized=false;
     console.log(blog);
     
   }
@@ -2038,6 +2047,12 @@ blogTopicClick(key) {
       createdDate:'',
       createdTime:''
     })
+    console.log(this.router.url == '/publish/selecttopic');
+    console.log(this.router.url =='/publish/newpost');
+    if(this.router.url == '/publish/selecttopic' || this.router.url =='/publish/newpost')
+      {
+          this.router.navigate(['publish']);
+      }
   }
   validateAllFormFields(formGroup: FormGroup) {         //{1}
         Object.keys(formGroup.controls).forEach(field => {  //{2}
@@ -2104,7 +2119,7 @@ blogTopicClick(key) {
         console.log(this.createAndUpdateTheBlogForm);
         if(this.createAndUpdateTheBlogForm.value.title == '' && this.createAndUpdateTheBlogForm.value.content==''){
           this.isOpenEditor=false;
-          //this.clearTheForm();
+          this.clearTheForm();
          // console.log("false");
         }
         else{

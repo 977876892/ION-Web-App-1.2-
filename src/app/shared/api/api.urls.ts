@@ -162,6 +162,7 @@ export class API {
 
   // get dashboard feeds api url
   public static GET_DASHBOARD_FEEDS(userId) {
+    console.log(this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?action=get&module=feeds&resource=getfeeds&userid=${userId}`));
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?action=get&module=feeds&resource=getfeeds&
     userid=${userId}`);
   }

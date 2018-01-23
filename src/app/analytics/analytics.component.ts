@@ -46,6 +46,8 @@ export class AnalyticsComponent implements OnInit {
   isStartLoader: boolean = false;
   curentYear;
   ngOnInit() {
+
+    console.log(this.router.url);
     if (localStorage.getItem('user') == null || localStorage.getItem('user') == '') {
       this.router.navigate(['login']);
     } else {
@@ -54,39 +56,62 @@ export class AnalyticsComponent implements OnInit {
           this.router.navigate(['home']);
         }
         else{
-            this.getAnalytics();
-            this.estimated=0;
+          this.getAnalytics();
+          this.estimated=0;
+         // console.log(this.router.url == '/analytics/appointments');
+          if (this.router.url == '/analytics') {
+              this.showQueryAnalytics=false;
+              this.showVisitAnalytics=false;
+              this.showPublishAnalytics=false;
+              this.websiteAnalytics=true;
+          }
+          else if(this.router.url == '/analytics/blogsdata') {
+              this.showQueryAnalytics=false;
+              this.showVisitAnalytics=false;
+              this.showPublishAnalytics=true;
+              this.websiteAnalytics=false;
+          }
+            else if(this.router.url == '/analytics/questionsData') {
+              this.showQueryAnalytics=true;
+              this.showVisitAnalytics=false;
+              this.showPublishAnalytics=false;
+              this.websiteAnalytics=false;
+          }
+            else {
+              this.showQueryAnalytics=false;
+              this.showVisitAnalytics=true;
+              this.showPublishAnalytics=false;
+              this.websiteAnalytics=false;
+          }
+
+            
         }
-      
     }
   }
 
-  onEventChanged(atype: any) {
-    console.log(atype);
-    if (atype === 'website') {
-       this.showQueryAnalytics=false;
-      this.showVisitAnalytics=false;
-      this.websiteAnalytics=true;
-      this.showPublishAnalytics=false;
-    } else if (atype === 'publish') {
-       this.showQueryAnalytics=false;
-      this.showVisitAnalytics=false;
-      this.showPublishAnalytics=true;
-      this.websiteAnalytics=false;
-    } 
-    else if (atype === 'queries') {
-      this.showQueryAnalytics=true;
-      this.showVisitAnalytics=false;
-      this.showPublishAnalytics=false;
-      this.websiteAnalytics=false;
-    } 
-    else {
-       this.showQueryAnalytics=false;
-      this.showVisitAnalytics=true;
-      this.showPublishAnalytics=false;
-      this.websiteAnalytics=false;
-    }
-  }
+  // onEventChanged(atype: any) {
+  //   console.log(atype);
+  //   if (atype === 'website') {
+  //      this.showQueryAnalytics=false;
+  //     this.showVisitAnalytics=false;
+  //     this.websiteAnalytics=true;
+  //     this.showPublishAnalytics=false;
+  //   } else if (atype === 'publish') {
+      //  this.showQueryAnalytics=false;
+      // this.showVisitAnalytics=false;
+      // this.showPublishAnalytics=true;
+      // this.websiteAnalytics=false;
+  //   } 
+  //   else if (atype === 'queries') {
+  //     this.showQueryAnalytics=true;
+  //     this.showVisitAnalytics=false;
+  //     this.showPublishAnalytics=false;
+  //     this.websiteAnalytics=false;
+  //   } 
+  //   else {
+       
+  //   }
+  // }
   shownoWebSiteAnalytics=false;
   getAnalytics() {
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;

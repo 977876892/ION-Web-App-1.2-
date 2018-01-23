@@ -46,7 +46,7 @@
                   <!--Title for ionized blog-->
                   <div class="title" style="cursor: pointer;" (click)="editBlogCall(eachpublish, 'publish');" *ngIf="eachpublish.published==0">{{ eachpublish.title }}</div>
                   <!--Title for ionized blog-->
-                
+
                   <div class="sub_title">By {{ eachpublish.author.name }}|{{eachpublish.speciality}}</div>
                   <!--Full view for ionizing blog-->
                   <div class="img_div" style="cursor: pointer;" *ngIf="eachpublish.published==4" (click)="getBlogDetailView(eachpublish.postid, 'publish');">
@@ -250,7 +250,7 @@
                 <div *ngIf="showNoBlogsAvailable">
                   No data found...
                 </div>
-                <div class="publish_item bx-shadow brd-radius-5" *ngFor="let eachpublish of publishedData; let i = index">
+                <div class="publish_item bx-shadow brd-radius-5 pub--ol__tool-tip" *ngFor="let eachpublish of publishedData; let i = index">
                   <div class="top_col">
                     <a style="cursor: pointer;" class="online" *ngIf="eachpublish.published==1">online</a>
                     <a style="cursor: pointer;" class="online" *ngIf="eachpublish.published==2">scheduled</a>
@@ -269,7 +269,7 @@
                   </div>
 
                   <div class="title" style="cursor: pointer;" (click)="getBlogDetailView(eachpublish.postid, 'online'); ">{{ eachpublish.title }}</div>
-                  <div class="sub_title">By {{ eachpublish.author.name }}</div>
+                  <div class="sub_title">By {{ eachpublish.author.name }}|{{eachpublish.speciality}}</div>
                   <div class="img_div" style="cursor: pointer;" (click)="getBlogDetailView(eachpublish.postid, 'online'); ">
                     <img *ngIf="eachpublish.image.url" class="img" src="{{ eachpublish.image.url }}">
                     <img *ngIf="eachpublish.image.url == null || eachpublish.image.url == ''" class="img" src="assets/images/dummy_img1.png">
@@ -344,7 +344,7 @@
                   </div>
 
                   <div class="title" style="cursor: pointer;" (click)="editBlogCall(eachpublish, 'draft');">{{ eachpublish.title }}</div>
-                  <div class="sub_title">By {{ eachpublish.author.name }}</div>
+                  <div class="sub_title">By {{ eachpublish.author.name }}|{{eachpublish.speciality}}</div>
                   <div class="img_div" style="cursor: pointer;" (click)="editBlogCall(eachpublish, 'draft');">
                     <img *ngIf="eachpublish.image.url" class="img" src="{{ eachpublish.image.url }}">
                     <img *ngIf="eachpublish.image.url == null || eachpublish.image.url == ''" class="img" src="assets/images/dummy_img1.png">
@@ -439,7 +439,7 @@
                   </div>
 
                   <div class="btn_actons  txt-center">
-                    
+
                     <button class="button btn-add" (click)="editBlogCall(eachpublish, 'draft'); ">Add Inputs</button>
                     <span class="draft_notification" *ngIf="eachpublish.unread_comments!=0">{{eachpublish.unread_comments}}</span>
                     <button class="button btn-ionize pub_ion_butt" (click)="ionizeTheDraft(eachpublish);">Ionize</button>
@@ -527,8 +527,8 @@
                   <div class="bottom">
                      <div class="btn_actons txt-center">
                       <button class="button" (click)="editBlogCall(staticViewData, 'publish');">REVIEW</button>
-                      <button class="button ionized">PUBLISH</button>
-                    </div> 
+                      <button class="button ionized" (click)="publishTheBlog(staticViewData)">PUBLISH</button>
+                    </div>
                   </div>
                 </div>
                 <div class="publish_status_pop ionizing" *ngIf="staticShowIonize" [style.left.px]="staticViewData.offsetLeft" [style.top.px]="staticViewData.offsetTop+23" style="position:absolute !important;z-index:5;">
@@ -540,7 +540,7 @@
                   <div class="bottom">
                      <div class="btn_actons txt-center">
                       <button class="button" (click)="getBlogDetailView(staticViewData.postid, 'publish');">ADD INPUTS</button>
-                    </div> 
+                    </div>
                   </div>
 
                 </div>
@@ -559,7 +559,7 @@
                      <div class="btn_actons txt-center">
                       <button class="button" (click)="getBlogDetailView(staticViewData.postid, 'online')">VIEW</button>
 
-                    </div> 
+                    </div>
                   </div>
                 </div>
               </div>
@@ -738,7 +738,7 @@
                   <owl-date-time [(ngModel)]="createdDate" (onSelect)="dateChange(createdDate)" [showHeader]="true" [inputId]="'input10'" [dateFormat]="'ddd'" [type]="'calendar'" [autoClose] ="'true'">
                                     <div [ngClass]="showDate==''?'calendar-btn':'calendar-btn contentdate'">
                                               <i class="fa fa-calendar" aria-hidden="true"></i>
-                                          </div>     
+                                          </div>
                   </owl-date-time>
                   <owl-date-time [(ngModel)]="createdTime" (onSelect)="timeChange(createdTime)" [showHeader]="true" [inputId]="'input101'"
                     [type]="'timer'" [autoClose]="'true'" [dateFormat]="'hh:mm'" [autoClose]="'true'">
@@ -865,7 +865,7 @@
         <div class="blog_panel" *ngIf="!isPublishComments">
 
           <div class="btn-top_actions">
-            <button class="button btn-save xs-margin-5" (click)="publishCurrentClass = 'save'" [class.active]="publishCurrentClass == 'save'">Save</button>
+            <button class="button btn-save xs-margin-5 pub--btn-top__save-btn" (click)="publishCurrentClass = 'save'" [class.active]="publishCurrentClass == 'save'">Save</button>
             <!-- <button class="button btn-ionize" (click)="publishCurrentClass = 'ionize'" [class.active]="publishCurrentClass == 'ionize'">Ionize</button>  -->
             <button class="button btn-publish" (click)="publishCurrentClass = 'publish'" [class.active]="publishCurrentClass == 'publish'">Publish</button>
 
@@ -875,9 +875,9 @@
           <div class="form_wrapper">
 
             <ul>
-              <li *ngIf="blogTypes.length!=0 && blogTypes.length<=3">
+              <li *ngIf="blogTypes.length!=0 && blogTypes.length<=3" class="pub-draft__pop--edtr-its-a">
                 <label class="form_lables">It’s a</label>
-                <div class="form_fields bx-bg">
+                <div class="form_fields bx-bg" class="pub--draft__pop--edtr-its-opts">
                   <a style="cursor: pointer;" (click)="typeselected(type)" [class.selected]="type.selected?publishCategeory == 'blog':''" *ngFor="let type of blogTypes;let i=index;">{{type.title}}</a>
                   <!-- <a style="cursor: pointer;" (click)="publishCategeory = 'blog'" [class.selected]="publishCategeory == 'blog'">Blog</a>
                         <a style="cursor: pointer;" (click)="publishCategeory = 'event'" [class.selected]="publishCategeory == 'event'">Event</a>
@@ -885,7 +885,7 @@
                 </div>
               </li>
 
-              <li>
+              <li class="pub-draft__pop-ion-tags">
                 <label class="form_lables">Tags</label>
                 <div class="form_fields">
                   <div class="xs-bg-fill">
@@ -1072,7 +1072,7 @@
         <div class="blog_panel" *ngIf="!isBlogComments">
 
           <div class="btn-top_actions">
-            <button class="button btn-save xs-margin-5" (click)="draftCurrentClass = 'save'" [class.active]="draftCurrentClass == 'save'">Save</button>
+            <button class="button btn-save xs-margin-5 pub--btn-top__save-btn" (click)="draftCurrentClass = 'save'" [class.active]="draftCurrentClass == 'save'">Save</button>
             <!-- <button class="button btn-ionize" (click)="draftCurrentClass = 'ionize'" [class.active]="draftCurrentClass == 'ionize'">Ionize</button>  -->
             <button class="button btn-publish" (click)="draftCurrentClass = 'publish'" [class.active]="draftCurrentClass == 'publish'">Publish</button>
 
@@ -1082,9 +1082,9 @@
           <div class="form_wrapper">
 
             <ul>
-              <li *ngIf="blogTypes.length!=0 && blogTypes.length<=3">
+              <li *ngIf="blogTypes.length!=0 && blogTypes.length<=3" class="pub-draft__pop--edtr-its-a">
                 <label class="form_lables">It’s a</label>
-                <div class="form_fields bx-bg">
+                <div class="form_fields bx-bg pub--draft__pop--edtr-its-opts">
                   <a style="cursor: pointer;" (click)="typeselected(type)" [class.selected]="type.selected?draftCategeory == 'blog':''" *ngFor="let type of blogTypes;let i=index;">{{type.title}}</a>
                   <!-- <a style="cursor: pointer;" (click)="draftCategeory = 'blog'" [class.selected]="draftCategeory == 'blog'">Blog</a>
               <a style="cursor: pointer;" (click)="draftCategeory = 'event'" [class.selected]="draftCategeory == 'event'">Event</a>
@@ -1092,7 +1092,7 @@
                 </div>
               </li>
 
-              <li>
+              <li class="pub-draft__pop-ion-tags">
                 <label class="form_lables">Tags</label>
                 <div class="form_fields">
                   <tag-input [(ngModel)]="blogTags" addOnBlur=true>
@@ -1277,9 +1277,9 @@
           <div class="form_wrapper">
 
             <ul>
-              <li *ngIf="blogTypes.length!=0 && blogTypes.length<=3">
-                <label class="form_lables">It’s a</label> 
-                <div class="form_fields bx-bg">
+              <li *ngIf="blogTypes.length!=0 && blogTypes.length<=3" class="pub-draft__pop--edtr-its-a">
+                <label class="form_lables">It’s a</label>
+                <div class="form_fields bx-bg pub--draft__pop--edtr-its-opts">
                   <a style="cursor: pointer;" (click)="typeselected(type)" [class.selected]="type.selected?draftCategeory == 'blog':''" *ngFor="let type of blogTypes;let i=index;">{{type.title}}</a>
                   <!-- <a style="cursor: pointer;" (click)="draftCategeory = 'blog'" [class.selected]="draftCategeory == 'blog'">Blog</a>
               <a style="cursor: pointer;" (click)="draftCategeory = 'event'" [class.selected]="draftCategeory == 'event'">Event</a>
@@ -1287,7 +1287,7 @@
                 </div>
               </li>
 
-              <li>
+              <li class="pub-draft__pop-ion-tags">
                 <label class="form_lables">Tags</label>
                 <div class="form_fields">
                   <tag-input [(ngModel)]="blogTags" addOnBlur=true>
@@ -1326,7 +1326,7 @@
                 </div>
                 <span style="color:red" *ngIf="createAndUpdateTheBlogForm.controls['createdDate'].hasError('required') && createAndUpdateTheBlogForm.controls['createdDate'].touched">Date is requird</span><br>
                 <span style="color:red" *ngIf="createAndUpdateTheBlogForm.controls['createdTime'].hasError('required') && createAndUpdateTheBlogForm.controls['createdTime'].touched">Time Is Required</span>
-               
+
               </li>
 
             </ul>
@@ -1440,7 +1440,7 @@
                               <span class="input-group-btn">
                                  <label for="file-upload-publish" class="img-btn btn-file">
                                   <img src="assets/css/images/icon-link.png">
-                                </label> 
+                                </label>
                               <input type="file" id="file-upload-publish" #filePublishInput placeholder="Upload image..." (change)="uploadPublishImage();showCommentError=false;" accept="image/*" multiple/>
                               <!-- <button class="img-btn btn-file"><img src="assets/css/images/icon-link.png"><input (change)="uploadPublishImage();" #filePublishInput type="file" name="chooseFile" id="chooseFile"></button> -->
                               </span><span class="input-group-btn">
@@ -1462,7 +1462,7 @@
         <div class="blog_panel" *ngIf="!isPublishComments">
 
           <div class="btn-top_actions">
-            <button class="button btn-save xs-margin-5" (click)="publishCurrentClass = 'save'" [class.active]="publishCurrentClass == 'save'">Save</button>
+            <button class="button btn-save xs-margin-5 pub--btn-top__save-btn" (click)="publishCurrentClass = 'save'" [class.active]="publishCurrentClass == 'save'">Save</button>
             <!-- <button class="button btn-ionize" (click)="publishCurrentClass = 'ionize'" [class.active]="publishCurrentClass == 'ionize'">Ionize</button>  -->
             <button class="button btn-publish" (click)="publishCurrentClass = 'publish'" [class.active]="publishCurrentClass == 'publish'">Publish</button>
 
@@ -1472,9 +1472,9 @@
           <div class="form_wrapper">
 
             <ul>
-              <li *ngIf="blogTypes.length!=0 && blogTypes.length<=3">
+              <li *ngIf="blogTypes.length!=0 && blogTypes.length<=3" class="pub-draft__pop--edtr-its-a">
                 <label class="form_lables">It’s a</label>
-                <div class="form_fields bx-bg">
+                <div class="form_fields bx-bg pub--draft__pop--edtr-its-opts">
                   <a style="cursor: pointer;" (click)="typeselected(type)" [class.selected]="type.selected?publishCategeory == 'blog':''" *ngFor="let type of blogTypes;let i=index;">{{type.title}}</a>
                   <!-- <a style="cursor: pointer;" (click)="publishCategeory = 'blog'" [class.selected]="publishCategeory == 'blog'">Blog</a>
                         <a style="cursor: pointer;" (click)="publishCategeory = 'event'" [class.selected]="publishCategeory == 'event'">Event</a>
@@ -1482,7 +1482,7 @@
                 </div>
               </li>
 
-              <li>
+              <li class="pub-draft__pop-ion-tags">
                 <label class="form_lables">Tags</label>
                 <div class="form_fields">
                   <div class="xs-bg-fill">
@@ -1504,18 +1504,18 @@
                     <p>{{showDate}} <span>{{showDay}}</span></p>
                     <span>{{showMonth}}</span>
                   </div>
-                  
+
                   <div class="date_div">
                     <p class="xs-small">At</p>
                     <span>{{showTime}}</span>
                   </div>
-                   
+
                   <owl-date-time [formControl]="createAndUpdateTheBlogForm.controls['createdDate']" (onSelect)="dateChange(createAndUpdateTheBlogForm.controls['createdDate'].value);" [showHeader]="true" [inputId]="'input10'" [dateFormat]="'ddd'" [type]="'calendar'" [autoClose] ="'true'" min="{{stopDates}}" required>
                                     <div [ngClass]="showDate==''?'calendar-btn':'calendar-btn contentdate'">
                                               <i class="fa fa-calendar" aria-hidden="true"></i>
-                                          </div>     
+                                          </div>
                   </owl-date-time>
-                                       
+
                   <owl-date-time [formControl]="createAndUpdateTheBlogForm.controls['createdTime']" (onSelect)="timeChange(createAndUpdateTheBlogForm.controls['createdTime'].value);" [showHeader]="true" [inputId]="'input101'"
                     [type]="'timer'" [autoClose]="'true'" [dateFormat]="'hh:mm'" [autoClose]="'true'" required>
                     <div [ngClass]="showDate==''?'calendar-btn timer':'calendar-btn timer contenttime'">
@@ -1525,7 +1525,7 @@
                 </div>
                 <span style="color:red" *ngIf="createAndUpdateTheBlogForm.controls['createdDate'].hasError('required') && createAndUpdateTheBlogForm.controls['createdDate'].touched">Date is requird</span><br>
                 <span style="color:red" *ngIf="createAndUpdateTheBlogForm.controls['createdTime'].hasError('required') && createAndUpdateTheBlogForm.controls['createdTime'].touched">Time Is Required</span>
-               
+
               </li>
 
             </ul>
@@ -1562,7 +1562,7 @@
                     <div class="profile-img-item upload-profile-img ">
                       <img src="assets/css/images/icon-upload-poto.png" class="" for="file-upload"/>
                       <div class="profile-img-title">Add photo</div>
-                      <div class="loader publish-img-loader" *ngIf="isStartLoader"></div> 
+                      <div class="loader publish-img-loader" *ngIf="isStartLoader"></div>
                     </div>
                 </label>
         </div>
@@ -1574,7 +1574,7 @@
            <textarea [formControl]="createAndUpdateTheBlogForm.controls['title']" style="border: 1px solid;overflow: hidden;" required></textarea><br>
        <span style="color:red" *ngIf="createAndUpdateTheBlogForm.controls['title'].hasError('required') && createAndUpdateTheBlogForm.controls['title'].touched">Title Is Required</span>
        <span style="color:red" *ngIf="createAndUpdateTheBlogForm.controls['content'].hasError('required') && createAndUpdateTheBlogForm.controls['content'].touched">Content Is Required</span>
-           
+
             <textarea [froalaEditor]="editorImageoptions" [formControl]="createAndUpdateTheBlogForm.controls['content']" required></textarea>
       </div> -->
 
@@ -1596,14 +1596,14 @@
       <!-- <div class="blog-left">
         <h1>Eyelid surgeries: From Saggy to Sassy surgeries: From Saggy to Sassy!</h1>
         <div class="blog-img"><img src="assets/images/blog-img.jpg"></div>
-  
+
         <p>Imagine not being able to open your eyes in spite of having a perfect eyesight. Imagine lifting up your eyelids every time you have to look at something. You don’t want that happening. Do you? If you are concerned about having droopy eyelids, you’ve landed on the right page.</p>
-  
+
         <p>YES, HERE YOU WILL FIND ANSWERS TO ALL CONCERNS. SO GO AHEAD AND READ.</p>
         <p class="txt-red">Let’s start with droopy eyelid is.</p>
         <p>let’s start with what droopy eyelid is.</p>
-  
-  
+
+
       </div> -->
 
       <div class="blog-right">
@@ -1633,12 +1633,12 @@
                           </span>
                       </div>
                   </div>
-  
+
               </div> -->
         </div>
 
         <!-- <div class="btn_actions">
-           <button class="button btn-publish">Republish</button> 
+           <button class="button btn-publish">Republish</button>
            <br>
            <a style="cursor: pointer;" style="color:black;">Edit</a>
           </div> -->
@@ -1678,7 +1678,7 @@
         <!-- <div class="blog-img" *ngIf="blogViewData.image.url!=null"><img src="{{blogViewData.image.url}}"></div>
    -->
         <!-- <p>Imagine not being able to open your eyes in spite of having a perfect eyesight. Imagine lifting up your eyelids every time you have to look at something. You don’t want that happening. Do you? If you are concerned about having droopy eyelids, you’ve landed on the right page.</p>
-  
+
         <p>YES, HERE YOU WILL FIND ANSWERS TO ALL CONCERNS. SO GO AHEAD AND READ.</p>
         <p class="txt-red">Let’s start with droopy eyelid is.</p>
         <p>let’s start with what droopy eyelid is.</p>
@@ -1807,7 +1807,7 @@
                     <div class="publish-dt" style="width: 130px;background-color: inherit !important;" [ngClass]="{'topic_call owl-datetime-main-input':selectedTrend.selectedDate != '0000-00-00'}" >
                       <!-- <input type="date" class="input xs-fill-wt" (change)="dateSelectedForTrendingTopic(key, j,selectedDate.value)"  #selectedDate></div> -->
                       <owl-date-time type="calendar" hideClearButton="true" dateFormat="DD-MM-YYYY" autoClose="true" placeHolder="dd-mm-yyyy" (onSelect)="dateSelectedForTrendingTopic(key, j,selectedDate.value)"
-                        min="{{stopDates}}" #selectedDate></owl-date-time>
+                        min="{{stopDates}}" [disabled]="category.isdateselected" #selectedDate></owl-date-time>
                     </div>
                     <!-- <span>{{category.start_date}}</span></div> -->
                   </li>
@@ -1817,7 +1817,7 @@
             </div>
 
             <!-- close -->
-            <div class="topics-addition" *ngIf="isAddNewTopicButton">
+            <div class="topics-addition pub--plan__cln" *ngIf="isAddNewTopicButton">
               <a class="txt-center" style="cursor: pointer;" style="cursor: pointer;" (click)="isAddNewTopicButton = false">Add a new topic</a>
             </div>
             <div class="topics-addition" *ngIf="!isAddNewTopicButton">
@@ -2037,7 +2037,7 @@
               <owl-date-time type="timer" hideClearButton="true" dateFormat="hh:mm" autoClose="true" [formControl]="createAndUpdateTheBlogForm.controls['createdTime']"
                 placeHolder="hh:mm" required></owl-date-time>
               <span style="color:red" *ngIf="createAndUpdateTheBlogForm.controls['createdTime'].hasError('required') && createAndUpdateTheBlogForm.controls['createdTime'].touched">Time Is Required</span> -->
-               
+
               <li>
                  <label class="form_lables publish_date">Publish date</label>
                 <div class="form_fields_date">
@@ -2045,18 +2045,18 @@
                     <p>{{showDate}} <span>{{showDay}}</span></p>
                     <span>{{showMonth}}</span>
                   </div>
-                  
+
                   <div class="date_div">
                     <p class="xs-small">At</p>
                     <span>{{showTime}}</span>
                   </div>
-                   
+
                   <owl-date-time [formControl]="createAndUpdateTheBlogForm.controls['createdDate']" (onSelect)="dateChange(createAndUpdateTheBlogForm.controls['createdDate'].value);" [showHeader]="true" [inputId]="'input10'" [dateFormat]="'ddd'" [type]="'calendar'" [autoClose] ="'true'" min="{{stopDates}}" required>
                                     <div [ngClass]="showDate==''?'calendar-btn':'calendar-btn contentdate'">
                                               <i class="fa fa-calendar" aria-hidden="true"></i>
-                                          </div>     
+                                          </div>
                   </owl-date-time>
-                                       
+
                   <owl-date-time [formControl]="createAndUpdateTheBlogForm.controls['createdTime']" (onSelect)="timeChange(createAndUpdateTheBlogForm.controls['createdTime'].value);" [showHeader]="true" [inputId]="'input101'"
                     [type]="'timer'" [autoClose]="'true'" [dateFormat]="'hh:mm'" [autoClose]="'true'" required>
                     <div [ngClass]="showDate==''?'calendar-btn timer':'calendar-btn timer contenttime'">
@@ -2066,9 +2066,9 @@
                 </div>
                 <span style="color:red" *ngIf="createAndUpdateTheBlogForm.controls['createdDate'].hasError('required') && createAndUpdateTheBlogForm.controls['createdDate'].touched">Date is requird</span><br>
                 <span style="color:red" *ngIf="createAndUpdateTheBlogForm.controls['createdTime'].hasError('required') && createAndUpdateTheBlogForm.controls['createdTime'].touched">Time Is Required</span>
-               
+
               </li>
-              
+
               <!-- <li>
                 <label class="form_lables">Publish date</label>
                 <div class="form_fields_date">
@@ -2136,8 +2136,8 @@
           <label for="file-upload" style="cursor: pointer;" class="custom-file-upload">
                     <div class="profile-img-item upload-profile-img ">
                       <img src="assets/css/images/icon-upload-poto.png" class="" for="file-upload"/>
-                      <div class="profile-img-title" >Add photo</div> 
-                      <div class="loader publish-img-loader" *ngIf="isStartLoader"></div> 
+                      <div class="profile-img-title" >Add photo</div>
+                      <div class="loader publish-img-loader" *ngIf="isStartLoader"></div>
                     </div>
 
                 </label>
@@ -2329,7 +2329,7 @@
                 </div>
               </div>
             </li> -->
-             <li>
+             <li class="pub-draft__pop-ion-tags">
               <label class="form_lables">Tags</label>
               <div class="form_fields">
                 <div class="xs-bg-fill-transform">
@@ -2370,37 +2370,48 @@
                 </div>
 
 
-              </div> 
+              </div>
 
             </li>-->
             <div class="loader" *ngIf="isStartLoader"></div>
-            <label class="form_lables">Publish date</label>
+            <li class="pub-draft__pop-ion-cln">
+                 <label class="form_lables">Publish date</label>
                 <div class="form_fields_date">
-                  <div class="date_div">
-                    <p>{{showDate}} <span>{{showDay}}</span></p>
-                    <span>{{showMonth}}</span>
-                  </div>
-                  
-                  <div class="date_div">
-                    <p class="xs-small">At</p>
-                    <span>{{showTime}}</span>
-                  </div>
-                  <owl-date-time [(ngModel)]="createdDate" (onSelect)="dateChange(createdDate);showDateRequired=false;" [showHeader]="true" [inputId]="'input10'" [dateFormat]="'ddd'" [type]="'calendar'" [autoClose] ="'true'" min="{{stopDates}}">
-                                    <div [ngClass]="showDate==''?'calendar-btn':'calendar-btn contentdate'">
-                                              <i class="fa fa-calendar" aria-hidden="true"></i>
-                                    </div>     
-                  </owl-date-time>
-                                       
-                  <owl-date-time [(ngModel)]="createdTime" (onSelect)="timeChange(createdTime);showTimeRequired=false;" [showHeader]="true" [inputId]="'input101'"
-                    [type]="'timer'" [autoClose]="'true'" [dateFormat]="'hh:mm'" [autoClose]="'true'">
-                    <div [ngClass]="showDate==''?'calendar-btn timer':'calendar-btn timer contenttime'">
-                      <i class="fa fa-clock-o test" aria-hidden="true"></i>
+                    <div class="pub-draft__pop-ion-date">
+                        <div class="date_div">
+                            <div class="date-div__content" style="display:inline-block;">
+                                <p>{{showDate}} <span>{{showDay}}</span></p>
+                                <span>{{showMonth}}</span>
+                            </div>
+                            <div style="display:inline-block;float: right;">
+                                <owl-date-time [(ngModel)]="createdDate" (onSelect)="dateChange(createdDate);showDateRequired=false;" [showHeader]="true" [inputId]="'input10'" [dateFormat]="'ddd'" [type]="'calendar'" [autoClose] ="'true'" min="{{stopDates}}">
+                                      <div [ngClass]="showDate==''?'calendar-btn':'calendar-btn contentdate'">
+                                          <i class="fa fa-calendar" aria-hidden="true"></i>
+                                      </div>
+                                </owl-date-time>
+                            </div>
+                        </div>
                     </div>
-                  </owl-date-time>
+                    <div class="pub-draft__pop-ion-time">
+                        <div class="date_div">
+                            <div class="date-div__content" style="display:inline-block;">
+                                <p class="xs-small">At</p>
+                                <span>{{showTime}}</span>
+                            </div>
+                            <div style="display:inline-block;float: right;">
+                                <owl-date-time [(ngModel)]="createdTime" (onSelect)="timeChange(createdTime);showTimeRequired=false;" [showHeader]="true" [inputId]="'input101'"
+                                  [type]="'timer'" [autoClose]="'true'" [dateFormat]="'hh:mm'" [autoClose]="'true'">
+                                    <div [ngClass]="showDate==''?'calendar-btn timer':'calendar-btn timer contenttime'">
+                                        <i class="fa fa-clock-o test" aria-hidden="true"></i>
+                                    </div>
+                                </owl-date-time>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <p style="color:red;" *ngIf="showDateRequired">Date Is Required</p>
                 <p style="color:red;" *ngIf="showTimeRequired">Time Is Required</p>
-
+            </li>
           </ul>
         </div>
         <!-- Form Wrapper Ends-->

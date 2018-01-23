@@ -26,7 +26,7 @@
               <ul>
                 <li class="{{eachquerie.activeclass}}" *ngFor="let eachquerie of queriesData | fullTextSearch : 'title,content': searchQuery; let i = index">
                   <div class="chat__desc">
-                    <div class="chat__timings">{{ eachquerie.display_time }} <span>{{ eachquerie.display_date }} &#160;&#160;&#160;</span> </div> 
+                    <div class="chat__timings">{{ eachquerie.display_time }} <span>&nbsp;{{ eachquerie.display_date }} &#160;&#160;&#160;</span> </div>
                     <div class="dotted-line" style="cursor: pointer;" (click)="$event.stopPropagation(); clickedOnDottedLine(i); ">
                     <div></div><div></div><div></div> 
                                       </div>
@@ -111,7 +111,7 @@
                 <div class="user__status_popbody  bx-shadow brd-radius-15 patient_detail_pop" style="border-radius: 20px !important;">
                 <div class="title">Patient Detail</div>
                 <div class="content">
-                <table width="100%" cellspacing="0" cellpadding="0" border="0">
+                <table width="100%" cellspacing="0" cellpadding="0" border="0" class="que--popular__pat-details">
                 <tbody>
                 <tr>
                 <td class="labels">Name</td>
@@ -323,7 +323,7 @@
         <div class="form-section">
             <form [formGroup]="patientQuerieForm" (ngSubmit)="updatePatientQuerie()" novalidate="novalidate">
             <div class="form-section-btm">
-            <ul>
+            <ul class="que--edit__edit-pat-que">
               <li>
                 <label class="labels" style="font-weight: bold;">EDIT TITLE</label>
                 <input type="text" [formControl]="patientQuerieForm.controls['subject']" pattern="\S.*\S" class="input" required style="background-color:inherit !important;font-weight: bold !important;">
@@ -342,9 +342,9 @@
         </li>
         </ul>
         </div>
-        
-        
-        <div class="actions" style="text-align: inherit !important;">
+
+
+        <div class="actions" style="text-align: inherit !important;margin-top:10px;">
         <button class="button profile-action ripple" [disabled]="patientQuerieForm.invalid" type="submit" style="padding: 10px 20px !important;">SAVE CHANGES</button>&#160;&#160;
         <button class="button cancel-action" (click)="isQuerieEdit = false;" style="margin-top: 8px;">cancel</button>
         </div>

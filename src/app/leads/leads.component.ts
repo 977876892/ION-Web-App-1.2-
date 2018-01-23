@@ -13,13 +13,17 @@ declare var require: any;
   styleUrls: ['./leads.component.css']
 })
 export class LeadsComponent implements OnInit {
+  format = require('date-fns/format');
   today=new Date();
-  stopDates=this.today.getFullYear()+"-"+(this.today.getMonth()+1)+"-"+this.today.getDate();
+  stopDates=this.format(this.today, ['YYYY-MM-DD']);
+  // today=new Date();
+  // stopDates=this.today.getFullYear()+"-"+(this.today.getMonth()+1)+"-"+this.today.getDate();
   leadsData: any = [];
   isStartLoader;
   isAddLead: boolean = false;
   isEditLead: boolean = false;
   isCheckBoxChecked: boolean = false;
+  isAlertPopupError:boolean=false;
   leadId: number;
   phoneMinlength:boolean=false;
   numLength:number=0;
@@ -243,7 +247,7 @@ addLeads() {
                           //this.getLeads();
                       }
                     }, (err) => {
-
+                         
                     }, () => {
                       this.isStartLoader = false;
                       this.clearForm();
@@ -434,7 +438,12 @@ clearForm() {
                       this.isStartLoader=false;
                       this.pager = this.pagerService.getPager(this.leadcount, page);
                 
-              },(err)=>{},()=>{
+              },(err)=>{
+                console.log(err);
+                this.isAlertPopupError=true;
+                this.alertMessage="Please Check your Internet Connection";
+                this.isStartLoader=false;
+              },()=>{
                 this.pageItems.forEach(item=>{
                     item.isClickOnDottedLine=false;
                 })

@@ -37,28 +37,28 @@
 
         <!-- promotional top block ends-->
         <div class="panel_promotions__btm">
-          <h1 class="txt-black">Your Ionized promotion <span>(Download to use)</span></h1>
+          <h1 class="txt-black">Your Ionized promotion <span style="color:#acadb2;">(Download to use)</span></h1>
           <div class="panel_promotions__grid" *ngFor="let eachblog of ionizedBlogData; let i = index">
             <div class="grid">
               <div class="grid_x_small bx-shadow brd-radius-10">
                 <div class="promo_img"> <img src="{{eachblog.image.url}}" (click)="promotionfullviewimg(eachblog.title)" style="cursor:pointer;">
                   <div class="promo_download" (click)="downLoadImage(eachblog.image.url)"><a style="cursor: pointer;"><Img src="assets/css/images/download-icon.png"></a></div>
                 </div>
-                <div class="promot_details"> <span class="promo_title">{{ eachblog.title }}</span> 
+                <div class="promot_details"> <span class="promo_title">{{ eachblog.title }}</span>
                   <button class="button btn_small button_seconday ripple" (click)="publishThePromotion(eachblog)"><span>Publish</span></button>
                 </div>
               </div>
             </div>
 
           </div>
-          
+
         </div>
         <!-- promotional Bottom block ends-->
         <p *ngIf="this.ionizedBlogData == ''" style="text-align: center;">No Promotions Available</p>
       </div>
       <!-- Promotions main end -->
       <!-- Promotions full view -->
-      <div class="panel panel_promotions" *ngIf="isPromotionFullView" style="padding-bottom:59px !important;">
+      <div class="panel panel_promotions" *ngIf="isPromotionFullView">
           <div class="loader" *ngIf="isStartLoader"></div>
         <div class="panel_promotions__top">
           <h1>Select your promotion</h1>
@@ -82,7 +82,7 @@
     </div>
     <!-- Panel Right Ends -->
     <!-- promotions demo -->
-    <div class="panel-rt panel-rt__extend" *ngIf="isPromotionDemo">
+    <div class="panel-rt panel-rt__extend xs-fill-styl4" *ngIf="isPromotionDemo">
       <app-header></app-header>
       <div class="panel panel_promotions panel_promotions__demo">
         <div class="panel_promotions__top gradient-2">

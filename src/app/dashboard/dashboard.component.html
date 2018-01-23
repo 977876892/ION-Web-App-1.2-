@@ -1,5 +1,5 @@
 
-        <div class="panel-lt" [ngClass]="{'xs-relative panel-lt__extend': router.url.includes('promotions') || router.url.includes('queries') || router.url.includes('visits') || router.url.includes('settings') || router.url.includes('visits') || router.url.includes('publish') && !router.url.includes('publish/calendar')}" *ngIf="isShowDashboard">
+        <div class="panel-lt" [ngClass]="{'xs-relative panel-lt__extend': router.url.includes('promotions') || router.url.includes('queries') || router.url.includes('visits') || router.url.includes('settings') || router.url.includes('visits') || router.url.includes('publish')||router.url.includes('analytics') && !router.url.includes('publish/calendar')}" *ngIf="isShowDashboard">
              <!-- Left side header -->
       <div class="lt-header">
           <!-- <label *ngIf="!router.url.includes('home')" class="username">Hi,</label> -->
@@ -13,7 +13,7 @@
                 <li routerLink="/home" routerLinkActive="active"> 
                 <a class="active" style="cursor: pointer;">
                 <img src="assets/images/home.png" width="42" height="38" [hidden]="router.url.includes('home')">
-                <img src="assets/images/home_active.png"  [hidden]="!router.url.includes('home')">
+                <img src="assets/images/home_active.png" [hidden]="!router.url.includes('home')">
                 <br>
                 <span [ngClass]="{'menu_color_cha':router.url.includes('home')}">Home</span>
                 </a> 
@@ -200,7 +200,7 @@
     </div>
 
       <!-- Analytics -->
-         <div class="nav-info__panel" *ngIf="router.url==='/analytics'" style="margin-top: -280px !important;position: relative !important;">
+         <div class="nav-info__panel" *ngIf="router.url.includes('/analytics')" style="margin-top: -280px !important;position: relative !important;">
           <ul>
             <li style="cursor: pointer;" class="info__answered" [class.info__active]="analyticsType == 'website'" (click)="analyticTypeClick('website');">
               <div class="info__count"> 

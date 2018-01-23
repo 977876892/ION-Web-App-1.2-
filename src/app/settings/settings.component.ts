@@ -325,6 +325,7 @@ uploadprofilepic() {
                 this.imageerrorAlert=true;
           }else{
               this.imageSrc = res.description[0].url;
+              this.item.profile_pic = this.imageSrc;
               this.isStartLoader = false;
               this.isShowImgDeleteButt=true;
           }
@@ -342,12 +343,14 @@ uploadprofilepic() {
 }
 uploadprofilepicDelete(){
   this.isStartLoader=true;
+  this.item.profile_pic='';
   this.imageSrc="";
    this.isShowImgDeleteButt=false;
   console.log( this.imageSrc);
   this.imageerrorAlert=false;
   this.imageUploadAlert = false;
   this.isStartLoader=false;
+
 }
   changepassword(pwditem){
     //console.log(pwditem);

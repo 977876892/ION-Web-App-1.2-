@@ -13,11 +13,7 @@
       <div class="login_box bx-shadow">
         <h1 class="heading" >Hello!<br>
           <span style="font-weight: bold;">Enter Login Details</span></h1>
-          <div >
-          <span class="form-error" *ngIf="errorMessage" style="color: #f00">{{errorMessage}}</span>
-          <span class="form-error" *ngIf="errorMessageEmpty" style="color: #f00">{{errorMessageEmpty}}</span>
-         <br/><br/>
-          </div> 
+       
            <form [formGroup]="loginForm" (ngSubmit)="signIn()" novalidate="novalidate">
         <div class="form-section">
        
@@ -57,6 +53,11 @@
           </div>
           
         </div>
+                  <div >
+          <span class="form-error" *ngIf="errorMessage" style="color: #f00">{{errorMessage}}</span>
+          <span class="form-error" *ngIf="errorMessageEmpty" style="color: #f00">{{errorMessageEmpty}}</span>
+         <br/><br/>
+          </div> 
                </form>
            <br/><br/>
        

@@ -81,8 +81,17 @@ export class DashboardComponent implements OnInit {
            }else {
              this.settingsType = 'users';
            }
+            if(this.router.url == '/analytics'){
+            this.analyticsType = 'website';
+          }else if(this.router.url == '/analytics/blogsdata'){
+             this.analyticsType = 'publish';
+           }else if(this.router.url == '/analytics/questionsData'){
+             this.analyticsType = 'queries';
+           }else {
+             this.analyticsType = 'visits';
+           }
          
-          if(this.router.url == '/settings'||this.router.url == '/settings/contactus' ||this.router.url == '/settings/users'||this.router.url == '/settings/subscription' ||this.router.url=='/analytics'||this.router.url=='/promotions'||this.router.url=='/promotions/smspromotions'||this.router.url=='/leads'||this.router.url=='/promotions/fullview') {
+          if(this.router.url == '/settings'||this.router.url == '/settings/contactus' ||this.router.url == '/settings/users'||this.router.url == '/settings/subscription' ||this.router.url=='/analytics'||this.router.url=='/analytics/blogsdata'||this.router.url=='/analytics/questionsData'||this.router.url=='/analytics/appointments'||this.router.url=='/promotions'||this.router.url=='/promotions/smspromotions'||this.router.url=='/leads'||this.router.url=='/promotions/fullview'||this.router.url.includes('promotiondemo')) {
             this.isLoadMore= true;
           } 
         // this.changePromotion();
@@ -102,9 +111,9 @@ export class DashboardComponent implements OnInit {
       this.eventType.emit(this.promotionTaType);
     }
   
-    if (this.router.url.includes('/analytics')) {
-      this.eventType.emit(this.analyticsType);
-    }
+    // if (this.router.url.includes('/analytics')) {
+    //   this.eventType.emit(this.analyticsType);
+    // }
     // if (this.router.url.includes('/settings')) {
     //   this.eventType.emit(this.settingsType);
     // }
@@ -168,7 +177,16 @@ promotionTypeClick(ptype) {
 }
 analyticTypeClick(atype) {
   this.analyticsType = atype;
-  this.changeAmount();
+  if(atype == 'website') {
+   this.router.navigate(['analytics']);
+  } else if(atype == 'publish') {
+    this.router.navigate(['analytics/blogsdata']);
+  } else if(atype == 'queries'){
+    this.router.navigate(['analytics/questionsData']);
+  }else{
+    this.router.navigate(['analytics/appointments']);
+  }
+  //this.changeAmount();
 }
 // settingsClick(stype) {
 //    this.settingsType = stype;
