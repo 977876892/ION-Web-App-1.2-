@@ -506,15 +506,17 @@ addNewUser(){
                       this.settingsService.addNewUserService(this.userDetailsForm.value)
                  .subscribe(
                         data => {console.log(data);
-                          this.isStartLoader=true;
+                          //this.isStartLoader=true;
                           this.isAlertPopup=true;
 
                           if(data.message=="Username in use. Please Give Another Username.")
                             {
                                this.alertMessage="Username in use.";
+                               this.isStartLoader=false;
                             }else if(data.message=="This email address is already registered.")
                               {
                                 this.alertMessage="This email address is already registered. Please Give Another Gamil.";
+                                this.isStartLoader=false;
                               }
                               else{
                                     this.imageSrc="";

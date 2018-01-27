@@ -39,6 +39,7 @@ export class QueriesComponent implements OnInit {
   isEditClick: boolean = false
   editContent="";
   editId="";
+  connect_err=IonServer.nointernet_connection_err;
   spaceComment=IonServer.Space_Not_required;
   @ViewChild('fileQuerieInput') fileQuerieInput;
   patientQuerieForm: FormGroup = this.builder.group({
@@ -164,7 +165,9 @@ querieEditOrDelete(event: any) {
       this.startFrom=this.startFrom+this.limit;
      
     }, (err) => {
-
+      this.isStartLoader = false;
+      this.isAlertPopup=true;
+      this.alertMessage=this.connect_err;
     }, () => {
       this.isStartLoader = false;
       this.queriesData.forEach((eachData) => {
@@ -196,7 +199,9 @@ querieEditOrDelete(event: any) {
             this.showQueries(this.queriesData[0]);
       this.startFrom=this.startFrom+this.limit;
     }, (err) => {
-
+      this.isStartLoader = false;
+      this.isAlertPopup=true;
+      this.alertMessage=this.connect_err;
     }, () => {
       this.queriesData.forEach((eachData) => {
         eachData.isClickOnDottedLine = false;
@@ -227,7 +232,9 @@ querieEditOrDelete(event: any) {
             this.showQueries(this.queriesData[0]);
             this.startFrom=this.startFrom+this.limit;
     }, (err) => {
-
+      this.isStartLoader = false;
+      this.isAlertPopup=true;
+      this.alertMessage=this.connect_err;
     }, () => {
       this.isStartLoader = false;
       this.queriesData.forEach((eachData) => {
@@ -243,7 +250,9 @@ getDetailsEachQuerie(id) {
       console.log(queriesResponse);
       this.eachQuerieData = queriesResponse.posts;
     }, (err) => {
-
+          this.isAlertPopup=true;
+          this.alertMessage=this.connect_err;
+          this.isStartLoader=false;
     }, () => {
       this.isStartLoader = false;
       if (this.eachQuerieData.length > 0) {
@@ -297,6 +306,9 @@ answerAQuerie(replyData, qId) {
           // this.queriesData = qResponse;
         }, (err) => {
                console.log(err);
+               this.isStartLoader=false;
+               this.isAlertPopup=true;
+               this.alertMessage=this.connect_err;
         }, () => {
           this.isStartLoader = false;
           if (this.isAddtoQuickReply) {
@@ -385,7 +397,9 @@ showTemplates(index) {
     (qResponse: any) => {
       this.downloadFile(qResponse); 
     }, (err) => {
-
+         this.isAlertPopup=true;
+         this.alertMessage=this.connect_err;
+         this.isStartLoader = false;
     }, () => {
       this.isStartLoader = false;
     });
@@ -432,7 +446,9 @@ transferQuery(catid){
             this.isShowTransferQuery = false;
               this.getQueriesBasedOnUrlStauts();
           }, (err) => {
-
+            this.isStartLoader = false;
+            this.isAlertPopup=true;
+            this.alertMessage=this.connect_err;
           }, () => {
             this.isStartLoader = false;
           });
@@ -516,7 +532,9 @@ querieEditClick(querieData) {
         }
        
      }, (err) => {
- 
+         this.isAlertPopup=true;
+         this.alertMessage=this.connect_err;
+         this.isStartLoader = false;
      }, () => {
        this.isStartLoader = false;
      });
@@ -550,7 +568,9 @@ showNoTemplatesAvailable=false;
         this.showNoTemplatesAvailable=true;
       }
    }, (err) => {
-
+    this.isAlertPopup=true;
+    this.alertMessage=this.connect_err;
+    this.isStartLoader = false;
    }, () => {
       this.querieTemplatesData.forEach(template=>{
             template.isShown=true;
@@ -617,7 +637,12 @@ quickReplySave(content,editId){
       //        })
       //      });
       this.isStartLoader = false;
-  });
+  }, (err) => {
+    this.isAlertPopup=true;
+    this.alertMessage=this.connect_err;
+    this.isStartLoader = false;
+   }, () => {
+   });
 
 }
 
@@ -674,6 +699,8 @@ uploadImage() {
       }
     },(err) => {
       this.isStartLoader = false;
+      this.isAlertPopup=true;
+      this.alertMessage=this.connect_err;
      }, () => {
       this.fileQuerieInput.nativeElement.value = '';
       this.isStartLoader = false;
@@ -714,7 +741,15 @@ deleteAndIonizeAlertPopup(){
            this.isDeleteTemplate  =false;
            this.isStartLoader = false;
            this.getQuerieTemplates(this.selectedQuery);
-         });
+         }, (err) => {
+          this.isAlertPopup=true;
+          this.alertMessage=this.connect_err;
+          this.isStartLoader=false;
+          this.isIonizeQuery=false;
+          this.isDeleteAlertPopup=false;
+     }, () => {
+
+     });
    }
    else if(this.isIonizeQuery== true){
     //  console.log(this.eachquerie);
@@ -730,13 +765,40 @@ deleteAndIonizeAlertPopup(){
           (queriesResponse: any) => {
                   console.log(queriesResponse.posts);
                   title=queriesResponse.posts[0].title;
+                  const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
                   for(var i=0;i<queriesResponse.posts.length;i++)
                     {
-                          content=content+"<p>"+queriesResponse.posts[i].content +"</p><br>";
+                          if(queriesResponse.posts[i].poster_name=="You"||queriesResponse.posts[i].poster_name=="you")
+                            {
+                                  var reply="<p>"+queriesResponse.posts[i].content+"</p>";
+                                  var authorandtime="<b>"+currentuser.username+"&nbsp; &nbsp; &nbsp;"+queriesResponse.posts[i].created+"</b><br>";
+                                  if(queriesResponse.posts[i].attachments.length>0)
+                                    {
+                                      queriesResponse.posts[i].attachments.forEach((attachment,index)=>{
+                                        reply=reply+"<img src='"+attachment.title+"'>"
+                                      })
+                                      content=content+authorandtime+reply+"<br>";
+                                    }
+                                    else{
+                                        content=content+authorandtime+reply+"<br>";
+                                    }
+                            } 
+                            else{
+                                  var reply="<p>"+queriesResponse.posts[i].content+"</p>";
+                                  var authorandtime="<b>"+queriesResponse.posts[i].poster_name+"&nbsp; &nbsp; &nbsp;"+queriesResponse.posts[i].created+"</b><br>";
+                                  if(queriesResponse.posts[i].attachments.length>0)
+                                    {
+                                        queriesResponse.posts[i].attachments.forEach(attachment=>{
+                                          reply=reply+"<img src='"+attachment.title+"'>"
+                                        })
+                                        content=content+authorandtime + reply;
+                                    }
+                                    else{
+                                        content=content+authorandtime + reply;
+                                    }        
+                            }                   
                     }
                   console.log(content);
-                  const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
-                  console.log(currentuser);
                   this.createTheBlogForm.patchValue({
                       title: title,
                       content:content,
@@ -763,7 +825,10 @@ deleteAndIonizeAlertPopup(){
                     });
                   
                 }, (err) => {
-
+                     this.isAlertPopup=true;
+                     this.alertMessage=this.connect_err;
+                     this.isStartLoader=false;
+                     this.isIonizeQuery=false;
                 }, () => {
                     
                 }); 
@@ -795,6 +860,8 @@ deleteAndIonizeAlertPopup(){
               },(err) => {
                 this.isStartLoader = false;
                 this.isDeleteAlertPopup=false;
+                this.isAlertPopup=true;
+                this.alertMessage=this.connect_err;
               }, () => {
                 this.isStartLoader = false;
                 this.isDeleteAlertPopup=false;
@@ -808,6 +875,8 @@ deleteAndIonizeAlertPopup(){
                  this.userDispalyData.featured=1;
                   },(err) => {
                     this.isStartLoader = false;
+                    this.isAlertPopup=true;
+                    this.alertMessage=this.connect_err;
                   }, () => {
                     this.isStartLoader = false;
         })
@@ -818,6 +887,8 @@ deleteAndIonizeAlertPopup(){
                  this.userDispalyData.featured=0;
                   },(err) => {
                     this.isStartLoader = false;
+                    this.isAlertPopup=true;
+                    this.alertMessage=this.connect_err;
                   }, () => {
                     this.isStartLoader = false;
         })

@@ -120,7 +120,7 @@
                       </div>
                       <br />
                       <div  class="analytics_headings">
-                      <h2 class="t-head txt-center m-b-30">Total Visitors - Age vs Genders</h2>
+                      <h2 class="t-head txt-center m-b-30">Total Visitors - Age vs Gender</h2>
                       <div class="txt-center m-b-20">
                           <input [checked]="true" type="radio" class="radio-styled " value="0" name="ageAndGender" (click)="lastThreeMonthsUsersBasedOnAgeAndGender()"  > <label for="LastMonth">Last 3 Months</label>
                            <input type="radio" class="radio-styled " value="1" name="ageAndGender" (click)="lastSixMonthsUsersBasedOnAgeAndGender()"><label for="Last6Month"> Last 6 Months</label>
@@ -266,7 +266,7 @@
                                       <td>{{publishedBlogsTable[0].Ionized}} </td>
                                 </tr>
                                 <tr>
-                                    <td><b>Ionize</b> </td>
+                                    <td><b>Ionizing</b> </td>
                                     <td>{{publishedBlogsTable[0].Ionizing}}</td>
                                     </tr>
                                 </tbody>
@@ -286,7 +286,7 @@
 
                 <!--publish analytics-->
                 <div *ngIf="showQueryAnalytics">
-                    <div *ngIf="showNoQuestionsDataAvailable">No Questions Data Avalable</div>
+                    <div *ngIf="showNoQuestionsDataAvailable">No Questions Data Available</div>
                     <h2 class="t-head txt-center m-b-30 analytics_headings" *ngIf="showQuestionByCategory">All Answered And UnAnswered Questions Count By Category</h2>
                         <div class="table-responsive" *ngIf="showQuestionByCategory" style="margin-left: -169px;">
                                 <table class="table table-bordered">

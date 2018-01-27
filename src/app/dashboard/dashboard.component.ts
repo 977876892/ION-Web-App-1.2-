@@ -33,7 +33,7 @@ export class DashboardComponent implements OnInit {
   publishType: string = 'publish';
   selectedDateValue: Date;
   isShowDashboard=false;
-  isLoadMore: boolean = false;
+  isLoadMore: boolean = true;
   currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
   constructor(private router: Router, private dashboardService: DashboardService) {
     this.selectedDateValue = new Date();

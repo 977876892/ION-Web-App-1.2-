@@ -19,7 +19,7 @@
 
               <button class="button excel-icon rounded ripple txt-uppercae" (click)="downloadQuries()" style="color: black;">Export</button>
             </div>
-            <div class="chat__body" style="height: 594px;;width: 100%;overflow-x: hidden; overflow-y: scroll;" *ngIf="queriesData">
+            <div class="chat__body"  *ngIf="queriesData">
               <div *ngIf="(queriesData | fullTextSearch : 'title,content': searchQuery).length === 0">
                   No Queries Found
                 </div>
@@ -153,9 +153,10 @@
                      <img src="assets/css/images/star.png" width="30" height="30" (click)="makeTheQuestionAsPopular(userDispalyData)" *ngIf="userDispalyData.featured==0">
                    </span>
                 </div> -->
-                <div class="live_chat__subject__star" *ngIf="userDispalyData.featured==0" (click)="makeTheQuestionAsPopular(userDispalyData)"><div class="rating_star"></div></div>
-                <div class="live_chat__subject__star" *ngIf="userDispalyData.featured==1" (click)="makeTheQuestionAsPopularUnPopular(userDispalyData)"><div class="rating_star_fill"></div></div>
-                <div class="live_chat__subject">{{ querieTitle }}</div>
+                <div class="live_chat__subject__star" *ngIf="userDispalyData.featured==0 && !isQuickReply" (click)="makeTheQuestionAsPopular(userDispalyData)"><div class="rating_star"></div></div>
+                <div class="live_chat__subject__star" *ngIf="userDispalyData.featured==1 && !isQuickReply" (click)="makeTheQuestionAsPopularUnPopular(userDispalyData)"><div class="rating_star_fill"></div></div>
+                <div class="live_chat__subject" [hidden]="!isQuickReply" style="background-color:#00dcff;">{{ querieTitle }}</div>
+                <div class="live_chat__subject" [hidden]="isQuickReply">{{ querieTitle }}</div>
               <div class="live_chat__body" [hidden]="isQuickReply"> 
                 
                 <ul>
@@ -360,7 +361,7 @@
       
         <!-- Popup querie edit-->
            <!-- alert -->
-      <div class="model model-alerts" *ngIf="isAlertPopup" style="margin-top: 150px;"> 
+      <div class="model model-alerts" *ngIf="isAlertPopup" style="margin-top: 150px;box-shadow: 0 0 5px #777;"> 
         <!-- <a class="close" href="javascript:void(0);">Close</a> -->
         
         <div class="model-content">

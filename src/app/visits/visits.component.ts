@@ -44,6 +44,7 @@ export class VisitsComponent implements OnInit {
   doctorsListForFilter=[];
   timeSlotsData: any = [];
   spaceComment=IonServer.Space_Not_required;  
+  connect_err=IonServer.nointernet_connection_err;
   imgerror="Choose Only Image.";
   imgsize="The file size can not exceed 8MB.";
   //select_column=[{name:'Age'},{name:'Phone'},{name:'Email'},{name:'Time'},{name:'Status'},{name:'Paid Amnt'}];
@@ -61,6 +62,7 @@ export class VisitsComponent implements OnInit {
   imageUploadAlert: boolean = false;
   isPrintClicked: boolean = false;
   isPrinting: boolean = false;
+  isAlertPopupError:boolean=false;
   selectedDateValue:Date=new Date();
   
   visitForm: FormGroup = this.builder.group({
@@ -146,7 +148,9 @@ export class VisitsComponent implements OnInit {
      
     }, (err) => {
       console.log(err);
-        this.isStartLoader = false;
+      this.isStartLoader = false;
+      this.isAlertPopupError=true;
+      this.alertMessage=this.connect_err;
     }, () => {
       this.isStartLoader = false;
       this.route.params.forEach((params: Params) => {
@@ -322,7 +326,9 @@ addVisit() {
                 //this.getVisits();
             }
           }, (err) => {
-       
+                 this.isAlertPopupError=true;
+                 this.alertMessage=this.connect_err;
+                 this.isAddVisitLoader=false;
           }, () => {
             this.isAddVisitLoader=false;
           // this.isStartLoader = false;
@@ -604,7 +610,6 @@ deleteVisit(vId) {
 }
 // visit edit
 visitEdit(pId) {
-  console.log("venkat");
   this.isEditVisit = true;
   this.isAddVisit = false;
   this.getCategeories();
@@ -737,7 +742,10 @@ patientEditDetails(pid) {
         }
       
         }, (err) => {
-
+             this.isAlertPopupError=true;
+             this.alertMessage=this.connect_err;
+             this.isStartLoader = false;
+             this.isEditVisit = false;
         }, () => {
           this.isStartLoader = false;
 
@@ -819,6 +827,8 @@ visitUpdate() {
                   console.log(err);
                 //  this.isStartLoader=false;
             this.isAddVisitLoader=false;
+            this.isAlertPopupError=true;
+            this.alertMessage=this.connect_err;
                 }, () => {
                   this.isAddVisitLoader=false;
                   this.isStartLoader=false;
@@ -889,7 +899,7 @@ clearForm() {
   showBetweenError=false;
   
   showPrintScreen() {
-
+    this.isStartLoader=true;
     console.log(this.select_column);
     console.log(this.visitDownloadForm.value);
     console.log(this.visitDownloadForm.value);
@@ -983,9 +993,10 @@ clearForm() {
       }
     }
 downloadVisits(){
-      console.log("download");
+  this.isStartLoader = true;
       this.visitsService.downloadVisits().subscribe(res => {
         console.log(res);
+        this.isStartLoader = false;
         let blob = new Blob([res], { type: 'text/csv' });
         let url = window.URL.createObjectURL(blob);
         let a = document.createElement('a');
@@ -997,6 +1008,9 @@ downloadVisits(){
             window.URL.revokeObjectURL(url);
 
       },(err) => {
+        this.isAlertPopupError=true;
+        this.alertMessage=this.connect_err;
+        this.isStartLoader = false;
       }, () => {
         this.isStartLoader = false;
       })
@@ -1120,6 +1134,9 @@ dobSelected(dob){
      
       },(err) => {
         console.log(err);
+        this.isAlertPopupError=true;
+        this.alertMessage=this.connect_err;
+        this.isStartLoader = false;
       }, () => {
         this.isStartLoader = false;
       })
@@ -1129,6 +1146,7 @@ dobSelected(dob){
     getLeadTags(){
     this.leadsService.getLeadTags().subscribe(res => {
          res.description.forEach(element => {
+           if(element.title!=='all')
             this.autoComplete.push(element.title);
           });
        // console.log(this.leadtagsForFilter);
@@ -1150,7 +1168,9 @@ dobSelected(dob){
          this.alertMessage="Appointment Deleted Successfully.";
       console.log(res);
       },(err) => {
-        console.log(err);
+         this.isAlertPopupError=true;
+         this.alertMessage=this.connect_err;
+         this.isStartLoader = false;
       }, () => {
         this.isStartLoader = false;
       })

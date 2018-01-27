@@ -157,8 +157,8 @@
                        <div class="heading">Groups</div>
                       <div class="flt-div" style="overflow-y:scroll; height:145px; overflow-x:hidden; position:relative;">
                           <label *ngFor="let eachtag of leadtagsForFilter; let j = index;">
-                          <input name="publish" value="{{eachtag.title}}" class="checkbox" type="checkbox" [checked]="eachtag.isChecked" (change)="changeTagClick(eachtag)" [hidden]="true" >
-                          <span style="text-transform: capitalize;">{{eachtag.title}}</span>
+                          <input name="publish" value="{{eachtag.title}}" class="checkbox" type="checkbox" [checked]="eachtag.isChecked" (change)="changeTagClick(eachtag)" [hidden]="true" *ngIf="eachtag.title!=='all'">
+                          <span style="text-transform: capitalize;" *ngIf="eachtag.title!=='all'">{{eachtag.title}}</span>
                           </label>
                          
                       </div>
@@ -226,7 +226,7 @@
     <label>
     <input name="1" value="false" (change)="selectedLeadUsingId(eachdata);" class="checkbox" type="checkbox" [(ngModel)]="eachdata.isChecked">
     <span>&nbsp;</span>
-    </label>
+    </label> 
     </td>
     <td [class.seleted]="eachdata.isChecked" *ngIf="eachdata.image!=''&&eachdata.image!='undefined'"><img src="{{eachdata.image}}" style="width: 34px;height: 34px;border-radius: 50%;object-fit: cover;"></td>
     <td [class.seleted]="eachdata.isChecked"  *ngIf="eachdata.image==''||eachdata.image=='undefined'"><span class="avatar avatar-r" style="margin: inherit !important;">{{ eachdata.imgTag }}</span></td>
@@ -322,18 +322,18 @@
          <label for="file-upload"  class="custom-file-upload">
         <div class="profile_img">
             <a style="cursor: pointer;" *ngIf="imageSrc == ''||imageSrc==null||imageSrc=='undefined'"><img src="assets/css/images/profile_no_img.png" ></a>
-            <a style="cursor: pointer;" *ngIf="imageSrc!='' && imageSrc!=null && imageSrc!='undefined'"><img src="{{imageSrc}}" height="154px" width="154px" style="border-radius: 100px;"></a>
+            <a style="cursor: pointer;" *ngIf="imageSrc!='' && imageSrc!=null && imageSrc!='undefined'"><img src="{{imageSrc}}" height="154px" width="154px" style="border-radius: 100px;object-fit: cover;"></a>
         </div>
          </label>
       
       <div class="profile_bottom"><span>
-          <label for="file-upload" class="custom-file-upload"  *ngIf="!isShowImgDeleteButt && imageSrc ==''|| imageSrc=='http://staging.getion.in/'">
+          <label for="file-upload" class="custom-file-upload"  *ngIf="!isShowImgDeleteButt && imageSrc ==''">
               Upload Image
           </label>
-           <div *ngIf="isShowImgDeleteButt || imageSrc !='' && imageSrc !='http://staging.getion.in/'">
+           <div *ngIf="isShowImgDeleteButt || imageSrc !=''">
               <label for="file-upload"  class="custom-file-upload" class="upload-img">CHANGE</label>
                <div style="float:left">
-                <span style="width: 1px;height: 40px;background-color:#0000002e;" *ngIf="isShowImgDeleteButt || imageSrc !='' && imageSrc !='http://staging.getion.in/'"></span>
+                <span style="width: 1px;height: 40px;background-color:#0000002e;" *ngIf="isShowImgDeleteButt || imageSrc !=''"></span>
               </div>
               <label style=" color: red;" class="upload-img" (click)="uploadImgeDelete()"> <b>X</b> DELETE</label>
           </div>
@@ -488,17 +488,28 @@
   
      </div>
     </div>
+     <!-- iserror popup -->
+     <div class="model model-alerts" *ngIf="isAlertPopupError" style="margin-top: 275px;box-shadow: 0 0 5px #777;"> 
+      <!-- <a class="close" href="#">Close</a> -->
+      
+      <div class="model-content">
+       <p>{{ alertMessage }}</p>           
+      <div class="btn_actions">
+        <div class="button btn-ok" (click)="isAlertPopupError = false;" >ok</div>
+       <!--   <div class="button btn-dismiss" (click)="isAlertPopup = false;">cancel</div> --> 
     
+        </div>
+       </div>
+      </div>
       <!-- Popup -->
         <!-- alert -->
-    <div class="model model-alerts" *ngIf="isAlertPopup || isAlertPopupError" style="margin-top: 275px;"> 
+    <div class="model model-alerts" *ngIf="isAlertPopup" style="margin-top: 275px;"> 
                 <!-- <a class="close" href="#">Close</a> -->
                 
                 <div class="model-content">
                  <p>{{ alertMessage }}</p>           
                 <div class="btn_actions">
-                  <div class="button btn-ok" (click)="getLeads(); isAlertPopup = false;" *ngIf="isAlertPopup">ok</div>
-                  <div class="button btn-ok" (click)="isAlertPopupError = false;" *ngIf="isAlertPopupError">ok</div>
+                  <div class="button btn-ok" (click)="getLeads(); isAlertPopup = false;">ok</div>
                  <!--   <div class="button btn-dismiss" (click)="isAlertPopup = false;">cancel</div> --> 
               
                   </div>

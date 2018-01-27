@@ -35,6 +35,7 @@ export class PublishComponent implements OnInit {
   isIonizedBlog: boolean = false;
   showRequestIsTaken: boolean = false;
   imageerrorAlert:boolean=false;
+  isAlertPopuperror:boolean=false;
   isPublishedBlog=false;
   blogCommentsData: any = [];
   calendarEventsData: any = [];
@@ -44,6 +45,7 @@ export class PublishComponent implements OnInit {
   isCalendarView: boolean = false;
   isClosingConformationAlertPopup:boolean=false;
   public calendarOptions: Options;
+  connect_err=IonServer.nointernet_connection_err;
   blogTitle="";
   offsetTop:string = "";
   offsetLeft:string = "";
@@ -496,6 +498,8 @@ getPublishedBlogs(startfrom, limitto) {
       this.isScrolled = false;
       this.isNoRecords = true;
       this.isPageStartLoader = false;
+      this.isAlertPopuperror=true;
+      this.alertMessage=this.connect_err;
     }, () => {
       this.isScrolled = false;
       this.isPageStartLoader = false;
@@ -582,7 +586,13 @@ getBlogDetailView(bid, viewType) {
           this.isIonizedBlog = false;
         }
     }, (err) => {
-
+      this.isPageStartLoader = false;
+      this.isStartLoader=false;
+      this.isIonizedBlog=false;
+      this.isAlertPopuperror=true;
+      PublishComponent.showIonize=false;
+      PublishComponent.showPublished=false;
+        this.alertMessage=this.connect_err;
     }, () => {
         this.isStartLoader=false;
         this.isPageStartLoader = false;
@@ -600,9 +610,9 @@ getBlogComments(bid) {
   this.loginUserId = currentuser.id;
   //this.isStartLoader = true;
   this.publishService.getBlogCommentsService(bid).subscribe(
-    (blogResponse: any) => {
-      console.log(blogResponse);
-      this.blogCommentsData = blogResponse.description;
+    (commentsResponse: any) => {
+      console.log(commentsResponse);
+      this.blogCommentsData = commentsResponse.description;
     }, (err) => {
 
     }, () => {
@@ -637,7 +647,9 @@ addBlogComment(bid, comment) {
             this.getBlogComments(bid);
             this.imageSrc=[];
           }, (err) => {
-
+            this.isLoaderForUpdateBlog=false;
+         this.isAlertPopup=true;
+         this.alertMessage=this.connect_err;
           }, () => {
             //this.isLoaderForUpdateBlog = false;
           });
@@ -797,8 +809,9 @@ getCalendarEventsByMonth(month,defaultdate) {
        events: this.calendarEventsData,
        eventMouseover: function(event, jsEvent, view) {
            let elemPos = $(this).offset();
-           event.offsetTop = elemPos.top;
-           event.offsetLeft = elemPos.left;
+           event.offsetTop = elemPos.top - 50;
+           event.offsetLeft = elemPos.left + $(this).parent().width();
+
            PublishComponent.calenderOverEvent(event);
         },
         eventMouseout: function(event, jsEvent, view) {
@@ -840,7 +853,7 @@ static calenderOverEvent(view) {
       {
         PublishComponent.showIonize=true;
       }
-      else if(view.state==1)
+      else if(view.state==1 ||view.state==2)
         {
           PublishComponent.showPublished=true;
         }
@@ -973,7 +986,10 @@ getTrendingTopicsByMonth(date) {
           this.ShowNoTopicsAreAvailable=true;
         }
     }, (err) => {
-
+        this.isAlertPopuperror=true;
+        this.alertMessage=this.connect_err;
+        this.isPageStartLoader = false;
+        this.isAddNewTopic=false;
     }, () => {
       this.isPageStartLoader = false;
       // for (const key in this.trendingTopicsData) {
@@ -1115,7 +1131,10 @@ addToCalendar(){
                         this.blogCalendarCall();
                   },
                   err =>{
-                    console.log(err);
+                    this.isAddNewTopic=false;
+                    this.isAlertPopuperror=true;
+                    this.alertMessage=this.connect_err;
+                    this.isPageStartLoader=false;
                   },()=>{
                     this.isPageStartLoader=false;
                   });
@@ -1150,6 +1169,9 @@ addNewTrendingTopic() {
       },
       err=>{
         this.isPageStartLoader=false;
+        this.isAlertPopuperror=true;
+        this.alertMessage=this.connect_err;
+        this.isAddNewTopic=false;
       },
       ()=>{
         this.newTrendTopicForm.reset();
@@ -1302,7 +1324,9 @@ createTheBlog(blogStatus){
               //this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['YYYY-MM-DD']);
               //this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh:mm A']);
             }, (err) => {
-                    console.log(err);
+                   this.isAlertPopuperror=true;
+                   this.alertMessage=this.connect_err;
+                   this.isLoaderForEditor=false;
             }, () => {
               
            });
@@ -1318,6 +1342,30 @@ createdTime="";
 showDateRequired=false;
 showTimeRequired=false;
 updateTheBlogDirectly(blogStatus) {
+  // blog subcategory mandatory.
+  //  var keepGoing = true;
+  //   if(this.blogTypes.length>0)
+  //     {
+  //       //var blogtypeSelected=false;
+  //       //for()
+  //         this.blogTypes.forEach(btype=>{
+
+  //           if(btype.selected)
+  //             {
+  //                 this.blogtypeSelected=true;
+  //                 keepGoing=false;
+  //             }
+  //           else{
+  //             if(keepGoing)
+  //                 this.blogtypeSelected=false;
+  //           }
+  //         });
+  //         if(!this.blogtypeSelected)
+  //           {
+  //               return;
+  //           }
+  //     }
+  // blog subcategory mandatory.
   if(this.createdDate===""){
     this.showDateRequired=true;
   }
@@ -1434,7 +1482,10 @@ updateTheBlogDirectly(blogStatus) {
         // console.log(trendResponse);
         // this.trendingTopicsData = trendResponse.description;
     }, (err) => {
-
+         this.isAlertPopuperror=true;
+         this.alertMessage=this.connect_err;
+         this.isLoaderForUpdateBlog=false;
+         this.isStartLoader = false;
     }, () => {
       // console.log(this.trendingTopicsData);
       this.isLoaderForUpdateBlog=false;
@@ -1445,9 +1496,34 @@ updateTheBlogDirectly(blogStatus) {
 
 
 }
-  
+  //blogtypeSelected=true;
   updateTheBlogFromEdit(blogStatus) {
     // console.log(this.blogViewData);
+    // blog subcategory mandatory.
+    // var keepGoing = true;
+    // if(this.blogTypes.length>0)
+    //   {
+    //     //var blogtypeSelected=false;
+    //     //for()
+    //       this.blogTypes.forEach(btype=>{
+
+    //         if(btype.selected)
+    //           {
+    //               this.blogtypeSelected=true;
+    //               keepGoing=false;
+    //           }
+    //         else{
+    //           if(keepGoing)
+    //               this.blogtypeSelected=false;
+    //         }
+    //       });
+    //       if(!this.blogtypeSelected)
+    //         {
+    //             return;
+    //         }
+    //   }
+    // blog subcategory mandatory.
+    
    
    console.log(this.createAndUpdateTheBlogForm.value);
    //console.log(this.blogTags);
@@ -1564,6 +1640,9 @@ updateTheBlogDirectly(blogStatus) {
                   this.getPublishedBlogs(0,20);
               }
             }, (err) => {
+                 this.isAlertPopuperror=true;
+                 this.alertMessage=this.connect_err;
+                 this.isLoaderForUpdateBlog=false;
 
             }, () => {
               // console.log(this.trendingTopicsData);
@@ -1601,7 +1680,7 @@ isEditorForEditTheDraft=false;
 isEditorForEditTheOnline=false;
 
 editBlogCall(eachData,type) {
-    
+    this.isPageStartLoader=true;
    this.blogTags=[];
    console.log(eachData);
    this.getBlogComments(eachData.postid);
@@ -1609,7 +1688,7 @@ editBlogCall(eachData,type) {
        console.log(data);
         this.dateChange(data.publish_up);
         this.timeChange(data.publish_up);
-      
+       
    if(data.tags.length!=0)
           {
             data.tags.forEach(tag=>{
@@ -1644,6 +1723,7 @@ editBlogCall(eachData,type) {
        
    if(type=='publish')
     {
+      this.isPageStartLoader=false;
         this.isEditorForEditThePublish=true;
     }
     else if(type=='draft')
@@ -1652,13 +1732,19 @@ editBlogCall(eachData,type) {
       //   createdDate:'',
       //   createdTime:''
       //  })
+      this.isPageStartLoader=false;
         this.isEditorForEditTheDraft=true;
       }
       else{
+        this.isPageStartLoader=false;
         this.isEditorForEditTheOnline=true;
       }
    },err=>{
-
+    this.isAlertPopuperror=true;
+    this.alertMessage=this.connect_err;
+    PublishComponent.showDraft=false;
+    PublishComponent.showIonized=false;
+    this.isPageStartLoader=false;
    },
   ()=>{
     PublishComponent.showDraft=false;
@@ -1701,7 +1787,9 @@ deleteTheBlog(){
      this.alertMessage = '';
      this.publishedData.splice(this.deleteBlogIndex,1);
   }, (err) => {
-
+    this.isAlertPopuperror=true;
+    this.isDeleteAlertPopup = false;
+      this.alertMessage=this.connect_err;
   }, () => {
     // console.log(this.trendingTopicsData);
     this.isStartLoader = false;
@@ -1917,6 +2005,8 @@ blogTopicClick(key) {
         
       },(err) => {
         this.isLoaderForUpdateBlog=false;
+        this.isAlertPopuperror=true;
+        this.alertMessage=this.connect_err;
         //this.isStartLoader = false;
        }, () => {
          this.filePublishInput.nativeElement.value = '';
@@ -1933,14 +2023,15 @@ blogTopicClick(key) {
   // Publish the blog
   publishTheBlog(blog) {
     console.log(blog);
+    this.isPageStartLoader=true;
     this.publishService.getBlogDetailViewService(blog.postid).subscribe( 
     (blogResponse: any) => {
-       
         this.createdDate=blogResponse.publish_up;
         this.createdTime=blogResponse.publish_up;
         this.dateChange(this.createdDate);
         this.timeChange(this.createdDate);
          this.blogViewData = blogResponse;
+         this.isPageStartLoader=false;
        console.log(this.blogViewData);
        if(blogResponse.tags.length!=0)
           {
@@ -1948,7 +2039,15 @@ blogTopicClick(key) {
                 this.blogTags.push(tag.title);
             })
           }
-    })
+    }, (err) => {
+      this.isStartLoader=false;
+      this.isPageStartLoader=false;
+      this.isAlertPopuperror=true;
+      this.isPublishNow=false;
+      PublishComponent.showIonized=false;
+      this.alertMessage=this.connect_err;
+    }, () => {
+    });
       
     //this.postionizeorpublish=blog;
     this.isPublishNow = true;
@@ -1962,11 +2061,13 @@ blogTopicClick(key) {
   // ionize the draft
   //postionizeorpublish="";
   ionizeTheDraft(blog) {
+    this.isPageStartLoader=true;
     console.log(blog);
      //console.log(blog);
      this.blogTags=[];
     this.publishService.getBlogDetailViewService(blog.postid).subscribe( 
-    (blogResponse: any) => {
+    (blogResponse: any) => { 
+      this.isPageStartLoader=false;
       this.createdDate=blogResponse.publish_up;
       this.createdTime=blogResponse.publish_up;
       this.dateChange(this.createdDate);
@@ -1979,18 +2080,41 @@ blogTopicClick(key) {
                 this.blogTags.push(tag.title);
             })
           }
+          if(this.blogTypes.length>0)
+      {
+        this.blogTypes.forEach(category=>{
+          console.log(category.id);
+          console.log(blogResponse.category.categoryid);
+          console.log(category.id==blogResponse.category.categoryid);
+          if(category.id==blogResponse.category.categoryid)
+            {
+                  category.selected=true;
+            }
+            else{
+                  category.selected=false;
+            }
+        })
+      }
     //this.postionizeorpublish=blog;
     this.isIonizeNow = true;
     PublishComponent.showDraft=false;
     PublishComponent.showIonize=false;
     PublishComponent.showPublished=false;
     PublishComponent.showIonized=false;
-    })
+    }, (err) => {
+      this.isAlertPopuperror=true;
+      this.isIonizeNow=false;
+      this.isPageStartLoader=false;
+      PublishComponent.showDraft=false;
+      this.alertMessage=this.connect_err;
+    }, () => {
+    });
      
   }
   typeselected(type){
     this.blogTypes.forEach(btype=>{
         btype.selected=false;
+        //this.blogtypeSelected=true;
         if(btype.id==type.id)
           {
             type.selected=true;
@@ -2036,6 +2160,7 @@ blogTopicClick(key) {
     this.showDay="";
     this.showMonth="";
     this.showTime="";
+    this.imageUploadAlert = false;
     this.createAndUpdateTheBlogForm.patchValue({
       title:'',
       content:'',

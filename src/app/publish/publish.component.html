@@ -12,7 +12,7 @@
 
             <div class="lt-col"></div>
             <div class="rt-col">
-              <a style="cursor: pointer;" class="btn-small" (click)="blogCalendarCall();">Blog Calender</a> &#160;&#160;&#160;
+              <a style="cursor: pointer;" class="btn-small" [routerLink]="['/publish/calendar']">Blog Calender</a> &#160;&#160;&#160;
               <a class="btn-small" style="cursor: pointer;" (click)="createNewPostCall();">Create New post</a>
             </div>
           </div>
@@ -517,7 +517,7 @@
                       <button class="button ionize" (click)="ionizeTheDraft(staticViewData)">IONIZE</button>
                     </div>
                   </div>
-                </div>
+                </div> 
                 <div class="publish_status_pop ionized" *ngIf="staticShowIonized" [style.left.px]="staticViewData.offsetLeft" [style.top.px]="staticViewData.offsetTop+23" style="position:absolute !important;z-index:5;">
                   <div class="top"><a class="ionized">Ionized</a></div>
                   <div class="middle">
@@ -1142,8 +1142,8 @@
           <div class="btn_actions">
             <!-- <button class="button btn-ionize" *ngIf="draftCurrentClass == 'ionize'" (click)="updateTheBlogFromEdit(4)">IONIZE</button>  -->
             <button class="button btn-ionize" *ngIf="draftCurrentClass == 'save'" (click)="updateTheBlogFromEdit(createAndUpdateTheBlogForm.controls['status'].value)">SAVE</button>
-            <button class="button btn-ionize" *ngIf="draftCurrentClass == 'publish'" (click)="updateTheBlogFromEdit(2)">SCHEDULE</button>
-            <button class="button btn-publish pub--pub-prvw__btns" *ngIf="draftCurrentClass == 'publish'" (click)="updateTheBlogFromEdit(1)">PUBLISH NOW</button>
+            <button class="button btn-ionize" *ngIf="draftCurrentClass == 'publish'" (click)="updateTheBlogFromEdit(2)" style="height: 39px;">SCHEDULE</button>
+            <button class="button btn-publish" *ngIf="draftCurrentClass == 'publish'" (click)="updateTheBlogFromEdit(1)">PUBLISH NOW</button>
           </div>
 
         </div>
@@ -1281,10 +1281,13 @@
                 <label class="form_lables">It’s a</label>
                 <div class="form_fields bx-bg pub--draft__pop--edtr-its-opts">
                   <a style="cursor: pointer;" (click)="typeselected(type)" [class.selected]="type.selected?draftCategeory == 'blog':''" *ngFor="let type of blogTypes;let i=index;">{{type.title}}</a>
+                  
+                  <!-- <span style="color:red" *ngIf="createAndUpdateTheBlogForm.controls['content'].hasError('required') && createAndUpdateTheBlogForm.controls['content'].touched">Content Is Required</span> -->
                   <!-- <a style="cursor: pointer;" (click)="draftCategeory = 'blog'" [class.selected]="draftCategeory == 'blog'">Blog</a>
               <a style="cursor: pointer;" (click)="draftCategeory = 'event'" [class.selected]="draftCategeory == 'event'">Event</a>
               <a style="cursor: pointer;" (click)="draftCategeory = 'news'" [class.selected]="draftCategeory == 'news'">News</a> -->
                 </div>
+            <!-- <span style="color:red" *ngIf="!blogtypeSelected">Please Select The Blog Type.</span> -->
               </li>
 
               <li class="pub-draft__pop-ion-tags">
@@ -2215,15 +2218,27 @@
       </div>
     </div>
   </div>
+<!-- iserrorpopup -->
+<div class="model model-alerts" *ngIf="isAlertPopuperror"  style="margin-top: 275px; box-shadow: 0 0 5px #777;z-index: 10">
+  <!-- <a class="close" style="cursor: pointer;">Close</a> -->
 
+  <div class="model-content">
+    <p>{{alertMessage}}</p>
+    <div class="btn_actions">
+      <div class="button btn-ok" (click)="isAlertPopuperror = false;">ok</div>
+      <!-- <div class="button btn-dismiss" (click)="isAlertPopup = false;">cancel</div> -->
+
+    </div>
+  </div>
+</div>
   <!-- Popup create new post end-->
-
+ 
   <!-- alert -->
-  <div class="model model-alerts" *ngIf="isAlertPopup">
+  <div class="model model-alerts" *ngIf="isAlertPopup"  style="margin-top: 275px; box-shadow: 0 0 5px #777;z-index: 10">
     <!-- <a class="close" style="cursor: pointer;">Close</a> -->
 
     <div class="model-content">
-      <p>Blog Deleted Successfully.</p>
+      <p>{{alertMessage}}</p>
       <div class="btn_actions">
         <div class="button btn-ok" (click)="getPublishedBlogs(); isAlertPopup = false;">ok</div>
         <!-- <div class="button btn-dismiss" (click)="isAlertPopup = false;">cancel</div> -->
@@ -2457,6 +2472,7 @@
                     <a style="cursor: pointer;" (click)="draftCategeory = 'event'" [class.selected]="draftCategeory == 'event'">Event</a>
                     <a style="cursor: pointer;" (click)="draftCategeory = 'news'" [class.selected]="draftCategeory == 'news'">News</a> -->
                 </div>
+                  <!-- <span style="color:red" *ngIf="!blogtypeSelected">Please Select The Blog Type.</span> -->
               </li>
 
             <li class="pub-draft__pop-ion-tags">
@@ -2547,6 +2563,6 @@
      </div>
     </div> -->
 
-  <div class="overlay" *ngIf="isStartLoader || isTrendingTopicsList || isIonizeNow || isPublishNow || isOpenEditor || isCreateNewPost || isCreateBlog || isAlertPopup || isBlogDraft || isIonizedBlog || isAddNewTopic || isBlogEditor || isPublishedBlog || isEditorForEditThePublish || isEditorForEditTheDraft || isEditorForEditTheOnline || showRequestIsTaken || isPageStartLoader || isDeleteAlertPopup"></div>
+  <div class="overlay" *ngIf="isStartLoader || isTrendingTopicsList || isIonizeNow || isPublishNow || isOpenEditor || isCreateNewPost || isCreateBlog || isAlertPopup || isBlogDraft || isIonizedBlog || isAddNewTopic || isBlogEditor || isPublishedBlog || isEditorForEditThePublish || isEditorForEditTheDraft || isEditorForEditTheOnline || showRequestIsTaken || isPageStartLoader || isDeleteAlertPopup || isAlertPopuperror"></div>
 
 </div>

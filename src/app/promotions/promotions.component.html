@@ -8,7 +8,7 @@
       <div class="panel panel_promotions" *ngIf="!isPromotionFullView">
         <div class="panel_promotions__top" *ngIf="promotionsData">
           <h1>Select your promotion <span>({{ promotionsData[0]?.title }})</span></h1>
-          <div class="panel_promotions__list">
+          <div class="panel_promotions__list"> 
             <ul>
               <li *ngFor="let eachpromotion of promotionsData[0]?.child; let i = index" (click)="promotionDemo(eachpromotion);">
                 <div class="promo-block"> <img src="{{eachpromotion.avatar}}"></div>
@@ -154,7 +154,7 @@
           <h1 class="txt-center"><b>Create your promotional SMS</b></h1>
           <div class="promotions_input">
 
-            <textarea placeholder="Write your text here.." [(ngModel)]="smsText" class="textarea brd-radius-5" (ngModelChange)="showErrorForSmsContent=false;smsTextChange(smsText)"></textarea>
+            <textarea placeholder="Write your text here.." [(ngModel)]="smsText" class="textarea brd-radius-5" (ngModelChange)="showErrorForSmsContent=false;smsTextChange(smsText)" data-gramm_editor="false"></textarea>
             <div class="txt-hint"> {{smsText.length}} / {{noOfMessages}}</div>
           </div>
 

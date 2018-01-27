@@ -8,4 +8,5 @@ export const IonServer = Object.freeze({
     email_required:'Email is required',
     invalid_email:'Invalid email',
     num_required:'Phone number is required',
+    nointernet_connection_err:'Please Check your Internet Connection'
 });

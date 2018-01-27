@@ -68,13 +68,16 @@
         <div class="home_hospital_feeds">
         <ul class="panel_box_list" *ngFor="let eachfeed of dashboardFeedData; let i = index">
         <li class="brd-radius-5">
-          <div class="feed_image"><img *ngIf="eachfeed.avatar == ''" src="assets/images/user_image.jpg" width="65" height="65" alt="Hospital Feed">
-            <img *ngIf="eachfeed.avatar != ''" src="{{ eachfeed.avatar }}" width="65" height="65" alt="Hospital Feed"></div>
+          <div class="feed_image"><img *ngIf="eachfeed.avatar == ''" src="assets/css/images/profile_no_img.png" width="65" height="65">
+            <img *ngIf="eachfeed.avatar != ''" src="{{ eachfeed.avatar }}" width="65" height="65"></div>
           <div class="feed_info"> <span class="lg-text home--hosp-fld__txt">{{ eachfeed.content.split(":")[0] }}</span> {{ eachfeed.content.split(":")[1] }}
             <div class="feed_info_stamp">{{eachfeed.since}} ago</div>
           </div>
           <div class="feed_actions txt-center">
-             <a *ngIf="eachfeed.action == 'View' && eachfeed.context.includes('blog')" style="cursor: pointer;" class="view_link" [routerLink]="['/publish']">
+            <a *ngIf="eachfeed.action == 'Publish' && eachfeed.context.includes('blog')" style="cursor: pointer;" class="view_link" [routerLink]="['/publish']">
+                  <div>{{eachfeed.action}}</div>
+                </a>
+             <a *ngIf="eachfeed.action == 'View' && eachfeed.context.includes('blog')" style="cursor: pointer;" class="view_link" [routerLink]="['/publish/online']">
                   <div>{{ eachfeed.action }}</div>
                 </a>
               <a *ngIf="eachfeed.action == 'View' && eachfeed.context.includes('visit')" style="cursor: pointer;" class="view_link" [routerLink]="['/visits']">
@@ -105,7 +108,7 @@
     <!-- Panel Right Ends -->
 </div>
 <!-- Popup1 -->
-<div class="model model-promotions" *ngIf="isPromoPopupOpen">
+<div class="model model-promotions" *ngIf="isPromoPopupOpen" style="width:900px !important;">
 <a class="close" style="cursor: pointer;" (click)="isPromoPopupOpen = false">Close</a>
 <div class="model-titlebar">
 <span class="model-title" style="display:none;">Popup Title</span>

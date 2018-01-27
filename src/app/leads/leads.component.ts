@@ -34,6 +34,7 @@ export class LeadsComponent implements OnInit {
   email_required_comm=IonServer.email_required;
   invalid_email_comm=IonServer.invalid_email;
   num_required_comm=IonServer.num_required;
+  connect_err=IonServer.nointernet_connection_err;
   @ViewChild('fileInput') fileInput;
   @ViewChild('editcontainer') editcontainer;
   imageSrc: any = '';
@@ -247,7 +248,10 @@ addLeads() {
                           //this.getLeads();
                       }
                     }, (err) => {
-                         
+                      this.isAlertPopupError=true;
+                      this.alertMessage=this.connect_err;
+                      this.isStartLoader=false;
+                      this.isAddLead = false;
                     }, () => {
                       this.isStartLoader = false;
                       this.clearForm();
@@ -269,7 +273,10 @@ addLeads() {
                         //this.getLeads();
                     }
                   }, (err) => {
-
+                    this.isAlertPopupError=true;
+                    this.alertMessage=this.connect_err;
+                    this.isStartLoader=false;
+                    this.isEditLead = false;
                   }, () => {
                     this.isStartLoader = false;
                     this.clearForm();
@@ -441,7 +448,7 @@ clearForm() {
               },(err)=>{
                 console.log(err);
                 this.isAlertPopupError=true;
-                this.alertMessage="Please Check your Internet Connection";
+                this.alertMessage=this.connect_err;
                 this.isStartLoader=false;
               },()=>{
                 this.pageItems.forEach(item=>{
@@ -558,6 +565,7 @@ autoComplete=[];
     this.leadsService.getLeadTags().subscribe(res => {
         this.leadtagsForFilter=res.description;
          res.description.forEach(element => {
+           if(element.title!=='all')
             this.autoComplete.push(element.title);
           });
        // console.log(this.leadtagsForFilter);
@@ -693,6 +701,8 @@ autoComplete=[];
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
       },(err) => {
+        this.isAlertPopupError=true;
+        this.alertMessage=this.connect_err;
       }, () => {
         this.isStartLoader = false;
       })
@@ -725,7 +735,15 @@ autoComplete=[];
                 //   (leadsResponse: any) => {
                 //     this.pageItems=leadsResponse.description;
                 //   });
-              });
+              },(err) => {
+                this.isStartLoader=false;
+                this.isDeleteAlertPopup=false;
+                this.isAlertPopupError=true;
+                this.isCheckBoxChecked = true;
+                this.alertMessage=this.connect_err;
+            }, () => {
+              this.isStartLoader = false;
+            });
     }
     
     selectedLeadUsingId(lead) {
@@ -885,6 +903,10 @@ autoComplete=[];
                   this.isAlertPopup = true;
                   this.alertMessage = "Groups Added Successfully To Selected Leads.";
           },(err) => {
+              this.isStartLoader=false;
+              this.isAlertPopupError=true;
+              this.selectedLeadUsingId;
+              this.alertMessage=this.connect_err;
           }, () => {
             this.isStartLoader = false;
           })

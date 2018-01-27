@@ -5,19 +5,24 @@ import { FormBuilder, FormControl, FormGroup,FormArray } from '@angular/forms';
 import { LeadsService } from '../shared/services/leads/leads.service';
 import { AuthserviceService } from '../shared/services/login/authservice.service';
 import { PromotionsService } from '../shared/services/promotions/promotions.service';
+import { DashboardService } from '../shared/services/dashboard/dashboard.service';
+import { IonServer } from '../shared/globals/global';
 declare var require: any;
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  providers: [SearchService,AuthserviceService,LeadsService,PromotionsService],
+  providers: [SearchService,AuthserviceService,LeadsService,PromotionsService,DashboardService],
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
   isSearchPopup: boolean = false;
   isStartLoader: boolean = false;
   isNoResult:boolean=false;
+  isAlertPopupError:boolean=false;
+  isFeedsNotification:boolean=false;
   imageSrc: any = '';
   alertMessage: string = '';
+  notificationFeedData: any=[];
   numLength:number=0;
   isShowImgDeleteButt:boolean=false;
   tags: string = '';
@@ -30,7 +35,17 @@ export class HeaderComponent implements OnInit {
   isPromoPopupOpen: boolean = false;
   isAlertPopup: boolean = false;
   isSelectAddLeads:boolean=false;
+  connect_err=IonServer.nointernet_connection_err;
   gender=[{checked:true},{checked:false}];
+  spaceComment=IonServer.Space_Not_required;  
+  f_name_req_comm=IonServer.f_name_required;
+  l_name_required_comm=IonServer.l_name_required;
+  f_name_length_comm=IonServer.f_name_length;
+  email_required_comm=IonServer.email_required;
+  invalid_email_comm=IonServer.invalid_email;
+  num_required_comm=IonServer.num_required;
+  imgerror="Choose Only Image.";
+  imgsize="The file size can not exceed 8MB.";
   @ViewChild('fileInput') fileInput;
   leadForm: FormGroup = this.builder.group({
     firstname: new FormControl(''),
@@ -48,8 +63,8 @@ export class HeaderComponent implements OnInit {
     id:new FormControl(''),
     source:new FormControl('')
   });
-  constructor(private router: Router, private searchService: SearchService,private authService: AuthserviceService,private builder: FormBuilder,private leadsService: LeadsService,private promotionService:PromotionsService) { }
-
+  constructor(private router: Router, private searchService: SearchService,private authService: AuthserviceService,private builder: FormBuilder,private leadsService: LeadsService,private promotionService:PromotionsService,private dashboardService: DashboardService) { }
+    
   ngOnInit() {
     console.log(localStorage.getItem('user')==null);
     
@@ -71,6 +86,25 @@ export class HeaderComponent implements OnInit {
     if(localStorage.getItem('user')!='')
     return JSON.parse(localStorage.getItem('user'));
 }
+topNotification:any=[];
+ // Get dashboard feeds
+ getNotificationFeeds() {
+  this.dashboardService.getDashboardFeeds().subscribe(
+    (notificationResponse: any) => {
+      this.notificationFeedData = notificationResponse.description;
+       console.log( this.notificationFeedData);     
+    }, (err) => {
+      this.isAlertPopup=true;
+      this.alertMessage=this.connect_err;
+      this.isFeedsNotification=false;
+    }, () => {
+    });
+
+}
+feedsNotification(){
+  this.isFeedsNotification=!this.isFeedsNotification;
+  this.getNotificationFeeds();
+}
 searchtext="";  
 searchCall(searchtext) {
   this.isSearchPopup = true;
@@ -89,6 +123,9 @@ searchCall(searchtext) {
               }
           }, (err) => {
             this.isStartLoader = false;
+            this.isAlertPopup=true;
+            this.isSearchPopup=false;
+            this.alertMessage=this.connect_err;
           }, () => {
             this.isStartLoader = false;
 
@@ -299,14 +336,19 @@ addLeads() {
                           this.isSelectAddLeads=false;
                       }
                     }, (err) => {
-                            
+                      this.isAlertPopup=true;
+                      this.isSelectAddLeads=false;
+                      this.alertMessage=this.connect_err;
+                      this.isFeedsNotification=false; 
                     }, () => {
                       this.isStartLoader = false;
                       this.clearForm();
                     });
+                    
       } else {
         this.validateAllFormFields(this.leadForm); 
         this.isStartLoader = false;
+
       }
   }
   validateAllFormFields(formGroup: FormGroup) {         //{1}

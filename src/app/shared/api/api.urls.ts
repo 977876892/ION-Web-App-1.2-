@@ -39,7 +39,6 @@ export class API {
   }
   public static GET_BLOG_TYPES(key,publishid){
      return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_api&format=raw&app=easyblog&resource=category&key=${key}&parentid=${publishid}`);
-  
   }
   public static CREATE_TRENDING_TOPIC(topic,date)
   { 
@@ -181,11 +180,11 @@ export class API {
   }
   // send sms using tags
   public static SEND_SMS_USING_TAGS(tags,message,username,pwd){
-    return this.removeWhiteSpaces(`http://staging.getion.in/index.php/request/sendSmsByTags/contacts/contacts?
+    return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request/sendSmsByTags/contacts/contacts?
     sendType=server&tags=${tags}&message=${message}&username=${username}&pwd=${pwd}&encode=true`);
   }
    public static SEND_SMS_USING_NUMBERS(phoneNo,message,username,pwd){
-    return this.removeWhiteSpaces(`http://staging.getion.in/index.php/request/sendSmsByPhoneNumb/contacts/contacts?
+    return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request/sendSmsByPhoneNumb/contacts/contacts?
     sendType=server&phone=${phoneNo}&message=${message}&username=${username}&pwd=${pwd}&encode=true`);
   }
   // get promotions ionized blogs api url
@@ -463,6 +462,8 @@ public static BLOG_DETAIL_VIEW(blogId, authkey) {
 }
 // get all blog comments
 public static GET_BLOG_COMMENTS(blogId) {
+  console.log(`${IonServer.ION_SERVER}/index.php/request?action=fullview&module=ionplanner&resource=planner
+  &type=blog&id=${blogId}`);
   return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?action=fullview&module=ionplanner&resource=planner
   &type=blog&id=${blogId}`);
 }

@@ -42,14 +42,14 @@
                 <span [ngClass]="{'menu_color_cha':router.url.includes('queries')}">Queries</span>
                 </a> 
                 </li>
-                <li  class="more_nav"  *ngIf="!isLoadMore">
+                 <li  class="more_nav"  *ngIf="!isLoadMore">
                   <a style="cursor: pointer;" (click)="isLoadMore = !isLoadMore">
                      <div class="more_circle">
                          <div></div> <div></div> <div></div>
                      </div>
                       <div>more</div>
                   </a>
-              </li>
+              </li> 
                 <li routerLink="/leads" routerLinkActive="active" *ngIf="isLoadMore && currentuser.userGroup==17">
                   <a class="active ripple" style="cursor: pointer;">
                   <img src="assets/images/Leads-1.png" width="35" height="31" *ngIf="!router.url.includes('leads')">
@@ -204,7 +204,7 @@
           <ul>
             <li style="cursor: pointer;" class="info__answered" [class.info__active]="analyticsType == 'website'" (click)="analyticTypeClick('website');">
               <div class="info__count"> 
-                <p>Web Site</p>
+                <p>WebSite</p>
               </div>
             </li>
             <li style="cursor: pointer;" class="info__unanswred" [class.info__active]="analyticsType == 'publish'" (click)="analyticTypeClick('publish');">

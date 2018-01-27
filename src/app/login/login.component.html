@@ -13,6 +13,8 @@
       <div class="login_box bx-shadow">
         <h1 class="heading" >Hello!<br>
           <span style="font-weight: bold;">Enter Login Details</span></h1>
+           <span class="form-error" *ngIf="errorMessage" style="color: #f00">{{errorMessage}}</span>
+          <span class="form-error" *ngIf="errorMessageEmpty" style="color: #f00">{{errorMessageEmpty}}</span>
        
            <form [formGroup]="loginForm" (ngSubmit)="signIn()" novalidate="novalidate">
         <div class="form-section">
@@ -40,6 +42,7 @@
             <input type="password" class="input has-errors line__style" minlength="3" maxlength="40" [formControl]="loginForm.controls['password']" placeholder="Password" required (input)="username_field($event.target.value)">
             </div>
           </div>
+         
           <div class="align-center btn-margin">
             <button (click)="signIn();"  class="btn button button-secondary btn_login no-border rounded ripple" type="submit"><span>Log In</span></button>
           </div>
@@ -54,8 +57,7 @@
           
         </div>
                   <div >
-          <span class="form-error" *ngIf="errorMessage" style="color: #f00">{{errorMessage}}</span>
-          <span class="form-error" *ngIf="errorMessageEmpty" style="color: #f00">{{errorMessageEmpty}}</span>
+          
          <br/><br/>
           </div> 
                </form>

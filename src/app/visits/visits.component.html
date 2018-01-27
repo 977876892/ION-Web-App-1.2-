@@ -54,6 +54,7 @@
 		<table class="visits-table-data" cellpadding="0" cellspacing="0" width="100%">
         <tr class="titles">
           <th>&nbsp;</th>
+          <th style="padding:0px;"></th>
           <th class="txt-uppercae">Name</th>
           <!-- <th class="txt-uppercae">Age</th> -->
           <th class="txt-uppercae">Phone</th>
@@ -74,11 +75,11 @@
   <tr *ngFor="let eachdata of booking[1] | orderBy: orderVal; let j = index">
         <td (click)="patientDetails(eachdata.id);" *ngIf="eachdata.image!=''"><img src="{{eachdata.image}}" style="width: 34px;height: 34px;border-radius: 50%;"></td>
         <td (click)="patientDetails(eachdata.id);" *ngIf="eachdata.image==''"><span class="avatar avatar-r">{{ eachdata.nametag }}</span></td>
-        <td class="v-name xs-pad-10 visit_styling" (click)="patientDetails(eachdata.id);">
-            <div style="width:128px !important; white-space: nowrap;overflow: hidden !important;text-overflow: ellipsis;" title="{{ eachdata.name }}"> {{ eachdata.name }}</div>
+        <td class="v-name xs-pad-10 visit_styling" (click)="patientDetails(eachdata.id);" style="width: 86px !important;">
+            <div style="width:85px !important; white-space: nowrap;overflow: hidden !important;text-overflow: ellipsis;" title="{{ eachdata.name }}"> {{ eachdata.name }}</div>
         </td>
         <!-- <td class="v-age xs-pad-10">{{ eachdata.age }}</td> -->
-        <td class="v-mobile xs-pad-10 visit_styling">{{ eachdata.mobile }}</td>
+        <td class="v-mobile xs-pad-10 visit_styling" style="width: 97px !important;">{{ eachdata.mobile }}</td>
         <!-- <td class="v-email xs-pad-10">{{ eachdata.email }}</td> -->
         <td class="v-doctor xs-pad-10 visit_styling_doc">{{ eachdata.resname }}</td>
         <td class="v-time xs-pad-10 visit_styling">{{ eachdata.display_starttime }}</td>
@@ -129,14 +130,14 @@
           </div>
            </label>
         <div class="profile_bottom"><span>
-            <label for="file-upload"  class="custom-file-upload" *ngIf="!isShowImgDeleteButt && imageSrc ==''|| imageSrc=='http://staging.getion.in/'">
+            <label for="file-upload"  class="custom-file-upload" *ngIf="!isShowImgDeleteButt && imageSrc ==''">
                 Upload Image
             </label>
              
-            <div *ngIf="isShowImgDeleteButt  || imageSrc !='' && imageSrc !='http://staging.getion.in/'">
+            <div *ngIf="isShowImgDeleteButt  || imageSrc !=''">
               <label for="file-upload"  class="custom-file-upload" class="upload-img">CHANGE</label>
              <div style="float:left">
-              <span style="width: 1px;height: 40px;background-color:#0000002e;" *ngIf="isShowImgDeleteButt || imageSrc !='' && imageSrc !='http://staging.getion.in/'"></span>
+              <span style="width: 1px;height: 40px;background-color:#0000002e;" *ngIf="isShowImgDeleteButt || imageSrc !=''"></span>
             </div>
               <label style=" color: red;" class="upload-img" (click)="uploadImgeDelete()"> <b>X</b> DELETE</label>
             </div>
@@ -371,7 +372,7 @@
                   </ul>
               </div>
 
- 
+  
         <div class="actions" *ngIf="!isEditVisit">
         <button class="button profile-action ripple" type="submit" (click)="addVisit()"  tabindex="16">ADD APPOINTMENT</button> &#160;&#160;
         <button class="button cancel-action" (click)="isAddVisit = false;closeAddAndEditVisit();" style="margin-top: 1px;"  tabindex="17">cancel</button>
@@ -518,7 +519,7 @@
   <div class="model model-add_leads bx-shadow model-popup" *ngIf="isPrintClicked">
     <a class="close" href="javascript:void(0);" (click)="isPrintClicked=false;visitDownloadForm.reset();showTodayOrTomorrowError=false;
     showBetweenError=false;fromdate='';fromDateEmpty=true;">Close</a>
-
+    <div class="loader" *ngIf="isStartLoader"></div>
      <div class="model-content">
       <div class="appointment-block bx-border-stl-2">
         <div class="heading vis--down-pop__heading">DOWNLOAD & PRINT DETAILS</div>
@@ -702,16 +703,28 @@
 
     </div>
 
+   <!-- iserrorpopup -->
+   <div class="model model-alerts" *ngIf="isAlertPopupError" style="margin-top: 275px;box-shadow: 0 0 5px #777;">
+    <!-- <a class="close" href="javascript:void(0);">Close</a> -->
+
+    <div class="model-content">
+     <p>{{ alertMessage }}</p>
+    <div class="btn_actions">
+      <div class="button btn-ok" (click)="isAlertPopupError = false;" >ok</div>
+
+      </div>
+     </div>
+    </div>
+
       <!-- Popup end -->
       <!-- alert -->
-      <div class="model model-alerts" *ngIf="isAlertPopup" style="margin-top: 275px;">
+      <div class="model model-alerts" *ngIf="isAlertPopup" style="margin-top: 275px;box-shadow: 0 0 5px #777;">
           <!-- <a class="close" href="javascript:void(0);">Close</a> -->
 
           <div class="model-content">
            <p>{{ alertMessage }}</p>
           <div class="btn_actions">
-            <div class="button btn-ok" (click)="isAlertPopup = false;getVisits();">ok</div>
-
+            <div class="button btn-ok" (click)="isAlertPopup = false;getVisits();" >ok</div>
 
             </div>
            </div>
@@ -741,4 +754,4 @@
     </div> -->
 </div>
 <!-- Container ends -->
-<div class="overlay" *ngIf="isAddVisit || isPrinting || isPrintClicked || imageUploadAlert || isEditVisit || isShowPatientDetails || isStartLoader || isAlertPopup || isAddVisitLoader||isDeleteAlert"></div>
+<div class="overlay" *ngIf="isAddVisit || isPrinting || isPrintClicked || imageUploadAlert || isEditVisit || isShowPatientDetails || isStartLoader || isAlertPopup || isAddVisitLoader||isDeleteAlert || isAlertPopupError"></div>

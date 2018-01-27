@@ -1157,12 +1157,12 @@ export class AnalyticsComponent implements OnInit {
                           this.analyticsService.yearWiseLineChart(selectedYear).subscribe(
                             (visistYearwiseLineReport: any) => {
 
-                              if(visistYearwiseLineReport.length==0)
+                              if(visistYearwiseLineReport.data.length==0)
                                 {
                                   this.showYearlyLineChart=false;
                                 }
                                 else{
-                                      var visistYearwise,month;
+                                      var visistYearwise=[],month;
                                       visistYearwise=visistYearwiseLineReport.data;
                                      // console.log(visistYearwise);
                                       for(var x=0;x<12;x=x+1){
@@ -1299,7 +1299,8 @@ export class AnalyticsComponent implements OnInit {
                     this.showByRevenue=false;
                     this.analyticsService.doctorWiseRevenue().subscribe(
                     (doctorWiseRevenue: any) => {
-                      if(doctorWiseRevenue.length==0)
+                      console.log(doctorWiseRevenue);
+                      if(doctorWiseRevenue.count.length==0)
                         {
                           this.showByRevenue=false;
                         }
@@ -1327,7 +1328,7 @@ export class AnalyticsComponent implements OnInit {
                     this.showByVisits=false;
                     this.analyticsService.doctorWiseVisits().subscribe(
                     (doctorWiseVisits: any) => {
-                      if(doctorWiseVisits.length==0)
+                      if(doctorWiseVisits.count.length==0)
                         {
                           this.showByVisits=false;
                         }

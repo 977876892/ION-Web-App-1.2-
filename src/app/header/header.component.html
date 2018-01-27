@@ -1,8 +1,46 @@
 <div class="rt-header wrapper__padding" *ngIf="isShowHeader">
     <label class="username"><span class="name">Hello,</span><span class="honorific">Dr. </span>{{ user.name }}</label>
     <div class="rt-header__rt__block">
-        <a style="cursor: pointer;" class="no-margin">
-            <img src="assets/css/images/Notifications.png" width="29" height="31" style="vertical-align: middle;">
+      <!-- notification popup-->
+ <div class="user__status_pop_transferq" *ngIf="isFeedsNotification" style="right: 396px;top:13px;">
+    <div class="user__status_popbody bx-shadow brd-radius-15 transfer_pop" style="z-index:10; width: 450px;border-radius: 20px !important;">
+        <div class="title"></div>
+        <div class="content_notification">
+            <ul>
+                <li class="brd-radius-5" *ngFor="let eachfeed of notificationFeedData | slice:0:10;" style="padding: 6px;border-radius: 10px;box-shadow: 0 0 5px #bbbbbb;margin-bottom:18px;">
+                  <div class="feed_image" style="padding: 10px;">
+                    <img *ngIf="eachfeed.avatar == ''" src="assets/images/user_image.jpg" width="65" height="65" alt="Hospital Feed">
+                    <img *ngIf="eachfeed.avatar != ''" src="{{ eachfeed.avatar }}" width="65" height="65" alt="Hospital Feed">
+                  </div>
+                  <div class="feed_info"> <span class="lg-text home--hosp-fld__txt">{{ eachfeed.content.split(":")[0] }}</span> {{ eachfeed.content.split(":")[1] }}
+                    <div class="feed_info_stamp">{{eachfeed.since}} ago</div>
+                  </div>
+                  <div class="feed_actions txt-center">
+                    <a *ngIf="eachfeed.action == 'Publish' && eachfeed.context.includes('blog')" style="cursor: pointer;" class="view_link" [routerLink]="['/publish']">
+                          <div>{{eachfeed.action}}</div>
+                        </a>
+                     <a *ngIf="eachfeed.action == 'View' && eachfeed.context.includes('blog')" style="cursor: pointer;" class="view_link" [routerLink]="['/publish/online']">
+                          <div>{{ eachfeed.action }}</div>
+                        </a>
+                      <a *ngIf="eachfeed.action == 'View' && eachfeed.context.includes('visit')" style="cursor: pointer;" class="view_link" [routerLink]="['/visits']">
+                          <div>{{ eachfeed.action }}</div>
+                        </a>
+                        <a *ngIf="eachfeed.action == 'Reply'" routerLink="/queries/{{eachfeed.context_id}}" style="cursor: pointer;" class="view_link">
+                            <div>{{ eachfeed.action }}</div>
+                        </a>
+                        <a *ngIf="eachfeed.action == 'Congratulate'" style="cursor: pointer;" (click)="congaratulate(eachfeed.id)" class="view_link">
+                            <div>{{ eachfeed.action }}</div>
+                        </a>
+                    <a *ngIf="eachfeed.action == 'Congratulated'" style="cursor: pointer;"> <img src="assets/images/congractulation-icon.png">
+                    <div>{{ eachfeed.action }}</div>
+                    </a> </div>
+                </li>
+              </ul>
+        </div>
+    </div>
+</div>
+      <a style="cursor: pointer;" class="no-margin" (click)="feedsNotification()">
+          <img src="assets/css/images/Notifications.png" width="29" height="31" style="vertical-align: middle;">
         </a>
         <a class="add_new" href="javascript:void(0)" (click)="isPromoPopupOpen = true">ADD NEW</a>
         <a href="javascript:void(0)" class="calender" [routerLink]="['/publish/calendar']"><div class="cal-date">{{todayDate}}</div></a>
@@ -11,8 +49,11 @@
       <button class="button rounded ripple" (click)="logout();" type="submit">Logout</button>
     </div>
   </div>
+
+ 
+
   <!--popup-->
- <div class="model model-promotions" *ngIf="isPromoPopupOpen">
+ <div class="model model-promotions" *ngIf="isPromoPopupOpen" style="width:900px !important;">
 <a class="close" style="cursor: pointer;" (click)="isPromoPopupOpen = false">Close</a>
 <div class="model-titlebar">
 <span class="model-title" style="display:none;">Popup Title</span>
@@ -35,7 +76,7 @@
 </div>  
 <!--popup1-->
   <!-- Popup2 -->
-<div class="model model-promotions" *ngIf="isSelectPromo"> 
+<div class="model model-promotions" *ngIf="isSelectPromo" style="width:900px;"> 
   <a class="close" style="cursor: pointer;" (click)="isSelectPromo = false">Close</a>
   <div class="model-titlebar">
   <span class="model-title" style="display:none;">Popup Title</span>
@@ -54,7 +95,7 @@
   
     <!-- Popup2 -->
      <!-- Popup3 -->
-<div class="model model-promotions" *ngIf="isPromoSelected"> 
+<div class="model model-promotions" *ngIf="isPromoSelected" style="width:900px;"> 
   <a class="close" style="cursor: pointer;" (click)="isPromoSelected = false;">Close</a>
   <div class="model-titlebar">
   <span class="model-title" style="display:none;">Popup Title</span>

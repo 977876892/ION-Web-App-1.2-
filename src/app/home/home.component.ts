@@ -35,6 +35,7 @@ imageUploadAlert: boolean = false;
 isSelectPromo: boolean = false;
 numLength:number=0;
 isPromoSelected: boolean = false;
+connect_err=IonServer.nointernet_connection_err;
 isSelectAddLeads:boolean=false;
 alertMessage: string = '';
 isShowImgDeleteButt:boolean=false;
@@ -269,6 +270,9 @@ selectPromo(eachpromotion){
         console.log( this.blogCommentsData);
       },(err)=> {
         this.isStartLoader = false;
+        this.isSelectSlider=false;
+        this.isAlertPopup=true;
+        this.alertMessage=this.connect_err;
       },()=>{
         this.isStartLoader = false;
       });
@@ -492,7 +496,10 @@ addLeads() {
                            this.isSelectAddLeads=false;
                        }
                      }, (err) => {
-                             
+                      this.isAlertPopup=true;
+                      this.isSelectAddLeads=false;
+                      this.alertMessage=this.connect_err;
+                      this.isStartLoader = false;
                      }, () => {
                        this.isStartLoader = false;
                        this.clearForm();

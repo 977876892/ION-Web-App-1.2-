@@ -3,7 +3,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { PromotionsService } from '../shared/services/promotions/promotions.service';
 import { AuthserviceService } from '../shared/services/login/authservice.service';
 import { LeadsService ,DataService} from '../shared/services/leads/leads.service';
-
+import { IonServer } from '../shared/globals/global';
 @Component({
   selector: 'app-promotions',
   templateUrl: './promotions.component.html',
@@ -24,6 +24,7 @@ export class PromotionsComponent implements OnInit {
   submitEnabled: boolean = false;
   ionizedPromotionTitle="";
   showErrorForSms:boolean=false;
+  connect_err=IonServer.nointernet_connection_err;
   currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
   smsBalance=this.currentuser.smsbalance;
    @ViewChild('fileInput') fileInput;
@@ -115,7 +116,9 @@ export class PromotionsComponent implements OnInit {
       console.log(promotionResponse);
       this.promotionsData = promotionResponse;
     }, (err) => {
-
+      this.isStartLoader = false;
+      this.isAlertPopup=true;
+      this.alertMessage=this.connect_err;
     }, () => {
       this.isStartLoader = false;
       this.getIonizedBlogsData();
@@ -195,7 +198,9 @@ upload(){
         this.isStartLoader = false;
       }
     },(err) => {
-
+ this.isAlertPopup=true;
+ this.alertMessage=this.connect_err;
+ this.isStartLoader = false;
      }, () => {
       this.isStartLoader = false;
     });
@@ -449,6 +454,9 @@ notselectTags:boolean=false;
             this.promotionStatus=4;
             this.showRequestIsTaken=true;
             },(err) => {
+              this.isAlertPopup=true;
+              this.alertMessage=this.connect_err;
+              this.isStartLoader=false;
             }, () => {
             })
         }
@@ -496,6 +504,9 @@ notselectTags:boolean=false;
             this.isAlertPopup=true;
             this.getIonizedBlogsData();
             },(err) => {
+              this.isAlertPopup=true;
+              this.alertMessage=this.connect_err;
+              this.isStartLoader=false;
             }, () => {
             })
 
@@ -511,6 +522,8 @@ notselectTags:boolean=false;
                     this.isSendSmspopup=true;
                     },(err) => {
                       this.isStartLoader=false;
+                      this.isAlertPopup=true;
+                      this.alertMessage=this.connect_err;
                     }, () => {
                       this.isStartLoader=false;
                     })
