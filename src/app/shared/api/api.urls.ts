@@ -31,11 +31,14 @@ export class API {
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_api&format=raw&app=easyblog&resource=latest&key=
     ${authkey}&user_id=${category}&limitstart=${limitStart}&limit=10`);
   }
-
+  public static GET_BLOG_TAGS(auth){
+    console.log(`${IonServer.ION_SERVER}/index.php?option=com_api&app=easyblog&resource=tags&format=raw&key=${auth}&limitstart=0&title=""`);
+     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_api&app=easyblog&resource=tags&format=raw&key=${auth}&limitstart=0&title=""`);
+  }
   //get Categorirs
-  public static GET_CATEGORIES(key,title){
-    console.log(`${IonServer.ION_SERVER}/index.php?option=com_api&app=easyblog&resource=tags&format=raw&key=${key}&limitstart=0&title=${title}`);
-     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_api&app=easyblog&resource=tags&format=raw&key=${key}&limitstart=0&title=${title}`);
+  public static GET_CATEGORIES(teamid){
+    console.log(`${IonServer.ION_SERVER}/index.php/request?action=clienttags&module=ionplanner&resource=planner&userid=${teamid}`);
+     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?action=clienttags&module=ionplanner&resource=planner&userid=${teamid}`);
   }
   public static GET_BLOG_TYPES(key,publishid){
      return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_api&format=raw&app=easyblog&resource=category&key=${key}&parentid=${publishid}`);
@@ -62,14 +65,14 @@ export class API {
     console.log(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=get&resource=posts&
     username=${username}&&limitstart=${startFrom}&limit=${limit}&featured=1`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=get&resource=posts&
-    username=${username}&&limitstart=${startFrom}&limit=${limit}&featured=1`);
+    username=${username}&&limitstart=${startFrom}&limit=${limit}&featured=1&publish=1`);
   }
   // getting unanswered queries api url.
   public static GET_UNANSWERED_QUERIES(userId, username,startFrom,limit) {
     console.log(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=get&resource=posts&
     username=${username}&limitstart=${startFrom}&limit=${limit}&status=0`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=get&resource=posts&
-    username=${username}&limitstart=${startFrom}&limit=${limit}&status=0`);
+    username=${username}&limitstart=${startFrom}&limit=${limit}&status=0&publish=1`);
   }
   // getting answered queries api url.
   public static GET_ANSWERED_QUERIES(userId, username,startFrom,limit) {
@@ -180,10 +183,14 @@ export class API {
   }
   // send sms using tags
   public static SEND_SMS_USING_TAGS(tags,message,username,pwd){
+    console.log(`${IonServer.ION_SERVER}/index.php/request/sendSmsByTags/contacts/contacts?
+    sendType=server&tags=${tags}&message=${message}&username=${username}&pwd=${pwd}&encode=true`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request/sendSmsByTags/contacts/contacts?
     sendType=server&tags=${tags}&message=${message}&username=${username}&pwd=${pwd}&encode=true`);
   }
    public static SEND_SMS_USING_NUMBERS(phoneNo,message,username,pwd){
+     console.log(`${IonServer.ION_SERVER}/index.php/request/sendSmsByPhoneNumb/contacts/contacts?
+     sendType=server&phone=${phoneNo}&message=${message}&username=${username}&pwd=${pwd}&encode=true`)
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request/sendSmsByPhoneNumb/contacts/contacts?
     sendType=server&phone=${phoneNo}&message=${message}&username=${username}&pwd=${pwd}&encode=true`);
   }
@@ -461,11 +468,11 @@ public static BLOG_DETAIL_VIEW(blogId, authkey) {
   id=${blogId}&key=${authkey}`);
 }
 // get all blog comments
-public static GET_BLOG_COMMENTS(blogId) {
+public static GET_BLOG_COMMENTS(blogId,userid) {
   console.log(`${IonServer.ION_SERVER}/index.php/request?action=fullview&module=ionplanner&resource=planner
-  &type=blog&id=${blogId}`);
+  &type=blog&id=${blogId}&userid=${userid}`);
   return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?action=fullview&module=ionplanner&resource=planner
-  &type=blog&id=${blogId}`);
+  &type=blog&id=${blogId}&userid=${userid}`);
 }
 // add blog comments
 public static ADD_BLOG_COMMENTS(blogId, username, pwd) {

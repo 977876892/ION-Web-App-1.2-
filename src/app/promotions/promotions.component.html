@@ -99,8 +99,10 @@
         <div class="panel_promotions__btm xs-bg-white">
         	<div class="panel_promotions__demo_lt">
             <h2><b>Design Brief:</b></h2>
-            <textarea class="textarea bg-grey brd-radius-15" style="width:400px !important;font-weight:bold;" placeholder="Write an idea about your requirement and what kind of text you want in the poster.." [(ngModel)]="aboutImages"></textarea>
-            </div>
+            <textarea class="textarea bg-grey brd-radius-15" style="width:400px !important;font-weight:bold;" placeholder="Write an idea about your requirement and what kind of text you want in the poster.." [(ngModel)]="aboutImages" (ngModelChange)="showtextareaError=false;"></textarea>
+           <br/> <span style="color:red" *ngIf="showtextareaError">For Your promotion Brief Is Required</span>  
+          </div>
+           
 			      <div class="panel_promotions__demo_lt xs-width-fixed">
             <!-- <h2>Where do you want to post?</h2>
 
@@ -128,11 +130,11 @@
                  <a style="cursor: pointer;" *ngFor="let image of imageSrc"><div class="add_photo"  *ngIf="image!=''"><div class="profile-img-item "><span class="item-close" (click)="removeImage(i)"></span><img src="{{image}}" width="100" height="100"></div></div> </a>
                 <a style="cursor: pointer;"><div class="add_icon"><label for="file-upload"><img src="assets/images/add-icon-2.png" width="36" height="37"></label></div>
                 <input type="file" id="file-upload" #fileInput placeholder="Upload image..." (change)="upload()" accept="image/*" multiple/></a>
-                <span style="color:red" *ngIf="showError">For Your promotion At least One Image Required</span>
+                <br/>  <span style="color:red" *ngIf="showError">For Your promotion At least One Image Required</span>
     
             </div>         
             
-            <div style="text-align: center;">
+            <div style="text-align: center;"> 
             <button class="button brd-radius-10 bx-shadow ripple" (click)="ionizeThePromotion()" style="height: 40px;width: 60%"><span>Ionize</span></button>
           </div>
 
@@ -168,7 +170,7 @@
                     </div>
                 </div>
 
-                <div class="groups x-xlose-btn x-padding bx-border-stl-3 brd-radius-5" *ngIf="selectedTags.length>0" (click)="getPatientGroups();" style="width: 68% !important;margin-right: 8px !important;margin-top:-15px;">
+                <div class="groups x-xlose-btn x-padding bx-border-stl-13 brd-radius-5" *ngIf="selectedTags.length>0" (click)="getPatientGroups();" style="width: 68% !important;float: right;margin-top:-15px;">
                     <a style="cursor: pointer;" *ngFor="let tag of selectedTags">{{tag}}</a>
                     <!-- <a style="cursor: pointer;">Dr. Gurunatham</a><a style="cursor: pointer;">Dr. Gurunatham</a><a style="cursor: pointer;">Cardiology</a></div>
                     -->
@@ -267,7 +269,7 @@
     <li>
     <span>Credits</span>
     <br>
-    <p style="float: left;"><b>40</b></p>
+    <p style="float: left;"><b>{{creadisCount}}</b></p>
     <p style="border-radius: 5px;border: 2px Solid grey;padding: 1px;float: left;font-size: 11px;margin-top: 10px;margin-left: 17px;">USED</p>
     </li>
 
@@ -316,8 +318,8 @@
     <div class="model model-alerts" *ngIf="isSendSmspopup" style="margin-top:200px;">
                 <!-- <a class="close" href="#">Close</a> -->
                 <div class="model-content">
-                 <p>Total Receipts:{{messagesCount}}</p>
-                 <p>Current SMS Balance:{{smsBalance}}</p>
+                 <p>Total Recipients:{{messagesCount}}</p>
+                 <p>Current SMS Balance:{{smsBalance}}</p> 
                 <div class="btn_actions">
                   <div class="button btn-ok" (click)="isSendSmspopup = false;sendSmsToUsers();">send</div>
                    <div class="button btn-dismiss" (click)="isSendSmspopup = false;">cancel</div>

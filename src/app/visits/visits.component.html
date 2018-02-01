@@ -42,19 +42,57 @@
               </ul> -->
               </div>
             </div>
-            <div class="filter-add filters-inline">
+            
+                        
+            <div class="filter-add filters-inline" style="position: relative;">
+        <button class="button add-review" (click)="$event.stopPropagation();isReviewLinkPopup = !isReviewLinkPopup">Review Link</button>
       <button class="button add-icon" (click)="addVisitPopup(); isAddVisit = !isAddVisit">Add Visit</button>
       <a class="downloads" (click)="downloadVisits()"><img src="assets/css/images/download-icon-2.png" width="33" height="30"></a>
 			<a style="cursor: pointer;" (click)="printOptionsClick('printSectionId');" class="print"><img src="assets/css/images/print-icon.png" width="33" height="31"></a>
-			</div>
-          </div> <!-- Visits search Ends -->
+      </div>
+       <!-- Review link popup-->
+      <div class="user__status_pop_transferq review_pop" *ngIf="isReviewLinkPopup"  #filtercontainers>
+          <div class="user__status_popbody bx-shadow brd-radius-15 transfer_pop" style="z-index:10; width: 450px;border-radius: 20px !important;">
+              <div class="title" style="text-align:center;">Send  Appointment</div>
+              <div class="review_content_notification">
+                  <form [formGroup]="reviewForm" novalidate="novalidate">
+                      <div class="form-section" >
+                      <ul>
+                          <li>
+                              <span class="labels">Please enter patient mail id</span>
+                              <input type="text" autofocus class="input xs-fill-wt" tabindex="1" pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{1,63}$" [formControl]="reviewForm.controls['patientMailId']" required>
+                              <!-- <span class="booking_error" *ngIf="reviewForm.controls['patientMailId'].hasError('required') && reviewForm.controls['patientMailId'].touched">Email is required</span> -->
+                              <span class="booking_error" *ngIf="reviewForm.controls['patientMailId'].hasError('pattern') && reviewForm.controls['patientMailId'].touched">Invalid email</span>
+                            </li>
+                          <br>
+                          <li>
+                              <span class="labels">Please enter mobile number</span>
+                              <input type="number" (input)="onTypeNumValid($event.target.value)" minlength="10" maxlength="12" required class="input xs-fill-wt" tabindex="2"  onkeyup="if(!this.checkValidity()){this.value='e';alert('Please enter a number');};" pattern="\S.*\S" [formControl]="reviewForm.controls['patientMobileNumber']">
+                              <!-- <span class="booking_error" *ngIf="reviewForm.controls['patientMobileNumber'].hasError('required') && reviewForm.controls['patientMobileNumber'].touched">Phone Number is Required</span> -->
+                              <!-- <span style="color:red" *ngIf="phoneEmpty"> Phone Number is Required</span> -->
+                              <span class="booking_error" *ngIf="phoneMinlength"> Phone Number Should Be 10 Numbers.</span>
+                              <span class="booking_error" *ngIf="phoneZeroComm"> Invalid Number.</span>
+                            </li>
+                          <br>
+                          <li  class="actions">
+                              <button class="button profile-action ripple" type="submit" (click)="reviewlink()">Send  Appointment</button> &#160;&#160;
+                              <button class="button profile-action ripple" type="submit" (click)="reviewlink()">Send  Review Link</button> 
+                          </li>
+                      </ul>
+                      </div>
+                  </form>
+              </div>
+          </div>
+      </div> 
+
+   </div> <!-- Visits search Ends -->
 
 		<div class="table-data">
 
 		<table class="visits-table-data" cellpadding="0" cellspacing="0" width="100%">
         <tr class="titles">
           <th>&nbsp;</th>
-          <th style="padding:0px;"></th>
+          <th style="padding:0px;" class="visit_01"></th>
           <th class="txt-uppercae">Name</th>
           <!-- <th class="txt-uppercae">Age</th> -->
           <th class="txt-uppercae">Phone</th>
@@ -73,9 +111,9 @@
     <th>{{booking[0]}}</th>
   </tr>
   <tr *ngFor="let eachdata of booking[1] | orderBy: orderVal; let j = index">
-        <td (click)="patientDetails(eachdata.id);" *ngIf="eachdata.image!=''"><img src="{{eachdata.image}}" style="width: 34px;height: 34px;border-radius: 50%;"></td>
-        <td (click)="patientDetails(eachdata.id);" *ngIf="eachdata.image==''"><span class="avatar avatar-r">{{ eachdata.nametag }}</span></td>
-        <td class="v-name xs-pad-10 visit_styling" (click)="patientDetails(eachdata.id);" style="width: 86px !important;">
+        <td (click)="patientDetails(eachdata.id);" *ngIf="eachdata.image!=''"><img src="{{eachdata.image}}" style="width: 34px;height: 34px;border-radius: 50%;cursor:pointer;"></td>
+        <td (click)="patientDetails(eachdata.id);" *ngIf="eachdata.image==''" style="cursor:pointer;"><span class="avatar avatar-r">{{ eachdata.nametag }}</span></td>
+        <td class="v-name xs-pad-10 visit_styling" (click)="patientDetails(eachdata.id);" style="cursor:pointer;width: 86px !important;">
             <div style="width:85px !important; white-space: nowrap;overflow: hidden !important;text-overflow: ellipsis;" title="{{ eachdata.name }}"> {{ eachdata.name }}</div>
         </td>
         <!-- <td class="v-age xs-pad-10">{{ eachdata.age }}</td> -->
@@ -83,10 +121,10 @@
         <!-- <td class="v-email xs-pad-10">{{ eachdata.email }}</td> -->
         <td class="v-doctor xs-pad-10 visit_styling_doc">{{ eachdata.resname }}</td>
         <td class="v-time xs-pad-10 visit_styling">{{ eachdata.display_starttime }}</td>
-        <td class="status xs-pad-10" *ngIf="eachdata.request_status == 'new'"><span class="new_full">{{ eachdata.request_status }}</span></td>
-        <td class="status xs-pad-10" *ngIf= "eachdata.request_status == 'Canceled'||eachdata.request_status == 'canceled'"><a class="reject">Cancelled</a></td>
-        <td class="status xs-pad-10" *ngIf="eachdata.request_status == 'accepted'"><a class="accept">{{ eachdata.request_status }}</a></td>
-        <td class="status xs-pad-10" *ngIf="eachdata.request_status == 'Review'"><span class="review_full">{{ eachdata.request_status }}</span></td>
+        <td class="status xs-pad-10" *ngIf="eachdata.request_status == 'new'" style="padding-left: 0px !important;"><span class="new_full">{{ eachdata.request_status }}</span></td>
+        <td class="status xs-pad-10" *ngIf= "eachdata.request_status == 'Canceled'||eachdata.request_status == 'canceled'" style="padding-left: 0px !important;"><a class="reject">Cancelled</a></td>
+        <td class="status xs-pad-10" *ngIf="eachdata.request_status == 'accepted'" style="padding-left: 0px !important;"><a class="accept">{{ eachdata.request_status }}</a></td>
+        <td class="status xs-pad-10" *ngIf="eachdata.request_status == 'Review'" style="padding-left: 0px !important;"><span class="review_full">{{ eachdata.request_status }}</span></td>
         <td class="v-amount xs-pad-10">{{ eachdata.booking_deposit }}</td>
         <td class="v-edit xs-pad-10" (click)="visitEdit(eachdata.id);"><a style="cursor: pointer;" class="edit">edit</a></td>
          <td class="v-delete xs-pad-10" (click)="showDeleteAlert(eachdata.id);"><a style="cursor: pointer;" class="edit">edit</a></td>
@@ -125,24 +163,24 @@
         <div class="profile_card">
            <label for="file-upload"  class="custom-file-upload">
           <div class="profile_img">
-            <a *ngIf="imageSrc == ''"><img src="assets/css/images/profile_no_img.png" ></a>
-            <a  *ngIf="imageSrc"><img src="{{imageSrc}}" height="154px" width="154px" style="border-radius: 100px;"></a>
+            <a *ngIf="visitForm.controls['image'].value == ''"><img src="assets/css/images/profile_no_img.png" ></a>
+            <a  *ngIf="visitForm.controls['image'].value"><img src="{{visitForm.controls['image'].value}}" height="154px" width="154px" style="border-radius: 100px;"></a>
           </div>
            </label>
         <div class="profile_bottom"><span>
-            <label for="file-upload"  class="custom-file-upload" *ngIf="!isShowImgDeleteButt && imageSrc ==''">
+            <label for="file-upload"  class="custom-file-upload" *ngIf="!isShowImgDeleteButt && visitForm.controls['image'].value ==''">
                 Upload Image
             </label>
              
-            <div *ngIf="isShowImgDeleteButt  || imageSrc !=''">
+            <div *ngIf="isShowImgDeleteButt  || visitForm.controls['image'].value !=''">
               <label for="file-upload"  class="custom-file-upload" class="upload-img">CHANGE</label>
              <div style="float:left">
-              <span style="width: 1px;height: 40px;background-color:#0000002e;" *ngIf="isShowImgDeleteButt || imageSrc !=''"></span>
+              <span style="width: 1px;height: 40px;background-color:#0000002e;" *ngIf="isShowImgDeleteButt || visitForm.controls['image'].value !=''"></span>
             </div>
               <label style=" color: red;" class="upload-img" (click)="uploadImgeDelete()"> <b>X</b> DELETE</label>
             </div>
         <input type="file" id="file-upload" #fileInput placeholder="Upload image..." (change)="upload()" accept="image/*"/>
-        <!-- <button type="button" (click)="upload()" class="upload" *ngIf="imageSrc == ''">Upload Image</button> -->
+        <!-- <button type="button" (click)="upload()" class="upload" *ngIf="visitForm.controls['image'].value == ''">Upload Image</button> -->
       </span></div>
 
         </div>
@@ -161,7 +199,7 @@
         <ul>
         <li>
         <label class="labels">SELECT SPECIALITY</label>
-        <select class="drp-down xs-fill-wt" (change)="getDoctors(categeryID.value)" [formControl]="visitForm.controls['category']" #categeryID required tabindex="1">
+        <select class="drp-down xs-fill-wt" (change)="getDoctors(categeryID.value)" [formControl]="visitForm.controls['category']" #categeryID required tabindex="1" autofocus>
           <option [selected]="true" value="">Select a speciality</option>
           <option *ngFor="let eachcategeory of visitCategeoryData" [value]="eachcategeory.id_categories">
                 {{eachcategeory.name}}
@@ -173,7 +211,7 @@
         <li>
          <label class="labels">SELECT DATE</label>
           <!-- <date-picker [formControl]="visitForm.controls['startdate']" format="L" required></date-picker> -->
-          <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" [formControl]="visitForm.controls['startdate']" autoClose="true" (onSelect)="getDoctorTimeSlots(doctorID.value, selectedDate.value)"  required #selectedDate placeHolder="dd-mm-yyyy" min="{{stopDates}}" tabindex="3"></owl-date-time>
+          <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD MMM, YYYY" [formControl]="visitForm.controls['startdate']" autoClose="true" (onSelect)="getDoctorTimeSlots(doctorID.value, selectedDate.value)"  required #selectedDate placeHolder="dd-mm-yyyy" min="{{stopDates}}" tabindex="3"></owl-date-time>
           <!-- <input type="date" class="input xs-fill-wt" (change)="getDoctorTimeSlots(doctorID.value, selectedDate.value)" [formControl]="visitForm.controls['startdate']" required #selectedDate> -->
           <span class="booking_error" *ngIf="visitForm.controls['startdate'].hasError('required') && visitForm.controls['startdate'].touched">Date Is Required</span>
           <span class="booking_error" *ngIf="visitForm.controls['startdate'].hasError('minlength') && visitForm.controls['startdate'].touched"> Please Select Date.</span>
@@ -220,7 +258,8 @@
             <option [selected]="true" value="">Select time slot</option>
             <option *ngFor="let eachtimeslot of timeSlotsData" [value]="eachtimeslot.id" [disabled]="eachtimeslot.booked!='Available' || eachtimeslot.isDisabled">
                 <!-- {{eachtimeslot.startendtime}}({{eachtimeslot.booked}}) -->
-                {{eachtimeslot.startendtime}}
+                {{eachtimeslot.display_starttime}}
+			<!--	{{eachtimeslot.startendtime}}-->
             </option>
         </select>
            <span class="booking_error" *ngIf="visitForm.controls['starttime'].hasError('required') && visitForm.controls['starttime'].touched">Please Select Timeslots</span>
@@ -249,7 +288,7 @@
         </li> -->
         <li>
         <label class="labels">AMOUNT PAID</label>
-          <input type="number" class="input xs-fill-wt visits-bk-apmt-ip" [formControl]="visitForm.controls['booking_deposit']" required tabindex="6">
+          <input type="number" class="input xs-fill-wt visits-bk-apmt-ip" [formControl]="visitForm.controls['booking_deposit']" required tabindex="6" onkeyup="if(!this.checkValidity()){this.value='e';alert('Please enter a number');};">
           <span class="booking_error" *ngIf="visitForm.controls['booking_deposit'].hasError('required') && visitForm.controls['booking_deposit'].touched">Amount Is Required</span>
 
         </li>
@@ -317,7 +356,7 @@
         <li class="visits-dob">
             <label class="labels">DATE OF BIRTH</label>
              <!-- <ng-datepicker [formControl]="visitForm.controls['dob']"></ng-datepicker>  -->
-             <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" [formControl]="visitForm.controls['dob']" (onSelect)="dobSelected(visitForm.controls['dob'].value)" autoClose="true" placeHolder="dd-mm-yyyy" max="{{stopDates}}"  tabindex="11">
+             <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD MMM, YYYY" [formControl]="visitForm.controls['dob']" (onSelect)="dobSelected(visitForm.controls['dob'].value)" autoClose="true" placeHolder="dd-mm-yyyy" max="{{stopDates}}"  tabindex="11">
              </owl-date-time>
             <!-- <input type="text" type="date" class="input xs-fill-wt" minlength="5" maxlength="40" [formControl]="visitForm.controls['dob']"> -->
             <!--<span style="color:red" *ngIf="visitForm.controls['dob'].hasError('required') && visitForm.controls['dob'].touched">Invalid date of birth</span>
@@ -326,7 +365,7 @@
         </li>
         <li>
             <label class="labels">EMAIL</label>
-              <input type="email" class="input xs-fill-wt visits-bk-apmt-ip" maxlength="40" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+[.]+[a-z]{1,4}$" [formControl]="visitForm.controls['email']" required tabindex="13">
+              <input type="email" class="input xs-fill-wt visits-bk-apmt-ip" maxlength="40" pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{1,63}$" [formControl]="visitForm.controls['email']" required tabindex="13">
               <span class="booking_error" *ngIf="visitForm.controls['email'].hasError('required') && visitForm.controls['email'].touched">Email is required</span>
               <span class="booking_error" *ngIf="visitForm.controls['email'].hasError('pattern') && visitForm.controls['email'].touched">Invalid email</span>
             </li>
@@ -462,7 +501,7 @@
   </td>
   <td>
   <label class="labels">Date of birth</label>
-  <input type="text" class="input" value="{{ patientDetailsData.birthday }}" readonly>
+  <input type="text" class="input" value="{{ patientDetailsData.birthdayshow }}" readonly *ngIf="patientDetailsData.birthday!='0000-00-00'">
   </td>
   <td>
   <label class="labels">Gender</label>
@@ -741,6 +780,8 @@
             </div>
            </div>
           </div>
+
+
       
             <!--image alert-->
  <!-- <div class="model model-alerts" *ngIf="imageUploadAlert" style="border-radius: 10px;box-shadow: 0 0 5px #777;top:367px;">  -->
@@ -752,6 +793,8 @@
       </div>
      </div>
     </div> -->
+     
+ 
 </div>
 <!-- Container ends -->
 <div class="overlay" *ngIf="isAddVisit || isPrinting || isPrintClicked || imageUploadAlert || isEditVisit || isShowPatientDetails || isStartLoader || isAlertPopup || isAddVisitLoader||isDeleteAlert || isAlertPopupError"></div>

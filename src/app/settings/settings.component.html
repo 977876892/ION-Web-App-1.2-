@@ -4,6 +4,9 @@
         width: 100%;
         border-bottom: 1px solid rgb(221, 221, 221);
     }
+     .sub {
+        border-bottom: none !important;
+    }
     
     .table-user-information>tbody>tr:first-child {
         border-top: 0;
@@ -73,27 +76,29 @@
                 <div style="padding: 10px 15px;background-color: #d9edf7;border-bottom: 1px solid transparent;border-top-right-radius: 3px;border-top-left-radius: 3px;border-color: #bce8f1;">
                     <h3 style="color: #31708f;"><b> {{item.fname}} {{item.lname}} </b></h3>
                 </div>
+                <form [formGroup]="profileForm">
                 <div class="setting_profile_detail_R"> 
                     <!-- <img id="setting_profile_photo" alt="User Pic" src="{{item.profile_pic}}" class="img-circle img-responsive"> -->
                     <div class="lt-div">
                         <div class="profile_card">
                           <div class="profile_img">
                             <!-- <a *ngIf="imageSrc == ''"><img src="assets/css/images/profile_no_img.png" ></a> -->
-                            <a><img src="{{item.profile_pic}}" height="154px" width="154px" style="border-radius: 100px;" *ngIf="item.profile_pic!=''&&item.profile_pic!='http://staging.getion.in/'&&item.profile_pic!=null"></a>
-                            <a ><img src="assets/css/images/profile_no_img.png" height="154px" width="154px" style="border-radius: 100px;" *ngIf="item.profile_pic==''||item.profile_pic=='http://staging.getion.in/'||item.profile_pic==null"></a>
+                            <a><img src="{{profileForm.controls['profile_pic'].value}}" height="154px" width="154px" style="border-radius: 100px;" *ngIf="profileForm.controls['profile_pic'].value!=''&&profileForm.controls['profile_pic'].value!='http://staging.getion.in/' && profileForm.controls['profile_pic'].value!=null"></a>
+                            <a ><img src="assets/css/images/profile_no_img.png" height="154px" width="154px" style="border-radius: 100px;" *ngIf="profileForm.controls['profile_pic'].value==''||profileForm.controls['profile_pic'].value=='http://staging.getion.in/'||profileForm.controls['profile_pic'].value==null"></a>
                             <!-- <a  *ngIf="imageSrc"><img src="{{imageSrc}}" height="154px" width="154px" style="border-radius: 100px;" *ngIf="item.profile_pic!=''&&item.profile_pic!='http://staging.getion.in/'&&item.profile_pic!=null && imageSrc != ''"></a> -->
                          
                         </div>
                         
                         <div class="profile_bottom"><span>
-                            <label for="file-upload"  class="custom-file-upload" *ngIf="!isShowImgDeleteButt && item.profile_pic ==''||item.profile_pic=='http://staging.getion.in/'" >
+                            
+                            <label for="file-upload"  class="custom-file-upload" *ngIf="!isShowImgDeleteButt && profileForm.controls['profile_pic'].value  ==''||profileForm.controls['profile_pic'].value =='http://staging.getion.in/' || profileForm.controls['profile_pic'].value ==null" >
                                 Upload Image
                             </label>
                              
-                            <div *ngIf="isShowImgDeleteButt || item.profile_pic !='' && item.profile_pic !='http://staging.getion.in/'">
+                            <div *ngIf="isShowImgDeleteButt || profileForm.controls['profile_pic'].value !='' && profileForm.controls['profile_pic'].value !='http://staging.getion.in/' && profileForm.controls['profile_pic'].value !=null">
                               <label for="file-upload"  class="custom-file-upload" class="upload-img">CHANGE</label>
                              <div style="float:left">
-                              <span style="width: 1px;height: 40px;background-color:#0000002e;" *ngIf="isShowImgDeleteButt || item.profile_pic !='' && item.profile_pic !='http://staging.getion.in/'"></span>
+                              <span style="width: 1px;height: 40px;background-color:#0000002e;" *ngIf="isShowImgDeleteButt || profileForm.controls['profile_pic'].value !='' && profileForm.controls['profile_pic'].value !='http://staging.getion.in/'"></span>
                             </div>
                               <label style=" color: red;" class="upload-img" (click)="uploadprofilepicDelete()"> <b>X</b> DELETE</label>
                             </div>
@@ -107,27 +112,34 @@
                       </div>
                 </div>
                 <div class="setting_profile_detail">
-
+            
                     <table class="table table-user-information">
                         <tbody>
                             <tr>
                                 <td style="width:40%;">First Name:</td>
                                 <td style="width:60%;">
-                                    <input type="text" placeholder="First Name" [(ngModel)]="item.fname">
+                                    <input type="text" placeholder="First Name" minlength="3" maxlength="40" pattern="\S.*\S" [formControl]="profileForm.controls['firstname']" tabindex="1" required>
+                                    <span class="required_comments" *ngIf="profileForm.controls['firstname'].hasError('required') && profileForm.controls['firstname'].touched">{{f_name_req_comm}}</span>
+                                    <span class="required_comments" *ngIf="profileForm.controls['firstname'].hasError('pattern') && profileForm.controls['firstname'].touched">{{spaceComment}}</span>
+                                    <span class="required_comments" *ngIf="profileForm.controls['firstname'].hasError('minlength') && profileForm.controls['firstname'].touched">{{f_name_length_comm}}</span>
                                 </td>
                                 <hr>
                             </tr>
                             <tr>
                                 <td>Last Name:</td>
                                 <td>
-                                    <input type="text" placeholder="Last Name" [(ngModel)]="item.lname">
+                                    <input type="text" placeholder="Last Name" [formControl]="profileForm.controls['surname']" pattern="\S*\S" tabindex="2" required>
+                                    <span class="required_comments" *ngIf="profileForm.controls['surname'].hasError('required') && profileForm.controls['surname'].touched">{{l_name_required_comm}}</span>
+                                    <span class="required_comments" *ngIf="profileForm.controls['surname'].hasError('pattern') && profileForm.controls['surname'].touched">{{spaceComment}}</span>
                                 </td>
                                 <hr>
                             </tr>
                             <tr>
                                 <td>Email:</td>
                                 <td>
-                                    <input type="email" placeholder="Email" [(ngModel)]="item.email">
+                                    <input type="text" placeholder="Email"  maxlength="40" pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{1,63}$" [formControl]="profileForm.controls['email']" tabindex="3" required>
+                                    <span class="required_comments" *ngIf="profileForm.controls['email'].hasError('required') && profileForm.controls['email'].touched">{{email_required_comm}}</span>
+                                    <span class="required_comments" *ngIf="profileForm.controls['email'].hasError('pattern') && profileForm.controls['email'].touched">{{invalid_email_comm}}</span>
                                 </td>
                                 <hr>
                             </tr>
@@ -136,28 +148,29 @@
                             <tr>
                                 <td>Mobile No:</td>
                                 <td>
-                                    <input type="number" placeholder="Mobile No" [(ngModel)]="item.mobile">
+                                    <input type="number" (input)="onTypeNumValid($event.target.value)" placeholder="Mobile No"  [formControl]="profileForm.controls['phone']" tabindex="4" onkeyup="if(!this.checkValidity()){this.value='e';alert('Please enter a number');};" required>
+                                    <span class="required_comments" *ngIf="phoneMinlength"> Phone Number Should Be 10 Numbers.</span>
                                 </td>
                                 <hr>
                             </tr>
                             <tr>
                                 <td>Role:</td>
                                 <td>
-                                    <input type="text" placeholder="Role" [(ngModel)]="item.role">
+                                    <input type="text" placeholder="Role" [formControl]="profileForm.controls['role']"  tabindex="5">
                                 </td>
                                 <hr>
                             </tr>
                             <tr>
                                 <td>Overview:</td>
                                 <td>
-                                    <textarea placeholder="Overview" [(ngModel)]="item.aboutme"></textarea>
+                                    <textarea placeholder="Overview" [formControl]="profileForm.controls['aboutme']"  tabindex="6" style="resize:none;"></textarea>
                                 </td>
                                 <hr>
                             </tr>
-                            <tr>
+                            <tr class="sub">
                                 <td></td>
                                 <td>
-                                    <input type="submit" value="Submit" (click)="profile_sub(item)" style="padding:10px;">
+                                    <input type="submit"  (click)="profile_sub()" value="Submit" style="padding:10px;">
                                     <!--<button style="margin-top:8px;padding:10px;background-color:#33cccc;cursor: pointer;" (click)="profile_sub(item)">Submit</button>-->
                                     <!-- <button style="margin-top:8px;padding:10px;background-color:#33cccc;cursor: pointer;">Edit</button> -->
 
@@ -165,10 +178,10 @@
                             </tr>
                         </tbody>
                     </table> 
-
+              
                 </div>
+            </form>
             </div>
-
             <!-- change password -->
             <div class="setting_change_password_box">
                 <div style="padding: 10px 15px;background-color: #d9edf7;border-bottom: 1px solid transparent;border-top-right-radius: 3px;border-top-left-radius: 3px;border-color: #bce8f1;">
@@ -205,7 +218,7 @@
                         <tr>
                             <td></td>
                             <td>
-                                <input type="submit" value="Submit" (click)="changepassword(pwditem)">
+                                <input type="submit" value="Submit" (click)="changepassword(pwditem)" style="padding:10px;">
                             </td>
                         </tr>
 
@@ -227,6 +240,7 @@
                  <div class="panel_box panel_box_contact panel_shadow" style="padding: 50px 0px 50px 20px;">
                 <div class="wrap-90 m-auto">
                 <div class="clearfix">
+                    <div style="height: 395px;">
                     <div class="contact_logo">
                         <div class="contact_logo_img">
                             <img src="assets/images/ion_support.png" class="logo-rounded img-responsive" />
@@ -252,8 +266,13 @@
                       </div>
 
               </div>
-                
-                      <div class="wrap-40 pull-left" style="width: 40% !important;">
+            </div>
+                <div class="need_help" (click)="needhelp()" *ngIf="isHelpButtonPopup">
+                    <b>Need Help Now?</b> Click here
+                </div>
+                <span *ngIf="isHelpPopup">
+                      <div class="wrap-40 pull-left" style="width: 40% !important;-webkit-animation: pop-in .5s;
+                      animation: pop-in .5s; ">
                           <a class="btn btn-main button-large btn-block clearfix contact-btn">
                               <span class="pull-left">
                                   <img class="contact-btn-img" src="assets/images/icon-call.png" /></span>
@@ -263,7 +282,8 @@
                               </span>
                           </a>
                       </div>
-                      <div class="wrap-40 pull-right" style="margin-right:53px !important">
+                      <div class="wrap-40 pull-right" style="margin-right:53px !important;-webkit-animation: pop-in .5s;
+                      animation: pop-in .5s; ">
                             <a class="btn btn-main button-large btn-block clearfix contact-btn">
                               <span class="pull-left">
                                   <img class="contact-btn-img" src="assets/images/icon-chat.png" style="margin-left: 54px;margin-right: -12px;"/></span>
@@ -276,7 +296,7 @@
                           </a>
                         
                       </div>
-                      
+                 </span> 
                 </div>
                 </div>
                 </div>
@@ -411,7 +431,7 @@
          <!-- users start -->
    <div *ngIf="showUsers" class="panel-rt panel-rt__extend">
             <app-header></app-header>
-             <div class="loader" *ngIf="isStartLoader"></div>
+              <div class="loader" *ngIf="isStartLoader" [style.margin-top.px]="windowBottom"></div> 
             <div class="panel" >
                     <div class="panel_box panel_box_contact xs-box-padding panel_shadow panel_box_contact_user" style="background-color: #f0f0f0 !important;box-shadow: none;">
             <!-- Add user button  -->
@@ -425,7 +445,7 @@
 
           <!-- users card  -->
        <ul>
-           <li *ngFor="let user of usersList">
+           <li *ngFor="let user of usersList; let i = index">
                 <div class="users_card">
 
                     <div class="setting_user">
@@ -445,14 +465,16 @@
                              </li>
                          </ul>
                          <div class="dropdown pull-right open">
-                                <a (click)="clickedOnDottedLine(user.id);" class="dotted-line">
+                                <a (click)="$event.stopPropagation();clickedOnDottedLine(i);" class="dotted-line">
                                   <div></div>
                                   <div></div>
                                   <div></div>
                                 </a>
-                                <ul class="dropdown-menu" *ngIf="isDeleteButtonClick && userMangement_select_card_delete == user.id" #editcontainer style="margin: 3px 15px 0;">
+                            
+                                <ul class="dropdown-menu" style="margin: 3px 15px 0;" *ngIf="user.isClickOnDottedLine" #deleteUser>
                                   <li><a style="cursor: pointer;" (click)="userCardDelete();">Delete</a></li>
                                 </ul>
+                                
                               </div>
                     </div>
 
@@ -503,7 +525,7 @@
 
 <!-- Popup User -->
 <div class="model model-profile-view  bx-shadow no-padding" *ngIf="isShowUserPopup" [style.margin-top.px]="windowBottom" style="width:1000px;margin-left: -425px;">
-        <div class="loader" *ngIf="isStartLoader"></div>
+        <div class="loader" *ngIf="isStartLoaderForUserPopup"></div>
         <div class="setting_user_popup_11">
               <div class="setting_user_popup_12">
                   <div class="lt-div">
@@ -567,7 +589,7 @@
                                     EMAIL ID
                                     <br>
                                     <!-- <input type="email" placeholder="Email Id" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['email']" required>  <br> -->
-                                    <input type="email" maxlength="40" style="width:90%;height: 37px;border-radius: 50px;" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+[.]+[a-z]{1,4}$" [formControl]="userDetailsForm.controls['email']" required>
+                                    <input type="email" maxlength="40" style="width:90%;height: 37px;border-radius: 50px;" pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{1,63}$" [formControl]="userDetailsForm.controls['email']" required>
                                     <span style="color:red" *ngIf="userDetailsForm.controls['email'].hasError('required') && userDetailsForm.controls['email'].touched"> Please Enter The Email. </span>
                                     <span style="color:red" *ngIf="userDetailsForm.controls['email'].hasError('pattern') && userDetailsForm.controls['email'].touched">Invalid email</span> 
                                 </td>
@@ -697,13 +719,13 @@
 </div>
 
    <!-- alert -->
-    <div class="model model-alerts" *ngIf="isAlertPopup" [style.margin-top.px]="windowBottom"> 
+    <div class="model model-alerts" *ngIf="isAlertPopup" [style.margin-top.px]="windowBottom" style="box-shadow: 0 0 5px #777;"> 
                 <!-- <a class="close">Close</a> -->
                 
                 <div class="model-content">
                  <p>{{ alertMessage }}</p>           
                 <div class="btn_actions">
-                  <div class="button btn-ok" (click)="isAlertPopup = false;">ok</div>
+                  <div class="button btn-ok" (click)="isAlertPopup = false;getUserData();">ok</div>
                   <!-- <div class="button btn-dismiss" (click)="isAlertPopup = false;">cancel</div> -->
               
                   </div>

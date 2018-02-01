@@ -23,6 +23,7 @@
     "@angular/router": "^4.2.4",
     "@types/underscore": "^1.8.3",
     "alasql": "^0.4.4",
+    "angular-autofocus-fix": "^0.1.0",
     "angular-calendar": "^0.21.3",
     "angular-froala-wysiwyg": "^2.7.1",
     "angular2-csv": "^0.2.5",

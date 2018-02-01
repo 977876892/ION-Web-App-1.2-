@@ -17,7 +17,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import * as _ from 'underscore';
 import * as xml2js from 'xml2js';
 import { AnalyticsService } from '../shared/services/analytics/analytics.service';
-
+import { IonServer } from '../shared/globals/global';
 @Component({
   selector: 'app-analytics',
   templateUrl: './analytics.component.html',
@@ -39,9 +39,12 @@ export class AnalyticsComponent implements OnInit {
   selectedDate:Date=new Date();
   allApiCalls:any[];
   estimated:number;
+  alertMessage='';
   websiteAnalytics:boolean=true;
   showPublishAnalytics:boolean=false;
   showVisitAnalytics:boolean=false;
+  isAlertPopup:boolean=false;
+  connect_err=IonServer.nointernet_connection_err;
   showQueryAnalytics:boolean=false;
   isStartLoader: boolean = false;
   curentYear;
@@ -134,7 +137,9 @@ export class AnalyticsComponent implements OnInit {
                 this.websiteTraffic();
                 this.lastMonthUserEngagementonWebsite();
             }, (err) => {
-
+                this.isStartLoader=false;
+                this.isAlertPopup=true;
+                this.alertMessage=this.connect_err;
         }, () => {
           this.isStartLoader = false;
       });
@@ -273,7 +278,9 @@ export class AnalyticsComponent implements OnInit {
                               }
                               this.showDailyLine=true;
                           }, (err) => {
-
+                            this.isAlertPopup=true;
+                            this.isStartLoader=false;
+                            this.alertMessage=this.connect_err;
                         }, () => {
                           this.isStartLoader = false;
                       });
@@ -307,6 +314,10 @@ export class AnalyticsComponent implements OnInit {
                                           }
                                           this.showMonthly=true;
                                   }, (err) => {
+                                    this.isAlertPopup=true;
+                                    this.isStartLoader=false;
+                                    this.showMonthly=false;
+                                    this.alertMessage=this.connect_err;
                                   }, () => {
                                     this.isStartLoader = false;
                     });
@@ -330,7 +341,9 @@ export class AnalyticsComponent implements OnInit {
                             (analyticsResponse: any) => {
                               this.ageAndGenderDisplay(analyticsResponse);
                             }, (err) => {
-
+                              this.isAlertPopup=true;
+                              this.isStartLoader=false;
+                              this.alertMessage=this.connect_err;
                             }, () => {
                               this.isStartLoader = false;
                             });
@@ -342,7 +355,9 @@ export class AnalyticsComponent implements OnInit {
                               (analyticsResponse: any) => {
                                 this.ageAndGenderDisplay(analyticsResponse)
                               }, (err) => {
-
+                                      this.isAlertPopup=true;
+                                      this.isStartLoader=false;
+                                      this.alertMessage=this.connect_err;
                               }, () => {
                                 this.isStartLoader = false;
                               });
@@ -397,7 +412,9 @@ export class AnalyticsComponent implements OnInit {
                             (analyticsResponse: any) => {
                                 this.sourceOfVisitors(analyticsResponse);
                             }, (err) => {
-
+                              this.isAlertPopup=true;
+                              this.isStartLoader=false;
+                              this.alertMessage=this.connect_err;
                             }, () => {
                               this.isStartLoader = false;
                         });
@@ -409,7 +426,9 @@ export class AnalyticsComponent implements OnInit {
                               (analyticsResponse: any) => {
                                 this.sourceOfVisitors(analyticsResponse);  
                               }, (err) => {
-
+                                this.isAlertPopup=true;
+                                this.isStartLoader=false;
+                                this.alertMessage=this.connect_err;
                               }, () => {
                                 this.isStartLoader = false;
                         });
@@ -449,7 +468,9 @@ export class AnalyticsComponent implements OnInit {
                                 (analyticsResponse: any) => {
                                   this.showTopPagesGraph(analyticsResponse);
                                 }, (err) => {
-
+                                  this.isAlertPopup=true;
+                                  this.isStartLoader=false;
+                                  this.alertMessage=this.connect_err;
                                 }, () => {
                                   this.isStartLoader = false;
                                 });
@@ -461,7 +482,9 @@ export class AnalyticsComponent implements OnInit {
                                 (analyticsResponse: any) => {
                                     this.showTopPagesGraph(analyticsResponse);
                                 }, (err) => {
-
+                                  this.isAlertPopup=true;
+                                  this.isStartLoader=false;
+                                  this.alertMessage=this.connect_err;
                                 }, () => {
                                   this.isStartLoader = false;
                       });
@@ -498,7 +521,9 @@ export class AnalyticsComponent implements OnInit {
                             (analyticsResponse: any) => {
                                 this.showKeyWordsGraph(analyticsResponse);
                             }, (err) => {
-
+                              this.isAlertPopup=true;
+                              this.isStartLoader=false;
+                              this.alertMessage=this.connect_err;
                             }, () => {
                               this.isStartLoader = false;
                       });
@@ -510,7 +535,9 @@ export class AnalyticsComponent implements OnInit {
                               (analyticsResponse: any) => {
                                 this.showKeyWordsGraph(analyticsResponse);
                               }, (err) => {
-
+                                this.isAlertPopup=true;
+                                this.isStartLoader=false;
+                                this.alertMessage=this.connect_err;
                               }, () => {
                                 this.isStartLoader = false;
                       });
@@ -565,7 +592,9 @@ export class AnalyticsComponent implements OnInit {
                       }   
                             this.showCitites=true;
                             }, (err) => {
-
+                              this.isAlertPopup=true;
+                              this.isStartLoader=false;
+                              this.alertMessage=this.connect_err;
                             }, () => {
                     });
                 }
@@ -593,8 +622,20 @@ export class AnalyticsComponent implements OnInit {
                                                         (analyticsResponse: any) => {
                                                           this.lAvgPageViews=Math.round(((analyticsResponse.rows[0])[0])/60);
                                                         })
+                                            },(err)=>{
+                                              this.isAlertPopup=true;
+                                              this.isStartLoader=false;
+                                              this.alertMessage=this.connect_err;
                                             })
+                                },(err)=>{
+                                  this.isAlertPopup=true;
+                                  this.isStartLoader=false;
+                                  this.alertMessage=this.connect_err;
                                 })
+                      },(err)=>{
+                        this.isStartLoader=false;
+                        this.isAlertPopup=true;
+                        this.alertMessage=this.connect_err;
                       })
                       this.showUserEngagementLM=true;
                 }
@@ -642,8 +683,20 @@ export class AnalyticsComponent implements OnInit {
                                                               this.lsAvgTimeSpent[i]=Math.round((analyticsResponse.rows[i+1])[2]/60);
                                                             }
                                                           })
+                                              },(err)=>{
+                                                this.isAlertPopup=true;
+                                                this.isStartLoader=false;
+                                                this.alertMessage=this.connect_err;
                                               })
+                                  },(err)=>{
+                                    this.isAlertPopup=true;
+                                    this.isStartLoader=false;
+                                    this.alertMessage=this.connect_err;
                                   })
+                        },(err)=>{
+                          this.isAlertPopup=true;
+                          this.isStartLoader=false;
+                          this.alertMessage=this.connect_err;
                         })
                         this.showUserEngagementLS=true;
                 }
@@ -675,6 +728,10 @@ export class AnalyticsComponent implements OnInit {
                                 });
                                     this.indiaRank=indiaRank;
                                     this.wordRank=worldRank;
+                            },(err)=>{
+                              this.isStartLoader=false;
+                              this.isAlertPopup=true;
+                              this.alertMessage=this.connect_err;
                             })
                   }
   //web site rank
@@ -709,6 +766,10 @@ export class AnalyticsComponent implements OnInit {
                         this.showBlogsBarChart=true;
                     }
                   
+            },(err)=>{
+              this.isAlertPopup=true;
+              this.isStartLoader=false;
+              this.alertMessage=this.connect_err;
             })
           }
           public publishedBlogsTable:Array<any>=[];
@@ -724,6 +785,10 @@ export class AnalyticsComponent implements OnInit {
                       this.publishedBlogsTable=blogs.description;
                       this.showBlogTable=true;
                       }
+            },(err)=>{
+              this.isAlertPopup=true;
+              this.isStartLoader=false;
+              this.alertMessage=this.connect_err;
             })
           
           }
@@ -755,6 +820,10 @@ export class AnalyticsComponent implements OnInit {
                           else{
                             this.showNoBlogsAvailable=true;
                           }
+            },(err)=>{
+              this.isAlertPopup=true;
+              this.isStartLoader=false;
+              this.alertMessage=this.connect_err;
             })
           
           }
@@ -782,6 +851,10 @@ export class AnalyticsComponent implements OnInit {
                         this.categoryQuestions=questions.description;
                         this.showQuestionByCategory=true;
                     }    
+            },(err)=>{
+              this.isAlertPopup=true;
+              this.isStartLoader=false;
+              this.alertMessage=this.connect_err;
             })
           }
           public yearlyQuestions:Array<any>=[];
@@ -803,6 +876,10 @@ export class AnalyticsComponent implements OnInit {
                 else{
                   this.showNoQuestionsDataAvailable=true;
                 }
+            },(err)=>{
+              this.isAlertPopup=true;
+              this.isStartLoader=false;
+              this.alertMessage=this.connect_err;
             })
 
           }
@@ -883,7 +960,9 @@ export class AnalyticsComponent implements OnInit {
                               }
                             
                           }, (err) => {
-
+                            this.isAlertPopup=true;
+                            this.isStartLoader=false;
+                            this.alertMessage=this.connect_err;
                         }, () => {
                       });
           }
@@ -957,6 +1036,10 @@ export class AnalyticsComponent implements OnInit {
                               this.isStartLoader=false;
                             }
                                      
+                        },(err)=>{
+                          this.isAlertPopup=true;
+                          this.isStartLoader=false;
+                          this.alertMessage=this.connect_err;
                         })
                     }
   //visit analytics day wise
@@ -1049,6 +1132,10 @@ export class AnalyticsComponent implements OnInit {
                     }    
                         // console.log(this.visitMonthyLineChartLabels);
                         // console.log(this.visitMonthlyLineChartData); 
+                },(err)=>{
+                  this.isAlertPopup=true;
+                  this.isStartLoader=false;
+                  this.alertMessage=this.connect_err;
                 })
           }
           public visitsMonthlyBarChartLabels:string[] = [];
@@ -1108,6 +1195,10 @@ export class AnalyticsComponent implements OnInit {
                           this.isStartLoader=false;
                         }
                        
+                },(err)=>{
+                  this.isAlertPopup=true;
+                  this.isStartLoader=false;
+                  this.alertMessage=this.connect_err;
                 })
           }
           
@@ -1191,7 +1282,9 @@ export class AnalyticsComponent implements OnInit {
                                 }
                             
                             }, (err) => {
-
+                              this.isAlertPopup=true;
+                              this.isStartLoader=false;
+                              this.alertMessage=this.connect_err;
                           }, () => {
                         });
             }
@@ -1318,6 +1411,10 @@ export class AnalyticsComponent implements OnInit {
                             // console.log(this.doctorWiseRevenueData); 
                         }
                       
+                    },(err)=>{
+                      this.isAlertPopup=true;
+                      this.isStartLoader=false;
+                      this.alertMessage=this.connect_err;
                     })
               }
               public doctorWiseVisitsLabels:string[] = [];
@@ -1353,6 +1450,10 @@ export class AnalyticsComponent implements OnInit {
                               this.showNoRevenueAndVistsAvailable=true;
                             }
                      
+                    },(err)=>{
+                      this.isAlertPopup=true;
+                      this.isStartLoader=false;
+                      this.alertMessage=this.connect_err;
                     })
               }
           //doctor wise revenue and visits chart

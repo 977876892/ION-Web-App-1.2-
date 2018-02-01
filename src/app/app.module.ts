@@ -31,6 +31,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown/angular2-multiselect-dropdown';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { DateTimePickerModule } from 'ng-pick-datetime';
+import { AutofocusModule } from 'angular-autofocus-fix';
+//import {  } from 'ng-pick-datetime';
 
 
 @NgModule({
@@ -67,7 +69,8 @@ import { DateTimePickerModule } from 'ng-pick-datetime';
     Ng2OrderModule,
     FroalaEditorModule.forRoot(), FroalaViewModule.forRoot(),
     DateTimePickerModule,
-    NgxCarouselModule
+    NgxCarouselModule,
+    AutofocusModule
   ],
   providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}],
   bootstrap: [AppComponent]

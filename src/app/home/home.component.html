@@ -40,15 +40,16 @@
               </div>
            </div> -->
         <!-- <div class="title-ribbon">Dr Disha Clinic</div> -->
-        <div style="width: 101%; height: 500px" >
+        <!-- <div style="width: 101%; height: 500px" > -->
+          <div style="width: 101%;">
             <ngx-carousel class="banner" [inputs]="carouselBanner" (carouselLoad)="carouselBannerLoad()">
                 <ngx-item NgxCarouselItem *ngFor="let item of carouselBannerItems; let i = index;">
                     <div class="bannerStyle" [style.background]="'url(' + item.image.url + ')'" (click)="testingFunction(item.postid)">
                         <h1>{{item.title}}</h1>
                     </div>
                 </ngx-item>
-                <button NgxCarouselPrev class="leftRs">&lt;</button>
-                <button NgxCarouselNext class="rightRs">&gt;</button>
+                <button NgxCarouselPrev></button>
+                <button NgxCarouselNext></button> 
             </ngx-carousel>
           <!-- <carousel [sources]="imageSources" [config]="config"></carousel> -->
         </div>
@@ -64,16 +65,27 @@
     <div class="panel_xs panel_xs_last">
     
     <div class="panel_box panel_box_h-feeds xs-box-padding" >
-        <div class="title txt-center">Hospital feeds</div>
+        <div class="title txt-center">Hospital feeds</div> 
         <div class="home_hospital_feeds">
         <ul class="panel_box_list" *ngFor="let eachfeed of dashboardFeedData; let i = index">
         <li class="brd-radius-5">
-          <div class="feed_image"><img *ngIf="eachfeed.avatar == ''" src="assets/css/images/profile_no_img.png" width="65" height="65">
-            <img *ngIf="eachfeed.avatar != ''" src="{{ eachfeed.avatar }}" width="65" height="65"></div>
-          <div class="feed_info"> <span class="lg-text home--hosp-fld__txt">{{ eachfeed.content.split(":")[0] }}</span> {{ eachfeed.content.split(":")[1] }}
-            <div class="feed_info_stamp">{{eachfeed.since}} ago</div>
+          <div style="margin-bottom: 10px;">
+          <div class="feed_image_home">
+            <img *ngIf="eachfeed.avatar == ''" src="assets/css/images/profile_no_img.png" width="65" height="65">
+            <img *ngIf="eachfeed.avatar != ''" src="{{ eachfeed.avatar }}" width="65" height="65">
           </div>
-          <div class="feed_actions txt-center">
+          <div class="feed_image_home feed_image_home22"> 
+            <span class="lg-text home--hosp-fld__txt"><p [innerHTML]="eachfeed.content.split(':')[0]"></p></span>
+            <p [innerHTML]="eachfeed.content.split(':')[1]"></p>
+            <div class="feed_info_stamp" style="margin: 4px 0px;">{{eachfeed.since}} ago</div>
+          </div>
+          <div  class="home_feed_icons11">
+            <img src="assets/images/Blogs.png" *ngIf="(eachfeed.action == 'Publish' || eachfeed.action == 'View')&& eachfeed.context.includes('blog')">
+            <img src="assets/images/visitz.png" *ngIf="eachfeed.action == 'View' && eachfeed.context.includes('visit')">
+            <img src="assets/images/quiresss_search.png" *ngIf="eachfeed.action == 'Reply'">
+          </div>
+        </div>  
+          <div class="feed_actions_home">
             <a *ngIf="eachfeed.action == 'Publish' && eachfeed.context.includes('blog')" style="cursor: pointer;" class="view_link" [routerLink]="['/publish']">
                   <div>{{eachfeed.action}}</div>
                 </a>
@@ -83,7 +95,10 @@
               <a *ngIf="eachfeed.action == 'View' && eachfeed.context.includes('visit')" style="cursor: pointer;" class="view_link" [routerLink]="['/visits']">
                   <div>{{ eachfeed.action }}</div>
                 </a>
-                <a *ngIf="eachfeed.action == 'Reply'" routerLink="/queries/{{eachfeed.context_id}}" style="cursor: pointer;" class="view_link">
+                <!-- <a *ngIf="eachfeed.action == 'Reply'" routerLink="/queries/{{eachfeed.context_id}}" style="cursor: pointer;" class="view_link">
+                    <div>{{ eachfeed.action }}</div>
+                </a> -->
+                  <a *ngIf="eachfeed.action == 'Reply'" routerLink="/queries" style="cursor: pointer;" class="view_link">
                     <div>{{ eachfeed.action }}</div>
                 </a>
                 <a *ngIf="eachfeed.action == 'Congratulate'" style="cursor: pointer;" (click)="congaratulate(eachfeed.id)" class="view_link">
@@ -119,8 +134,8 @@
 
   <div class="actions" style="width:95% !important;">
   <a style="cursor: pointer;" [routerLink]="['/visits/addvisit']" class="visit brd-radius-15 xs-bg-white new_add"><img src="assets/images/add-visits-icon.png"><br>Add Visit</a>
-  <a style="cursor: pointer;" (click) = "isSelectPromo = true; isPromoPopupOpen = false" class="promo brd-radius-15 xs-bg-white new_add" style="float: left !important;"><img src="assets/images/add-promo-icon.png"><br>Add Promo</a>
-  <a style="cursor: pointer;" (click)="isSelectAddLeads=true;this.isPromoPopupOpen=false;" class="promo brd-radius-15 xs-bg-white new_add" style="float:right !important;"><img src="assets/images/add-promo-icon.png"><br>Add Lead</a>
+  <a (click) = "isSelectPromo = true; isPromoPopupOpen = false" class="promo brd-radius-15 xs-bg-white new_add" style="cursor: pointer;float: left !important;"><img src="assets/images/add-promo-icon.png"><br>Add Promo</a>
+  <a (click)="isSelectAddLeads=true;this.isPromoPopupOpen=false;" class="promo brd-radius-15 xs-bg-white new_add" style="float:right !important;cursor: pointer;"><img src="assets/images/lead_icon.png" height="40" width="40"><br>Add Lead</a>
   <a style="cursor: pointer;" (click) = "isSelectBlog=true; isSelectPromo = false; isPromoPopupOpen = false" class="blog brd-radius-15 xs-bg-white"><img src="assets/images/add-blog-icon.png" align="absmiddle">Start a new Blog</a>
   
   
@@ -198,8 +213,8 @@
     
         <h3 class="p-t-20">Select a topic to start from your speciality ?</h3>
            <div class="wrap-60 m-auto">
-              <button class="button btn-white brd-none brd-radius-50 btn-full m-b-20" routerLink="/publish/selecttopic" type="submit" (click)="isSelectBlog=false;">Yes Select the topic</button>
-              <button class="button btn-white-reverse  brd-radius-50 btn-full m-b-60" routerLink="/publish/newpost" type="submit" (click)="isSelectBlog=false;">No i want to start a new topic</button>
+              <button class="button btn-white brd-none brd-radius-50 btn-full m-b-20" routerLink="/publish/selecttopic" type="submit" (click)="isSelectBlog=false;" style="color: #33cccc;">Yes Select the topic</button>
+              <button class="button btn-white-reverse  brd-radius-50 btn-full m-b-60" routerLink="/publish/newpost" type="submit" (click)="isSelectBlog=false;">No i want start a new topic</button>
            </div>
     
          </div>

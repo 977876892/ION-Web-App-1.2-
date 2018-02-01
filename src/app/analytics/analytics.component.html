@@ -502,5 +502,18 @@
                 </div>
                         <br><br>
     </div>
-    <div class="overlay" *ngIf="isStartLoader" ></div>
+     <!-- alert -->
+     <div class="model model-alerts" *ngIf="isAlertPopup"  style="margin-top: 275px;box-shadow: 0 0 5px #777;"> 
+        <!-- <a class="close">Close</a> -->
+        
+        <div class="model-content">
+         <p>{{ alertMessage }}</p>           
+        <div class="btn_actions">
+          <div class="button btn-ok" (click)="isAlertPopup = false;">ok</div>
+          <!-- <div class="button btn-dismiss" (click)="isAlertPopup = false;">cancel</div> -->
+      
+          </div>
+         </div>
+</div>
+    <div class="overlay" *ngIf="isStartLoader || isAlertPopup" ></div>
 </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit,ViewChild } from '@angular/core';
+import { Component, ContentChildren,OnInit,ElementRef,ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SearchService } from '../shared/services/search/search.service';
 import { FormBuilder, FormControl, FormGroup,FormArray } from '@angular/forms';
@@ -7,6 +7,7 @@ import { AuthserviceService } from '../shared/services/login/authservice.service
 import { PromotionsService } from '../shared/services/promotions/promotions.service';
 import { DashboardService } from '../shared/services/dashboard/dashboard.service';
 import { IonServer } from '../shared/globals/global';
+import {PublishComponent} from '../publish/publish.component';
 declare var require: any;
 @Component({
   selector: 'app-header',
@@ -15,6 +16,7 @@ declare var require: any;
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
+  //@ContentChildren('feedsNotificationClick') feedsNotificationClick;
   isSearchPopup: boolean = false;
   isStartLoader: boolean = false;
   isNoResult:boolean=false;
@@ -63,17 +65,45 @@ export class HeaderComponent implements OnInit {
     id:new FormControl(''),
     source:new FormControl('')
   });
-  constructor(private router: Router, private searchService: SearchService,private authService: AuthserviceService,private builder: FormBuilder,private leadsService: LeadsService,private promotionService:PromotionsService,private dashboardService: DashboardService) { }
-    
+  @ViewChild('filtercontainer') filtercontainer;
+   autoComplete=[];
+  constructor(private router: Router, private searchService: SearchService,private authService: AuthserviceService,private builder: FormBuilder,private leadsService: LeadsService,private promotionService:PromotionsService,private dashboardService: DashboardService) {
+     //document.addEventListener('click', this.offClickHandler.bind(this));
+     document.addEventListener('click', this.offClickHandler.bind(this));
+   }
+   offClickHandler(event:any) {
+    if (this.filtercontainer && !this.filtercontainer.nativeElement.contains(event.target)) { // check click origin
+        this.isFeedsNotification = false;
+    }
+}
   ngOnInit() {
     console.log(localStorage.getItem('user')==null);
     
     if(localStorage.getItem('user')=='' ||localStorage.getItem('user')==null){
     }
     else{
+     
+         this.leadsService.getLeadTags().subscribe(res => {
+         res.description.forEach(element => {
+            this.autoComplete.push(element.title);
+          });
+      },(err) => {
+      }, () => {
+        
+      })
       this.isShowHeader=true;
     }
   }
+  // offClickHandler(event: any) {
+  //     console.log(this.feedsNotificationClick);
+  //     if (!this.feedsNotificationClick._emitter.closed) {
+  //       //console.log(this.isFeedsNotification);
+  //       if(this.isFeedsNotification){
+  //           this.isFeedsNotification=false;
+  //       }
+  //     }
+  //   }
+    
   logout() {
     localStorage.setItem('user', '');
     localStorage.setItem('blogs','');
@@ -107,6 +137,10 @@ feedsNotification(){
 }
 searchtext="";  
 searchCall(searchtext) {
+  PublishComponent.showDraft=false;
+  PublishComponent.showIonize=false;
+  PublishComponent.showPublished=false;
+  PublishComponent.showIonized=false;
   this.isSearchPopup = true;
   console.log(searchtext);
   if(typeof searchtext!="undefined" && searchtext.length>4)
@@ -132,6 +166,10 @@ searchCall(searchtext) {
           });
     }
         else{
+          if(searchtext.length<4)
+            {
+              this.isNoResult=false;
+            }
           this.searchResposne=[];
         }
   
@@ -362,4 +400,10 @@ addLeads() {
   });
   this.isStartLoader=false;
    }
+addNew(){
+  PublishComponent.showDraft=false;
+  PublishComponent.showIonize=false;
+  PublishComponent.showPublished=false;
+  PublishComponent.showIonized=false;
+}
 }

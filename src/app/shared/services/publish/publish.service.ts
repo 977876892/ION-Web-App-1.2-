@@ -31,7 +31,6 @@ createTheBlogService(createBlogForm,tags) {
       var published_date='',published_time='',finalpublished='';
       let body = new FormData();
       console.log(createBlogForm);
-      console.log(createBlogForm.createdTime);
       const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
       var newDate=new Date();
       var created_date=format(newDate, ['YYYY-MM-DD HH:mm:ss']);
@@ -40,6 +39,7 @@ createTheBlogService(createBlogForm,tags) {
     //         finalpublished='';
     //     }
     // else{
+      
       published_date=format(createBlogForm.createdDate, ['YYYY-MM-DD']);
       published_time=format(createBlogForm.createdTime, ['HH:mm:ss']);
       finalpublished=published_date+" "+published_time;
@@ -181,7 +181,7 @@ updateBlogService(blogData,tags) {
    // Get blog comments service
   getBlogCommentsService(bID) {
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
-    return this.http.get(API.GET_BLOG_COMMENTS(bID)).map(
+    return this.http.get(API.GET_BLOG_COMMENTS(bID,currentuser.id)).map(
       (responseData) => {
         const key = '_body';
         return JSON.parse(responseData[key]);
@@ -297,9 +297,17 @@ createBlogService(promotionid, content, promotionTitle) {
           return JSON.parse(responseData[key]);
         });
    }
-  getCategories(title){
+  getCategories(){
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
-       return this.http.get(API.GET_CATEGORIES(currentuser.auth,title)).map(
+       return this.http.get(API.GET_CATEGORIES(currentuser.teamid)).map(
+        (responseData) => {
+          const key = '_body';
+          return JSON.parse(responseData[key]);
+        });
+  }
+  getBlogTags(){
+    const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+       return this.http.get(API.GET_BLOG_TAGS(currentuser.auth)).map(
         (responseData) => {
           const key = '_body';
           return JSON.parse(responseData[key]);

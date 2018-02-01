@@ -11,12 +11,14 @@
             <div class="lt-admin-nav" [ngClass]="{'main_nav_more': !isLoadMore}">
               <ul>
                 <li routerLink="/home" routerLinkActive="active"> 
+                  <span [ngClass]="{'lead_navbar':router.url.includes('home')}">
                 <a class="active" style="cursor: pointer;">
                 <img src="assets/images/home.png" width="42" height="38" [hidden]="router.url.includes('home')">
                 <img src="assets/images/home_active.png" [hidden]="!router.url.includes('home')">
                 <br>
                 <span [ngClass]="{'menu_color_cha':router.url.includes('home')}">Home</span>
                 </a> 
+                </span>
                 </li>
                 
                 <li routerLink="/publish" routerLinkActive="active">
@@ -51,14 +53,15 @@
                   </a>
               </li> 
                 <li routerLink="/leads" routerLinkActive="active" *ngIf="isLoadMore && currentuser.userGroup==17">
+                  <span [ngClass]="{'lead_navbar':router.url.includes('leads')}">
                   <a class="active ripple" style="cursor: pointer;">
                   <img src="assets/images/Leads-1.png" width="35" height="31" *ngIf="!router.url.includes('leads')">
                   <img src="assets/images/leads_active.png" width="35" height="31" *ngIf="router.url.includes('leads')">
                   <br>
                   <span [ngClass]="{'menu_color_cha':router.url.includes('leads')}">Leads</span>
                   </a>
+                </span>
                 </li>
-              
                 
                 <li routerLink="/promotions" routerLinkActive="active" *ngIf="isLoadMore">
                 <a class="active ripple" style="cursor: pointer;">

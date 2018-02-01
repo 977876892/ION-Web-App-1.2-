@@ -40,6 +40,7 @@ export class PromotionsComponent implements OnInit {
    showError:boolean=false;
    promotionStatus:any='';
    imageUploadAlert: boolean = false;
+   showtextareaError:boolean=false;
 
   constructor(private router: Router, private promotionService: PromotionsService, 
     private route: ActivatedRoute,private authService:AuthserviceService, private leadsService: LeadsService) { }
@@ -156,7 +157,6 @@ getPatientGroups() {
   this.isPatientGroups = true;
 }
 upload(){
-  
    this.showError=false;
   const fileBrowser = this.fileInput.nativeElement;
   // if (fileBrowser.files && fileBrowser.files[0]) {
@@ -184,7 +184,6 @@ upload(){
     fd.append('password', currentuser.pwd);
     fd.append('encode', 'true');
     fd.append('auth_key', currentuser.auth);
-    
     this.authService.uploadImageService(fd).subscribe(res => {
       // do stuff w/my uploaded file
       console.log(res.description);
@@ -210,8 +209,11 @@ upload(){
   }
 
  getSmsTags(){
+    var alltag={'title':'all'};
     this.leadsService.getLeadTags().subscribe(res => {
         this.smsTags=res.description;
+        if(res.description.length>0)
+            this.smsTags.push(alltag);
       },(err) => {
       }, () => {
         this.smsTags.forEach((smsTag) => {
@@ -302,6 +304,8 @@ notselectTags:boolean=false;
   sendSmsToUsers(){
           this.isStartLoader=true;
           this.selectedTags=[];
+          this.smsText=this.smsText.replace(/&/g, "%26");
+          console.log(this.smsText)
           if(this.sendSmsTags!=''){
          
           this.promotionService.SEND_SMS_USING_TAGS(this.sendSmsTags,this.smsText).subscribe(res => {
@@ -309,6 +313,7 @@ notselectTags:boolean=false;
             {
                  this.promotionService.SEND_SMS_USING_PHONE_NUMBERS(this.phoneNumbers,this.smsText).subscribe(res => {
                       console.log(res);
+                     
                  },(err) => {
                    this.isStartLoader=false;
                     }, () => {
@@ -357,7 +362,7 @@ notselectTags:boolean=false;
         }
         else{
           console.log(this.sendSmsTags);
-            this.getMessagesCount(this.sendSmsTags)
+          this.getMessagesCount(this.sendSmsTags)
             
       //     this.isStartLoader=true;
       //     this.selectedTags=[];
@@ -406,13 +411,14 @@ notselectTags:boolean=false;
   }
     doctorName="";
     ionizedDate="";
+    creadisCount:number=0;
     ionizeThePromotion(){
       var content="";
       const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       // console.log(this.images);
       //console.log(this.promotionId);
       //console.log(this.aboutImages);
-      if(this.aboutImages=="")
+        if(this.aboutImages=="")
         {
          // content=content+this.promotionTitle+"<br>";
           content=this.promotionTitle;
@@ -421,11 +427,19 @@ notselectTags:boolean=false;
           //content =content+this.aboutImages +"<br>";
           content =this.aboutImages +"<br>";
         }
-      if(this.imageSrc.length==0)
+        if(this.aboutImages=='' && this.imageSrc.length==0){
+            this.showtextareaError=true;
+            this.showError=true;
+        }
+        else if(this.aboutImages!=''&& this.imageSrc.length==0)
         {
-          this.showError=true;
+            this.showError=true;
+        }
+        else if(this.aboutImages==''&& this.imageSrc.length!=0){
+            this.showtextareaError=true;
         }
         else{
+         // this.showtextareaError=false;
           if(this.imageSrc.length>1)
             {
                 for(let image of this.imageSrc)
@@ -446,12 +460,14 @@ notselectTags:boolean=false;
             this.doctorName=currentuser.name;
             console.log(this.promotionId);
             console.log(content);
+            console.log(this.imageSrc.length)
             console.log(this.images[0]);
             console.log(this.promotionTitle);
             this.promotionService.addPromotionService(this.promotionId,content,this.imageSrc[0],this.promotionTitle).subscribe(res => {
             console.log(res);
             this.isStartLoader=false;
             this.promotionStatus=4;
+            this.creadisCount=res.credits;
             this.showRequestIsTaken=true;
             },(err) => {
               this.isAlertPopup=true;
@@ -513,9 +529,14 @@ notselectTags:boolean=false;
      }
           messagesCount=0;
           getMessagesCount(tags){
-            if(tags!=''&&tags!=null)
+            this.isStartLoader=true;
+            const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+            this.authService.getCommonDetails(currentuser.teamid).subscribe(res => {
+              console.log(res);
+              //localStorage.setItem('user.smsbalance',res.description[0].smsbalance);
+              this.smsBalance=res.description[0].smsbalance;
+              if(tags!=''&&tags!=null)
               {
-                  this.isStartLoader=true;
                this.promotionService.getMessagesCount(tags).subscribe(res => {
                     console.log(res);
                     this.messagesCount=res.count;
@@ -529,9 +550,12 @@ notselectTags:boolean=false;
                     })
               }
                   else{
+                    this.isStartLoader=false;
                     this.messagesCount=0;
                     this.isSendSmspopup=true;
                   }
+            },(err) => {this.alertMessage=this.connect_err;}, () => {});
+            
                
           }
          

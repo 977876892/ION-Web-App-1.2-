@@ -155,8 +155,8 @@
                 </div> -->
                 <div class="live_chat__subject__star" *ngIf="userDispalyData.featured==0 && !isQuickReply" (click)="makeTheQuestionAsPopular(userDispalyData)"><div class="rating_star"></div></div>
                 <div class="live_chat__subject__star" *ngIf="userDispalyData.featured==1 && !isQuickReply" (click)="makeTheQuestionAsPopularUnPopular(userDispalyData)"><div class="rating_star_fill"></div></div>
-                <div class="live_chat__subject" [hidden]="!isQuickReply" style="background-color:#00dcff;">{{ querieTitle }}</div>
-                <div class="live_chat__subject" [hidden]="isQuickReply">{{ querieTitle }}</div>
+                <div class="live_chat__subject" [hidden]="!isQuickReply" style="background-color:#31c1c1;color:white;    text-transform: capitalize;">{{ querieTitle }}</div>
+                <div class="live_chat__subject" [hidden]="isQuickReply" style="text-transform: capitalize;color:#616161;">{{ querieTitle }}</div>
               <div class="live_chat__body" [hidden]="isQuickReply"> 
                 
                 <ul>
@@ -210,7 +210,8 @@
                           <img src="assets/images/attach.png" class="profile-img-pic">
                       </div> -->
                     </div>
-                    <div class="input-group">  <span class="input-group-btn">
+                    <div class="input-group">  
+                      <span class="input-group-btn" style="width: 10%;">
                        <label for="file-upload" class="img-btn btn-file">
                                   <img src="assets/css/images/icon-link.png">
                                 </label> 
@@ -218,8 +219,8 @@
                         <!-- <button class="img-btn btn-file"><img src="assets/css/images/icon-link.png">
                           <input type="file" (change)="uploadImage();" #fileQuerieInput name="chooseFile" id="chooseFile"></button> -->
                        </span>
-
-                       <input type="text" value="" placeholder="Your Answer" (keyup)="isReplyEmpty=false;" autofocus (keyup.enter)="answerAQuerie(answerData.value, questionId); answerData.value = ''" class="input form-control" #answerData/>
+                       <textarea value="" placeholder="your answer" (keyup)="isReplyEmpty=false;" autofocus (keyup.enter)="answerAQuerie(answerData.value, questionId); answerData.value = ''" #answerData class="querie_ans" style="line-height: 20px;"></textarea>
+                       <!-- <input type="text" value="" placeholder="Your Answer" (keyup)="isReplyEmpty=false;" autofocus (keyup.enter)="answerAQuerie(answerData.value, questionId); answerData.value = ''" class="input form-control querie_ans" #answerData/> -->
                        <span style="color:red" *ngIf="isReplyEmpty">Reply Couldn't Empty.</span>
                    </div>
                    <p style="color:red;" *ngIf="imageUploadAlert">{{imgsize}}</p>
@@ -321,6 +322,7 @@
        <div class="model-content" style="padding: 37px !important;">
        <h2>Edit Patient Query</h2>     
       <div class="rt-div" style="width: 96% !important;margin: 0 auto;float: none !important;">
+        <div class="loader" *ngIf="isStartLoader"></div>
         <div class="form-section">
             <form [formGroup]="patientQuerieForm" (ngSubmit)="updatePatientQuerie()" novalidate="novalidate">
             <div class="form-section-btm">

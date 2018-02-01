@@ -5,7 +5,7 @@ import { NgModel } from '@angular/forms';
 import { Users } from './userlist';
 import { SettingsService } from '../shared/services/settings/settings.service';
 import { AuthserviceService } from '../shared/services/login/authservice.service';
-
+import { IonServer } from '../shared/globals/global';
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
@@ -14,13 +14,25 @@ import { AuthserviceService } from '../shared/services/login/authservice.service
 })
 export class SettingsComponent implements OnInit {
 
-
-  constructor(private router: Router, private route: ActivatedRoute, private settingsService:SettingsService,private builder: FormBuilder,private authService: AuthserviceService,) { }
+@ViewChild('deleteUser') deleteUser;
+  constructor(private router: Router, private route: ActivatedRoute, private settingsService:SettingsService,private builder: FormBuilder,private authService: AuthserviceService,) { 
+      document.addEventListener('click', this.offClickHandler.bind(this));
+  }
+  offClickHandler(event: any) {
+  if (this.deleteUser && !this.deleteUser.nativeElement.contains(event.target)) {
+    //this.isDeleteButtonClick=false;
+     this.usersList.forEach(user=>{
+         user.isClickOnDottedLine=false;
+       })
+ }
+}
   showProfile: boolean=true;
   showContactus:boolean=false;
   showSubscription:boolean=false;
   showUsers:boolean=false;
   isShowUserPopup: boolean = false; 
+  isHelpPopup:boolean=false;
+  phoneMinlength:boolean=false;
   isDeleteAlertPopup:boolean=false;
   isDeleteButtonClick:boolean=false;
   isClickOnEdit:boolean=false;
@@ -29,6 +41,14 @@ export class SettingsComponent implements OnInit {
   isAddVisitLoader:boolean=false;
   imageerrorAlert:boolean=false;
   queryBoxAlert:boolean=false;
+  isHelpButtonPopup:boolean=true;
+  connect_err=IonServer.nointernet_connection_err;
+  f_name_req_comm=IonServer.f_name_required;
+  f_name_length_comm=IonServer.f_name_length;
+  spaceComment=IonServer.Space_Not_required; 
+  l_name_required_comm=IonServer.l_name_required;
+  email_required_comm=IonServer.email_required;
+  invalid_email_comm=IonServer.invalid_email;
   imgsize="The file size can not exceed 8MB.";
   fname:string;
   lname:string;
@@ -37,8 +57,9 @@ export class SettingsComponent implements OnInit {
   email:string;
   mobile:string;
   aboutme:string;
+  numLength:number;
   role:string;
-  profile_pic:string;
+  //profile_pic:string;
   item= new Users();
   useritem= new Users();
   pwditem=new Users();
@@ -57,6 +78,15 @@ export class SettingsComponent implements OnInit {
   imageSrc='';
   pic="";
   userDetails:any=[];
+  profileForm: FormGroup = this.builder.group({
+    firstname: new FormControl(''),
+    surname: new FormControl(''),
+    email: new FormControl(''),
+    phone: new FormControl(''),
+    role:new FormControl(''),
+    aboutme:new FormControl(''),
+    profile_pic : new FormControl('')
+  });
   @ViewChild('fileInput') fileInput;
     userDetailsForm: FormGroup = this.builder.group({
     firstname: new FormControl(''),
@@ -80,13 +110,15 @@ export class SettingsComponent implements OnInit {
       this.getIonSubscriptionDetails();
         console.log(localStorage.getItem('user'));
       const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
-      this.item.fname = currentuser.firstname;
-      this.item.lname = currentuser.lastname;
-      this.item.email = currentuser.email;
-      this.item.mobile = currentuser.mobile;
-      this.item.aboutme = currentuser.aboutme;
-      this.item.role = currentuser.role;
-      this.item.profile_pic = currentuser.profilepic;
+      this.profileForm.patchValue({
+        firstname: currentuser.firstname,
+        surname:  currentuser.lastname,
+        email:   currentuser.email,
+        phone: currentuser.mobile,
+        role: currentuser.role,
+        aboutme:currentuser.aboutme,
+        profile_pic:currentuser.profilepic
+      })
       this.userDetails = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
 console.log(this.userDetails);
       this.dropdownSettings = {
@@ -160,11 +192,7 @@ console.log(this.userDetails);
       }
 
     
-      if(this.imageSrc == ''){
-       this.pic=this.userDetails.profilepic
-        console.log( this.pic);
-    }
-
+    
   }
   // onEventChanged(stype: any) {
   //       if (stype === 'profile') {
@@ -192,50 +220,76 @@ console.log(this.userDetails);
 
   // }
   
-  clickedOnDottedLine(id) {
-    console.log(id);
-    this.isDeleteButtonClick=!this.isDeleteButtonClick;
-    this.userMangement_select_card_delete=id;
+  clickedOnDottedLine(index) {
+    // console.log(id);
+    // this.isDeleteButtonClick=!this.isDeleteButtonClick;
+    // this.userMangement_select_card_delete=id;
+    //console.log(this.usersList);
+    this.usersList.forEach(user=>{
+      user.isClickOnDottedLine=false;
+    })
+    this.userMangement_select_card_delete=this.usersList[index].id;
+    this.usersList[index].isClickOnDottedLine = true;
+  //    if(this.usersList[index].isClickOnDottedLine) {
+  //       this.usersList[index].isClickOnDottedLine = false;
+  // }else {
+        
+  // }
   }
   userCardDelete(){
-    console.log("id");
+    //console.log("id");
+     this.usersList.forEach(user=>{
+         user.isClickOnDottedLine=false;
+       })
     this.isDeleteAlertPopup=true;
     this.isDeleteButtonClick=false;
   }
   deleteTheUser(){
+    this.isDeleteAlertPopup=false;
     this.isStartLoader=true;
     this.settingsService.DeleteUserService(this.userMangement_select_card_delete).subscribe(res=>{
       console.log(res);
       this.isStartLoader=false;
-      this.isDeleteAlertPopup=false;
       this.getUserData();
+    },(err)=>{
+      this.isStartLoader=false;
+      this.isAlertPopup=true;
+      this.isDeleteAlertPopup=false;
+      this.alertMessage=this.connect_err;
     })
   }
-  
-  profile_sub(item) {
-    console.log(item);
-   // console.log(this.imageSrc);
-   // console.log(localStorage.getItem('user'));
-  this.isStartLoader = true;
-    this.settingsService.editProfileListService(item,this.imageSrc).subscribe(data => {
-     // console.log(item);
-      if(this.imageSrc == ''){
-        this.pic=this.userDetails.profilepic
-         console.log( this.pic);
+  onTypeNumValid(numValue) { 
+    //this.numLength=numValue.length; 
+    console.log(numValue.length)
+        if(numValue.length > 10){
+          this.phoneMinlength=true;
         }
         else{
-          this.pic=this.imageSrc;
-          console.log(this.pic);
+           this.phoneMinlength=false;
         }
+    }
+  profile_sub() {
+    console.log(this.profileForm.value);
+    console.log((this.profileForm.value.phone).toString().length);
+    if((this.profileForm.value.phone).toString().length!=10)
+    {
+       this.phoneMinlength=true;
+    }
+    else{
+      this.phoneMinlength=false;
+    }
+  if(this.profileForm.valid && !this.phoneMinlength){
+    this.isStartLoader = true;
+    this.settingsService.editProfileListService(this.profileForm.value).subscribe(data => {
       localStorage.setItem('user', JSON.stringify({
-        email: item.email,
-        firstname: item.fname,
-        lastname: item.lname,
-        mobile: item.mobile,
-        aboutme: item.aboutme,
-        role: item.role,
-        profilepic:this.pic,
-        name:item.fname+' '+item.lname,
+        email: this.profileForm.value.email,
+        firstname: this.profileForm.value.firstname,
+        lastname: this.profileForm.value.surname,
+        mobile: this.profileForm.value.phone,
+        aboutme: this.profileForm.value.aboutme,
+        role: this.profileForm.value.role,
+        profilepic:this.profileForm.value.profile_pic,
+        name:this.profileForm.value.firstname+' '+this.profileForm.value.surname,
         cliniclogo:this.userDetails.cliniclogo,
         id: this.userDetails.id,
         teamid: this.userDetails.teamid,
@@ -250,14 +304,26 @@ console.log(this.userDetails);
         smsbalance:this.userDetails.smsbalance
       }));
       this.isStartLoader = false; 
+      this.isAlertPopup=true;
+      this.alertMessage="Profile Updated Successfully.";
      this.isShowImgDeleteButt=false;
-         //  console.log("success");
-     
          console.log(localStorage.getItem('user'));
-              });
-             
+              },(err)=>{
+                this.isStartLoader = false; 
+                this.isAlertPopup=true;
+                this.alertMessage=this.connect_err;
+              },()=>{});
+     }else{
+      this.isStartLoader = false;
+       this.validateAllFormFields(this.profileForm);
+     }  
   }
  
+  needhelp(){
+    this.isHelpPopup=!this.isHelpPopup;
+    this.isHelpButtonPopup=false;
+  }
+
   // submit_query
   submit_query(query_des){
     if( query_des == ''){
@@ -265,7 +331,7 @@ console.log(this.userDetails);
     }
     else{
       this.queryBoxAlert=false;
-    this.userDetailsForm.value.query_des
+    //this.userDetailsForm.value.query_des
     this.isStartLoader=true;
      console.log(query_des);
      this.settingsService.postAskYourQuery(query_des).subscribe(data =>{
@@ -273,7 +339,11 @@ console.log(this.userDetails);
       this.alertMessage="Your Query Successfully Added"
       this.isStartLoader=false;
       this.query_des='';
-     });
+     },(err)=>{
+       this.isAlertPopup=true;
+       this.alertMessage=this.connect_err;
+       this.isStartLoader=false;
+     },()=>{});
     }
   }
   query_text(query_des){
@@ -324,14 +394,20 @@ uploadprofilepic() {
                 this.imageUploadAlert = false;
                 this.imageerrorAlert=true;
           }else{
-              this.imageSrc = res.description[0].url;
-              this.item.profile_pic = this.imageSrc;
+              //this.imageSrc = res.description[0].url;
+             // this.item.profile_pic = res.description[0].url;
+             this.profileForm.patchValue({
+               profile_pic:res.description[0].url
+             })
               this.isStartLoader = false;
               this.isShowImgDeleteButt=true;
+              
           }
         
         },(err) => {
-             
+          this.isStartLoader = false; 
+          this.isAlertPopup=true;
+          this.alertMessage=this.connect_err;
         }, () => {
           this.fileInput.nativeElement.value = '';
           this.isStartLoader = false;
@@ -343,7 +419,9 @@ uploadprofilepic() {
 }
 uploadprofilepicDelete(){
   this.isStartLoader=true;
-  this.item.profile_pic='';
+  this.profileForm.patchValue({
+    profile_pic:''
+  })
   this.imageSrc="";
    this.isShowImgDeleteButt=false;
   console.log( this.imageSrc);
@@ -354,6 +432,7 @@ uploadprofilepicDelete(){
 }
   changepassword(pwditem){
     //console.log(pwditem);
+    this.isStartLoader=true;
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
     //console.log(currentuser.pwd);
     if (currentuser.pwd == btoa(pwditem.oldpwd)) {
@@ -361,6 +440,13 @@ uploadprofilepicDelete(){
                   this.settingsService.changePwdListService(pwditem.newpwd)
                   .subscribe(data => {
                       console.log("success");
+                      this.isStartLoader=false;
+                      this.isAlertPopup=true;
+                      this.alertMessage="Password Changed Successfully.";
+              },(err)=>{
+                this.isAlertPopup=true;
+                this.alertMessage=this.connect_err;
+                this.isStartLoader=false;
               });
             }else{console.log("newpwd and conpwd not matching");}
     }else {
@@ -379,11 +465,20 @@ uploadprofilepicDelete(){
         //   user.email=user.email.split("@");
         // })
         this.isStartLoader=false;
-     })
+     },(err)=>{
+      this.isStartLoader = false; 
+      this.isAlertPopup=true;
+      this.alertMessage=this.connect_err;
+     },()=>{
+       this.usersList.forEach(user=>{
+         user.isClickOnDottedLine=false;
+       })
+     });
  }
 
  isAddUser=false;
  userid="";
+ isStartLoaderForUserPopup=false;
  openUserDialog(userId){
    this.selectedItems=[];
    this.isDeleteButtonClick=false;
@@ -402,7 +497,7 @@ uploadprofilepicDelete(){
         this.userGroups=[{name:"Doctor",value:10,checked:false},{name:"Frontdesk Team",value:15,checked:false},{name:"Junior Doctors",value:16,checked:false},{name:"Business Head",value:17,checked:false}];
         this.isAddUser=true;
     }else{
-       this.isStartLoader=true;
+       this.isStartLoaderForUserPopup=true;
       this.userid=userId;
       console.log(userId);
       this.settingsService.getUserDetails(userId).subscribe(
@@ -449,7 +544,12 @@ uploadprofilepicDelete(){
                     reTypePassword:'',
                     image:userdataResponse.avatar
             })
-        },err=>{},()=>{ this.isStartLoader=false;})
+        },err=>{
+          this.isStartLoaderForUserPopup=false;
+          this.isAlertPopup=true;
+          this.isShowUserPopup = false;
+          this.alertMessage=this.connect_err;
+        },()=>{ this.isStartLoaderForUserPopup=false;})
          
     }
   this.isShowUserPopup = true;
@@ -502,31 +602,39 @@ addNewUser(){
           console.log("true");
                 if(this.userDetailsForm.valid && !this.isGroupsRequied)
                   {
-                      this.isStartLoader=true;
+                      this.isStartLoaderForUserPopup=true;
                       this.settingsService.addNewUserService(this.userDetailsForm.value)
                  .subscribe(
                         data => {console.log(data);
                           //this.isStartLoader=true;
-                          this.isAlertPopup=true;
+                          
 
-                          if(data.message=="Username in use. Please Give Another Username.")
+                          if(data.message=="The username is already taken, try another.")
                             {
-                               this.alertMessage="Username in use.";
-                               this.isStartLoader=false;
+                               this.alertMessage=data.message;
+                               this.isStartLoaderForUserPopup=false;
+                               this.isAlertPopup=true;
                             }else if(data.message=="This email address is already registered.")
                               {
-                                this.alertMessage="This email address is already registered. Please Give Another Gamil.";
-                                this.isStartLoader=false;
+                                this.alertMessage=data.message;
+                                this.isStartLoaderForUserPopup=false;
+                                this.isAlertPopup=true;
                               }
                               else{
+                                    this.isStartLoaderForUserPopup=false;
                                     this.imageSrc="";
                                     this.alertMessage="User Added Successfully."
+                                    this.isAlertPopup=true;
                                     this.closeUserPopUp();
-                                    this.getUserData();
+                                    //this.getUserData();
                                     console.log("success");
                               }
                          },
-                        err => console.log(err),
+                        err => {
+                          this.isStartLoaderForUserPopup=false;
+                          this.isAlertPopup=true;
+                          this.alertMessage=this.connect_err;
+                        }
                   );
                   }
                   else{
@@ -536,7 +644,7 @@ addNewUser(){
           else{
                 this.pwdNotMatch=true;
                  console.log(this.pwdNotMatch);
-          console.log("false");
+                 console.log("false");
          // this.isShowUserPopup=true;
           }
         
@@ -566,17 +674,23 @@ addNewUser(){
               this.userDetailsForm.value.groups=ids;
               this.userDetailsForm.value.categories=categeries;
               console.log( this.userDetailsForm.value);
-              this.isStartLoader=true;
+              //this.isStartLoader=true;
+              this.isStartLoaderForUserPopup=true;
                this.settingsService.updateUserService(this.userDetailsForm.value,this.userid)
                .subscribe(
                       data => {
-                        this.isStartLoader=false;
+                        // this.isStartLoader=false;
+                        this.isStartLoaderForUserPopup=false;
                         this.isAlertPopup=true;
                         this.alertMessage="User Updated Successfully."
                          this.closeUserPopUp();
-                         this.getUserData();
+                         //this.getUserData();
                         console.log(data);console.log("success");},
-                      err => console.log(err),
+                      err =>{
+                       this.isStartLoader=false;
+                       this.isAlertPopup=true;
+                       this.alertMessage=this.connect_err;
+                      }
                 );
           }
   
@@ -642,11 +756,16 @@ selectedIds=[];
           this.subscriptionStart=data.description[0].subscription.split(" ");
           this.subscriptionEnd=data.description[0].expiration.split(" ");
       },
-      err=>{},()=>{})
+      err=>{
+        this.isAlertPopup=true;
+        this.alertMessage=this.connect_err;
+        this.isStartLoader=false;
+      },()=>{})
     }
 
     upload() {
   this.isStartLoader = true;
+  this.isStartLoaderForUserPopup=true;
   this.imageerrorAlert=false;
   const fileBrowser = this.fileInput.nativeElement;
    if (fileBrowser.files && fileBrowser.files[0]) {
@@ -685,7 +804,11 @@ selectedIds=[];
     },(err) => {
         this.fileInput.nativeElement.value = '';
         this.isStartLoader = false;
+        this.isStartLoader=false;
+        this.isAlertPopup=true;
+        this.alertMessage=this.connect_err;
      }, () => {
+       this.isStartLoaderForUserPopup=false;
       //this.isStartLoader = false;
     });
   }

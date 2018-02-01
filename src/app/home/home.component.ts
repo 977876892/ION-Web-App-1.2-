@@ -76,6 +76,7 @@ leadForm: FormGroup = this.builder.group({
 });
 checkboxGroup: FormGroup;
 gender=[{checked:true},{checked:false}];
+autoComplete=[];
 
 public carouselBannerItems: Array<any> = [];
 public carouselBanner: NgxCarousel;
@@ -87,6 +88,14 @@ constructor(private router: Router,private leadsService: LeadsService,private au
     if (localStorage.getItem('user') == null || localStorage.getItem('user') == '') {
       this.router.navigate(['login']);
     } else {
+         this.leadsService.getLeadTags().subscribe(res => {
+         res.description.forEach(element => {
+            this.autoComplete.push(element.title);
+          });
+      },(err) => {
+      }, () => {
+        
+      })
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
     this.getDashboardStatistics();
      const OneSignal = window['OneSignal'] || [];
@@ -114,7 +123,7 @@ constructor(private router: Router,private leadsService: LeadsService,private au
       });
     });
       //OneSignal.push(['sendTag', 'userid', currentuser.id]); 
-      OneSignal.push(['sendTags', {'userid': currentuser.id,'group':currentuser.publishid,'teamid':currentuser.teamid}]); 
+      OneSignal.push(['sendTags', {'userid': currentuser.id,'categoryid':currentuser.publishid,'teamid':currentuser.teamid}]); 
     }
    
     
@@ -180,6 +189,8 @@ get user(): any {
         this.dashboardData = dashboardResponse.description;
       }, (err) => {
         this.isStartLoader = false;
+        this.isAlertPopup=true;
+        this.alertMessage=this.connect_err;
       }, () => {        
         this.getDashboardFeeds();       
       });
@@ -199,6 +210,8 @@ selectPromo(eachpromotion){
          console.log( this.dashboardFeedData);
       }, (err) => {
         this.isStartLoader = false;
+        this.isAlertPopup=true;
+        this.alertMessage=this.connect_err;
       }, () => {
         this.getDashboardNotifications();
       });
@@ -213,6 +226,9 @@ selectPromo(eachpromotion){
         console.log(this.notificationsData);
       }, (err) => {
         this.isStartLoader = false;
+        this.isStartLoader = false;
+        this.isAlertPopup=true;
+        this.alertMessage=this.connect_err;
       }, () => {
         this.isStartLoader = false;
               
@@ -253,7 +269,9 @@ selectPromo(eachpromotion){
         this.blogCommentsData = blogResponse.description;
         console.log( this.blogCommentsData);
       }, (err) => {
-  
+        this.isStartLoader = false;
+        this.isAlertPopup=true;
+        this.alertMessage=this.connect_err;
       }, () => {
         this.isStartLoader = false;
       });
@@ -295,6 +313,8 @@ selectPromo(eachpromotion){
         this.promotionsData = promotionResponse;
       }, (err) => {
         this.isStartLoader = false;
+        this.isAlertPopup=true;
+        this.alertMessage=this.connect_err;
       }, () => {
         this.isStartLoader = false;
       });
@@ -312,6 +332,8 @@ selectPromo(eachpromotion){
         this.getDashboardFeeds();
       }, (err) => {
         this.isStartLoader = false;
+        this.isAlertPopup=true;
+        this.alertMessage=this.connect_err;
       }, () => {
         this.isStartLoader = false;
       });
@@ -357,7 +379,9 @@ upload() {
       }
     
     },(err) => {
-
+      this.isStartLoader = false;
+      this.isAlertPopup=true;
+      this.alertMessage=this.connect_err;
      }, () => {
       this.fileInput.nativeElement.value = '';
        setTimeout (() => {

@@ -36,6 +36,7 @@ export class VisitsComponent implements OnInit {
   visitNoUpdateSub:any[];
   visitUpdateDetail:any[];
   isModifyData:boolean=false;
+  isReviewLinkPopup:boolean=false;
   phoneZeroComm:boolean=false;
   imageerrorAlert:boolean=false;
   patientDetailsData: any = {};
@@ -52,7 +53,6 @@ export class VisitsComponent implements OnInit {
   // status_fields = [{id: 'new', value: 'New'}, {id: 'accepted', value: 'Accepted'}, {id: 'canceled', value: 'Cancelled'},{id: 'Review', value: 'Review'}];
   @ViewChild('fileInput') fileInput;
   //@ViewChild('visitsListing') listing;
-  imageSrc: any = '';
   isEditVisit: boolean = false;
   orderVal: string = '';
   visitsTempData: any = [];
@@ -85,7 +85,8 @@ export class VisitsComponent implements OnInit {
     req_id: new FormControl(''),
     tags: new FormControl(''),
     ce_id:new FormControl(''),
-    age:new FormControl('')
+    age:new FormControl(''),
+    image:new FormControl('')
   });
   visitDownloadForm: FormGroup =this.builder.group({
     selectDuration: new FormControl(''),
@@ -95,11 +96,22 @@ export class VisitsComponent implements OnInit {
     toDate:new FormControl(''),
     selecedDoctor:new FormControl('')
   });
+  reviewForm:FormGroup=this.builder.group({
+    patientMailId:new FormControl(''),
+    patientMobileNumber:new FormControl('')
+  })
+  @ViewChild('filtercontainers') filtercontainers;
   gender=[{checked:true},{checked:false}];
   excelOrPdf="excel";
   constructor(private router: Router, private visitsService: VisitsService, private route: ActivatedRoute,
-     private builder: FormBuilder,  private authService: AuthserviceService,private leadsService:LeadsService,private csvService: CsvService) { }
-
+     private builder: FormBuilder,  private authService: AuthserviceService,private leadsService:LeadsService,private csvService: CsvService) {
+      document.addEventListener('click', this.offClickHandler.bind(this));
+      }
+      offClickHandler(event:any) {
+        if (this.filtercontainers && !this.filtercontainers.nativeElement.contains(event.target)) { // check click origin
+            this.isReviewLinkPopup = false;
+        }
+       }
   ngOnInit() {
      
     if (localStorage.getItem('user') =='' || localStorage.getItem('user')==null) {
@@ -288,7 +300,6 @@ addVisit() {
        }
       
           this.visitForm.value.enddate = this.visitForm.value.startdate;
-          this.visitForm.value.image = this.imageSrc;
           this.visitForm.value.name = this.visitForm.value.firstname + ' ' + this.visitForm.value.lastname;
           console.log(this.visitForm.value.tags);
           if(this.visitForm.value.tags!=null && this.visitForm.value.tags.length!=0 )
@@ -354,12 +365,21 @@ patientDetails(pid) {
      for (const eachdata of eachentry[1]) {
       if(eachdata.id === pid) {
         console.log(eachdata.birthday);
-        eachdata.birthday=this.format(eachdata.birthday, ['DD/MM/YYYY']);
+        if(eachdata.birthday!='0000-00-00' && eachdata.birthday!='')
+          {
+              eachdata.birthdayshow=this.format(eachdata.birthday, ['DD/MM/YYYY']);
+          }
+          else{
+            eachdata.birthdayshow='';
+          }
         this.patientDetailsData = eachdata;
       }}}
   //this.patientEditDetails(pid);
 }
 
+reviewlink(){
+  console.log(this.reviewForm.value)
+}
 addVisitPopup() {
   this.clearForm();
   this.getCategeories();
@@ -544,7 +564,6 @@ upload() {
       if(fileBrowser.files[0].size/1024/1024 > 9) {
         this.imageUploadAlert = true;
         this.imageerrorAlert = false;
-        // this.imageSrc = "";
         this.fileInput.nativeElement.value = '';
         return false;
       }
@@ -570,7 +589,9 @@ upload() {
                 this.imageUploadAlert = false;
                 this.imageerrorAlert=true;
           }else{
-              this.imageSrc = res.description[0].url;
+              this.visitForm.patchValue({
+                image:res.description[0].url
+              });
               this.isStartLoader = false;
               this.isShowImgDeleteButt=true;
           }
@@ -587,9 +608,10 @@ upload() {
   
 }
 uploadImgeDelete(){
-  this.imageSrc="";
+  this.visitForm.patchValue({
+    image:''
+  });
    this.isShowImgDeleteButt=false;
-  console.log( this.imageSrc);
   this.imageerrorAlert=false;
   this.imageUploadAlert = false;
 }
@@ -629,6 +651,7 @@ visitStateChange() {
 // patient details for edit function
 patientEditDetails(pid) {
     this.isStartLoader = true;
+   
     for (const eachentry of this.visitsTempData) {
      for (const eachdata of eachentry[1]) {
       if(eachdata.id === pid) {
@@ -638,7 +661,7 @@ patientEditDetails(pid) {
           console.log(timeslotResponse.data);
             let selectdate=new Date(eachdata.startdate);
             let todayDate=new Date();
-          
+           
              if(selectdate.getFullYear()==todayDate.getFullYear()&&selectdate.getMonth()==todayDate.getMonth()&&selectdate.getDate()==todayDate.getDate())
             {
                 let timeslots=[];
@@ -714,11 +737,24 @@ patientEditDetails(pid) {
               this.gender[0].checked=false;
               this.gender[1].checked=false;
             }
-
-        this.patientDetailsData = eachdata;
+            if(eachdata.birthday=='0000-00-00')
+              {
+                eachdata.birthday='';
+              }
+              else{   
+                eachdata.birthday= this.format(eachdata.birthday, ['YYYY-MM-DD']);
+              }
+        console.log(eachdata.birthday);
+        //this.patientDetailsData = eachdata;
         console.log(eachdata);
-        this.imageSrc=eachdata.image;
         if(this.isEditVisit) {
+          console.log(eachdata.mobile.length);
+          if(eachdata.mobile.length < 10){
+            this.phoneMinlength=true;
+          }
+          else{
+            this.phoneMinlength=false;
+          }
           this.visitForm.patchValue({
             startdate: eachdata.startdate,
             request_status: eachdata.request_status,
@@ -736,7 +772,8 @@ patientEditDetails(pid) {
             phone: eachdata.mobile,
             comments: eachdata.remarks,
             dob: eachdata.birthday,
-            ce_id:eachdata.ce_id
+            ce_id:eachdata.ce_id,
+            image:eachdata.image
           });
           this.visitUpdateDetail= this.visitForm.value;
         }
@@ -791,7 +828,6 @@ visitUpdate() {
            this.visitForm.value.endtime = eachslot.timeslot_endtime;
          }
     }
-    this.visitForm.value.image = this.imageSrc;
     // console.log(this.visitForm.value);
     // console.log(this.visitForm.value.request_status);
    
@@ -801,6 +837,7 @@ visitUpdate() {
       console.log(this.visitForm.value);
       
         var strUDFs="";
+        console.log(this.visitForm.value.sex);
         strUDFs += 2 + ';' + this.visitForm.value.sex + '~';
         if(this.visitForm.value.dob !== '') {
           strUDFs += 3 + ';' + this.visitForm.value.dob + '~';
@@ -847,7 +884,6 @@ timechange(){
 // to clear from fields
 clearForm() {
   this.visitForm.reset();
-  this.imageSrc='';
   this.phoneMinlength=false;
   this.visitForm.patchValue({
     firstname: '',
@@ -862,7 +898,9 @@ clearForm() {
     dob: '',
     res_id: '',
     sex: '',
-    category: ''
+    category: '',
+    image:'',
+    age:''
   });
 }
 

@@ -511,14 +511,15 @@ querieEditClick(querieData) {
  }
  // updatePatientQuerie
  updatePatientQuerie() {
+   this.isStartLoader=true;
    this.quriesService.editQuerieService(this.singleQuerieData.id, btoa(this.patientQuerieForm.value.subject),
      btoa(this.patientQuerieForm.value.querie)).subscribe(
      (updatedResponse: any) => {
        console.log(updatedResponse);
-       this.isQuerieEdit = false;
-      
-       this.alertMessage = updatedResponse.description;
-       if(updatedResponse.status=="ok")
+      this.isQuerieEdit = false;
+      this.isStartLoader=false;
+      this.alertMessage = updatedResponse.description;
+        if(updatedResponse.status=="ok")
         {
             this.isAlertPopup = true;
             this.queriesData.forEach(query => {
@@ -530,7 +531,6 @@ querieEditClick(querieData) {
               }
           });
         }
-       
      }, (err) => {
          this.isAlertPopup=true;
          this.alertMessage=this.connect_err;

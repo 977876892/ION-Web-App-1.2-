@@ -73,7 +73,7 @@ addPromotionService(promotionid,content,image,promotionTitle) {
     body.append('copyrights','');
     body.append('published',"4");
     body.append('subscription','');
-    body.append('title',promotionTitle);
+    body.append('title',promotionTitle+" "+created);
     body.append('content',content);
     body.append('tags','');
     body.append('frontpage','1');

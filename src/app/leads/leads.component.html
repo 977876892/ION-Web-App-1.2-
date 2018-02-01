@@ -41,7 +41,7 @@
               <div class="filter-lt">
                   <ul>    
                       <li>
-                       <div class="flt flt-gender bx-border brd-radius-5">
+                       <div class="flt flt-gender bx-border brd-radius-5"> 
                        <div class="heading">Gender</div>
                        <div class="flt-div gender">
                        <input checked="checked" [formControl]="leadFilterForm.controls['gender']" value="Male" name="rdblGender" id="rdblGender_0" type="radio">
@@ -356,14 +356,14 @@
       <li> 
       
       <label class="labels">First name</label>
-      <input type="text" class="input" minlength="3" maxlength="40" pattern="\S.*\S" [formControl]="leadForm.controls['firstname']" tabindex="1" required>
+      <input type="text" autofocus class="input" minlength="3" maxlength="40" pattern="\S.*\S" [formControl]="leadForm.controls['firstname']" tabindex="1" required>
       <span class="required_comments" *ngIf="leadForm.controls['firstname'].hasError('required') && leadForm.controls['firstname'].touched">{{f_name_req_comm}}</span>
       <span class="required_comments" *ngIf="leadForm.controls['firstname'].hasError('pattern') && leadForm.controls['firstname'].touched">{{spaceComment}}</span>
       <span class="required_comments" *ngIf="leadForm.controls['firstname'].hasError('minlength') && leadForm.controls['firstname'].touched">{{f_name_length_comm}}</span>
       </li>
       <li>
       <label class="labels">Email</label> 
-      <input type="email" class="input" maxlength="40" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+[.]+[a-z]{1,4}$" [formControl]="leadForm.controls['email']" tabindex="3" required>
+      <input type="email" class="input" maxlength="40" pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{1,63}$" [formControl]="leadForm.controls['email']" tabindex="3" required>
       <span class="required_comments" *ngIf="leadForm.controls['email'].hasError('required') && leadForm.controls['email'].touched">{{email_required_comm}}</span>
       <span class="required_comments" *ngIf="leadForm.controls['email'].hasError('pattern') && leadForm.controls['email'].touched">{{invalid_email_comm}}</span>
       </li>
@@ -450,8 +450,8 @@
         <br>
       
       <div class="actions">
-      <button class="button profile-action ripple" type="submit" tabindex="12">Submit</button><br>
-      <button class="button cancel-action" (click)="isAddLead = false;isEditLead=false;clearForm();" tabindex="13">cancel</button>
+      <button class="button profile-action ripple" type="submit" tabindex="12">Submit</button>
+      <button class="button cancel-action" (click)="isAddLead = false;isEditLead=false;clearForm();" tabindex="13" style="margin-top: 1px;margin-left: 10px;">cancel</button>
       </div>
     </form>
       

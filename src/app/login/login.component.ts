@@ -56,7 +56,7 @@ export class LoginComponent implements OnInit {
                         mobile: loginUserResponse.phone,
                         aboutme: loginUserResponse.aboutme,
                         role: loginUserResponse.role,
-                        profilepic: commonDetails.description[0].avatar,
+                        profilepic: loginUserResponse.profile_image,
                         cliniclogo:loginUserResponse.clinic_logo,
                         analyticId: commonDetails.description[0].ganalytics,
                         username: this.loginForm.value.username,

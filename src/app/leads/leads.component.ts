@@ -104,7 +104,7 @@ export class LeadsComponent implements OnInit {
     tags: new FormControl('')
   });
   tagsArray:any=[];
-  @ViewChild('filtercontainer') filtercontainer;
+  @ViewChild('filtercontainer') filtercontainer; 
   currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
 
   constructor(private router: Router, private leadsService: LeadsService, private route: ActivatedRoute,
@@ -564,8 +564,9 @@ autoComplete=[];
   getLeadTags(){
     this.leadsService.getLeadTags().subscribe(res => {
         this.leadtagsForFilter=res.description;
+        //this.autoComplete=res.description.splice(0,1);
+        //console.log(this.autoComplete);
          res.description.forEach(element => {
-           if(element.title!=='all')
             this.autoComplete.push(element.title);
           });
        // console.log(this.leadtagsForFilter);
@@ -689,8 +690,9 @@ autoComplete=[];
      
     }
     downloadLeads(){
-      console.log("download");
+      this.isStartLoader = true;
       this.leadsService.downloadLeads().subscribe(res => {
+        this.isStartLoader = false;
         let blob = new Blob([res], { type: 'text/csv' });
         let url = window.URL.createObjectURL(blob);
         let a = document.createElement('a');
@@ -702,6 +704,7 @@ autoComplete=[];
             window.URL.revokeObjectURL(url);
       },(err) => {
         this.isAlertPopupError=true;
+        this.isStartLoader = false;
         this.alertMessage=this.connect_err;
       }, () => {
         this.isStartLoader = false;

@@ -1,49 +1,53 @@
 <div class="rt-header wrapper__padding" *ngIf="isShowHeader">
-    <label class="username"><span class="name">Hello,</span><span class="honorific">Dr. </span>{{ user.name }}</label>
+    <label class="username"><span class="name">Hello,</span><span class="honorific"></span>{{ user.name }}</label>
     <div class="rt-header__rt__block">
       <!-- notification popup-->
- <div class="user__status_pop_transferq" *ngIf="isFeedsNotification" style="right: 396px;top:13px;">
+ <div class="user__status_pop_transferq" *ngIf="isFeedsNotification" style="right: 396px;top:13px;" #filtercontainer>
     <div class="user__status_popbody bx-shadow brd-radius-15 transfer_pop" style="z-index:10; width: 450px;border-radius: 20px !important;">
         <div class="title"></div>
         <div class="content_notification">
             <ul>
                 <li class="brd-radius-5" *ngFor="let eachfeed of notificationFeedData | slice:0:10;" style="padding: 6px;border-radius: 10px;box-shadow: 0 0 5px #bbbbbb;margin-bottom:18px;">
                   <div class="feed_image" style="padding: 10px;">
-                    <img *ngIf="eachfeed.avatar == ''" src="assets/images/user_image.jpg" width="65" height="65" alt="Hospital Feed">
+                    <img *ngIf="eachfeed.avatar == ''" src="assets/css/images/profile_no_img.png" width="65" height="65" alt="">
                     <img *ngIf="eachfeed.avatar != ''" src="{{ eachfeed.avatar }}" width="65" height="65" alt="Hospital Feed">
                   </div>
-                  <div class="feed_info"> <span class="lg-text home--hosp-fld__txt">{{ eachfeed.content.split(":")[0] }}</span> {{ eachfeed.content.split(":")[1] }}
-                    <div class="feed_info_stamp">{{eachfeed.since}} ago</div>
+                  <div class="feed_info" style="margin-bottom: 20px;"> 
+                   <div> <span class="lg-text home--hosp-fld__txt" ><p [innerHTML]="eachfeed.content.split(':')[0]"></p></span> 
+                    <p [innerHTML]="eachfeed.content.split(':')[1]"></p></div>
+                    <div class="feed_info_stamp" style="margin: 4px 0px;">{{eachfeed.since}} ago</div>
                   </div>
-                  <div class="feed_actions txt-center">
-                    <a *ngIf="eachfeed.action == 'Publish' && eachfeed.context.includes('blog')" style="cursor: pointer;" class="view_link" [routerLink]="['/publish']">
+                  <div class="feed_actions txt-center"  style="cursor: pointer;">
+                    <a *ngIf="eachfeed.action == 'Publish' && eachfeed.context.includes('blog')" class="view_link" [routerLink]="['/publish']">
                           <div>{{eachfeed.action}}</div>
                         </a>
-                     <a *ngIf="eachfeed.action == 'View' && eachfeed.context.includes('blog')" style="cursor: pointer;" class="view_link" [routerLink]="['/publish/online']">
+                     <a *ngIf="eachfeed.action == 'View' && eachfeed.context.includes('blog')" class="view_link" [routerLink]="['/publish/online']">
                           <div>{{ eachfeed.action }}</div>
                         </a>
-                      <a *ngIf="eachfeed.action == 'View' && eachfeed.context.includes('visit')" style="cursor: pointer;" class="view_link" [routerLink]="['/visits']">
+                      <a *ngIf="eachfeed.action == 'View' && eachfeed.context.includes('visit')"  class="view_link" [routerLink]="['/visits']">
                           <div>{{ eachfeed.action }}</div>
                         </a>
-                        <a *ngIf="eachfeed.action == 'Reply'" routerLink="/queries/{{eachfeed.context_id}}" style="cursor: pointer;" class="view_link">
+                        <a *ngIf="eachfeed.action == 'Reply'" routerLink="/queries/{{eachfeed.context_id}}" class="view_link">
                             <div>{{ eachfeed.action }}</div>
                         </a>
-                        <a *ngIf="eachfeed.action == 'Congratulate'" style="cursor: pointer;" (click)="congaratulate(eachfeed.id)" class="view_link">
+                        <a *ngIf="eachfeed.action == 'Congratulate'" (click)="congaratulate(eachfeed.id)" class="view_link">
                             <div>{{ eachfeed.action }}</div>
                         </a>
-                    <a *ngIf="eachfeed.action == 'Congratulated'" style="cursor: pointer;"> <img src="assets/images/congractulation-icon.png">
+                    <a *ngIf="eachfeed.action == 'Congratulated'" > <img src="assets/images/congractulation-icon.png">
                     <div>{{ eachfeed.action }}</div>
                     </a> </div>
                 </li>
               </ul>
         </div>
     </div>
-</div>
-      <a style="cursor: pointer;" class="no-margin" (click)="feedsNotification()">
+</div> 
+      <a style="cursor: pointer;" class="no-margin" (click)="feedsNotification();$event.stopPropagation(); ">
           <img src="assets/css/images/Notifications.png" width="29" height="31" style="vertical-align: middle;">
         </a>
-        <a class="add_new" href="javascript:void(0)" (click)="isPromoPopupOpen = true">ADD NEW</a>
         <a href="javascript:void(0)" class="calender" [routerLink]="['/publish/calendar']"><div class="cal-date">{{todayDate}}</div></a>
+        <a class="add_new" href="javascript:void(0)" (click)="isPromoPopupOpen = true;addNew()" style="    margin-right: 0px !important;">
+            <img src="assets/css/images/add-now-butt-140-x40.png" alt="" style="object-fit: cover;">
+          </a>
         <a (click)="searchCall();" style="cursor: pointer;" class="Search no-margin"><img src="assets/css/images/search-icon1.png" width="29" height="31"></a>
         <!-- <a style="cursor: pointer;" class="calender" [routerLink]="['/publish/calendar']">{{todayDate}}</a> -->
       <button class="button rounded ripple" (click)="logout();" type="submit">Logout</button>
@@ -64,8 +68,8 @@
 
   <div class="actions" style="width:95% !important;">
   <a style="cursor: pointer;" routerLink="/visits/addvisit" class="visit brd-radius-15 xs-bg-white new_add"><img src="assets/images/add-visits-icon.png"><br>Add Visit</a>
-  <a style="cursor: pointer;" (click) = "isSelectPromo = true; isPromoPopupOpen = false" class="promo brd-radius-15 xs-bg-white new_add" style="float: left !important;"><img src="assets/images/add-promo-icon.png"><br>Add Promo</a>
-  <a style="cursor: pointer;" (click)="isPromoPopupOpen = false;isSelectAddLeads=true" class="promo brd-radius-15 xs-bg-white new_add" style="float:right !important;"><img src="assets/images/add-promo-icon.png"><br>Add Lead</a>
+  <a (click) = "isSelectPromo = true; isPromoPopupOpen = false" class="promo brd-radius-15 xs-bg-white new_add" style="float: left !important;cursor: pointer;"><img src="assets/images/add-promo-icon.png"><br>Add Promo</a>
+  <a (click)="isPromoPopupOpen = false;isSelectAddLeads=true" class="promo brd-radius-15 xs-bg-white new_add" style="float:right !important;cursor: pointer;"><img src="assets/images/lead_icon.png" height="40" width="40"><br>Add Lead</a>
   <a style="cursor: pointer;" (click) = "isSelectBlog=true; isSelectPromo = false; isPromoPopupOpen = false" class="blog brd-radius-15 xs-bg-white"><img src="assets/images/add-blog-icon.png" align="absmiddle">Start a new Blog</a>
   
   
@@ -142,8 +146,8 @@
     
         <h3 class="p-t-20">Select a topic to start from your speciality ?</h3>
            <div class="wrap-60 m-auto">
-               <button class="button btn-white brd-none brd-radius-50 btn-full m-b-20" routerLink="/publish/selecttopic" type="submit" >Yes Select the topic</button>
-                <button class="button btn-white-reverse  brd-radius-50 btn-full m-b-60" routerLink="/publish/newpost" type="submit">No i want to start a new topic</button>
+               <button class="button btn-white brd-none brd-radius-50 btn-full m-b-20" routerLink="/publish/selecttopic" type="submit" style="color: #33cccc;">Yes Select the topic</button>
+                <button class="button btn-white-reverse  brd-radius-50 btn-full m-b-60" routerLink="/publish/newpost" type="submit">No i want start a new topic</button>
            </div>
     
          </div>
@@ -197,7 +201,7 @@
                          <div class="sp-profile-pic" *ngIf="searchData.image=='NA'"><span class="avatar avatar-r header_avatar">{{ searchData.nametag }}</span> </div>                                                
                          <div class="sp-profile-data" style="margin-top: 10px;">
                                <div class="sp-profile-name" *ngIf="searchData.title!='NA'"><b style=" text-transform: capitalize;">{{searchData.title}} <span *ngIf="searchData.age!='NA'">,{{searchData.age}}</span> <span *ngIf="searchData.gender!='NA'">,{{searchData.gender}}</span></b></div>
-                             <span class="sp-profile-info" *ngIf="searchData.mobile!='NA'">{{searchData.mobile}}</span>  <span class="sp-profile-info" *ngIf="searchData.email!='NA'">{{searchData.email}}</span>
+                             <span class="sp-profile-info" *ngIf="searchData.mobile!='NA'">{{searchData.mobile}},</span>  <span class="sp-profile-info" *ngIf="searchData.email!='NA'">{{searchData.email}}</span>
                          </div>
                     </div>
                     <div class="pull-right"> <div class="sp-profile-actions">
@@ -212,7 +216,7 @@
                          <span class="avatar avatar-r header_avatar" *ngIf="searchData.image=='NA' || searchData.image==''">{{ searchData.nametag }}</span>
                       </div>                     
                          <div class="sp-profile-data">
-                              <div><span class="sp-profile-name" *ngIf="searchData.title!='NA'"><b style=" text-transform: capitalize;float: left;margin-top: 10px;">{{searchData.title}},<span *ngIf="searchData.age!='NA'">{{searchData.age}},</span><span *ngIf="searchData.gender!='NA'">{{searchData.gender}}</span></b></span></div>
+                              <div><span class="sp-profile-name" *ngIf="searchData.title!='NA'"><b style=" text-transform: capitalize;float: left;margin-top: 10px;">{{searchData.title}},<span *ngIf="searchData.age!='NA' && searchData.age!=''">{{searchData.age}},</span><span *ngIf="searchData.gender!='NA' && searchData.gender!=''">{{searchData.gender}}</span></b></span></div>
                              <span class="sp-profile-info" *ngIf="searchData.mobile!='NA'">{{searchData.mobile}},</span><span class="sp-profile-info" *ngIf="searchData.email!='NA'">{{searchData.email}}</span>
                         </div>
 
@@ -244,7 +248,7 @@
                         <div class="sp-profile-pic" *ngIf="searchData.image=='NA'"><span class="avatar avatar-r header_avatar">{{ searchData.nametag }}</span> </div>
                          <div class="sp-profile-data" style="margin-top: 10px;">
                                <div class="sp-profile-name" *ngIf="searchData.title!='NA'"><b style=" text-transform: capitalize;">{{searchData.title}} <span *ngIf="searchData.age!='NA'">,{{searchData.age}}</span> <span *ngIf="searchData.gender!='NA'">,{{searchData.gender}}</span></b></div>
-                             <span class="sp-profile-info" *ngIf="searchData.mobile!='NA'">{{searchData.mobile}}</span>  <span class="sp-profile-info" *ngIf="searchData.email!='NA'">{{searchData.email}}</span>
+                             <span class="sp-profile-info" *ngIf="searchData.mobile!='NA' && searchData.mobile!=''">{{searchData.mobile}},</span><span class="sp-profile-info" *ngIf="searchData.email!='NA'">{{searchData.email}}</span>
                          </div>
 
                     </div>
