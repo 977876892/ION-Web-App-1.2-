@@ -99,7 +99,7 @@
                                     <span style="color:red" *ngIf="showTrasferError">Please Select Category</span>      
                               </li>
                               <li style="text-align: center;">
-                              <button class="button btn-nor ripple" (click)="transferQuery(categeryID.value)" value="Submit">Transfer</button>
+                              <button class="button btn-nor ripple btn" (click)="transferQuery(categeryID.value)" value="Submit">Transfer</button>
                               </li>
                               </ul>
                         </div>
@@ -163,7 +163,7 @@
                 <div *ngFor="let eachdata of eachQuerieData; let i = index">
                         <li class="others" *ngIf="eachdata.user_id == '0'">
                             <span class="chat_name">{{ eachdata.poster_name }}</span>
-                            <span class="chat_time" >{{ eachdata.display_time }}</span>
+                            <span class="chat_time" >{{eachdata.display_date}}&nbsp;&nbsp; {{ eachdata.display_time }}</span>
                             <span class="chat_content" >{{ eachdata.content }}
                                 <div class="chat_post_gallery" *ngIf="eachdata.attachments?.length > 0 && eachdata.attachments != ''">
                                     <div class="chat_post_img" *ngFor="let eachImage of eachdata.attachments">
@@ -241,7 +241,7 @@
                   
                   </div>
                   </div>
-                  <button class="button submit brd-radius-10 ripple" (click)="answerAQuerie(answerData.value, questionId);  answerData.value = ''" type="submit">Reply Query</button>
+                  <button class="button submit brd-radius-10 ripple btn" (click)="answerAQuerie(answerData.value, questionId);  answerData.value = ''" type="submit">Reply Query</button>
                 </div>
               </div>
               <!-- quick reply popup -->
@@ -271,12 +271,12 @@
                                   <!-- {{ eachtemplate.content }} -->
                                   <p [innerHTML]="eachtemplate.content"></p>
                                   <i class="delete" (click)="deleteQuerieTemplate(eachtemplate.id);"></i>
-                                  <i class="edit" (click)="quickReplyEdit(eachtemplate)"></i>
+                                  <i class="edit" (click)="quickReplyEdit(i)"></i>
                                   </li>
-                                  <li *ngIf="isEditClick && editId == eachtemplate.id">
+                                  <li *ngIf="!eachtemplate.isShown">
                                       <textarea style=" width:100%;border: 1px solid #bbb;border-radius: 7px;" [(ngModel)]="editContent" style="resize: none;width: 100%;"></textarea>
                                       <button style="position: absolute;top: 55px;right: 60px;cursor: pointer;float: left;background-color: #33cccc;padding: 3px;color: white;border-radius: 3px;" (click)="quickReplySave(editContent,editId)">Save</button>
-                                      <button style="position: absolute;top: 55px;right: 0px;cursor: pointer;float: left;background-color: #ba1a47;padding: 3px;color: white;border-radius: 3px;" (click)="isEditClick = false;cancelQuickReply()">Cancel</button>
+                                      <button style="position: absolute;top: 55px;right: 0px;cursor: pointer;float: left;background-color: #ba1a47;padding: 3px;color: white;border-radius: 3px;" (click)="isEditClick = false;cancelQuickReply(i)">Cancel</button>
                                 </li>
                         <!-- <li>Lorem Ipsum is simply Lorem Ipsu Ipsum Lorem Ipsum is simply Lorem Ipsu Ipsum Lorem Ipsum is simply Lorem Ipsu Ipsum....?
                           <i class="delete"></i>
@@ -300,7 +300,7 @@
                      </label>
                      </div>
                      <div class="options">
-                    <button class="button submit brd-radius-10 ripple" type="button" (click)="answerAQuerie(templateData, questionId);" [disabled]="querieTemplatesData.length==0">Reply Query</button>
+                    <button class="button submit brd-radius-10 ripple btn" type="button" (click)="answerAQuerie(templateData, questionId);" [disabled]="querieTemplatesData.length==0">Reply Query</button>
                      
                      </div>
                      </div>
@@ -316,7 +316,7 @@
     </div>
     <!-- Panel ends -->
     <!-- Popup querie edit-->
-  <div class="model model-add_leads bx-shadow" *ngIf="isQuerieEdit" style="height: 360px;"> 
+  <div class="model model-add_leads bx-shadow" *ngIf="isQuerieEdit" style="height: 400px;" [style.margin-top.px]="windowBottom"> 
       <a class="close" href="javascript: void(0);" (click)="isQuerieEdit = false;">Close</a>
      
        <div class="model-content" style="padding: 37px !important;">
@@ -329,8 +329,9 @@
             <ul class="que--edit__edit-pat-que">
               <li>
                 <label class="labels" style="font-weight: bold;">EDIT TITLE</label>
-                <input type="text" [formControl]="patientQuerieForm.controls['subject']" pattern="\S.*\S" class="input" required style="background-color:inherit !important;font-weight: bold !important;">
-                <span style="color:red" *ngIf="patientQuerieForm.controls['subject'].hasError('pattern') && patientQuerieForm.controls['subject'].touched">{{spaceComment}}</span>
+                <input type="text" [formControl]="patientQuerieForm.controls['subject']" pattern="\S.*\S" class="input" required style="background-color:inherit !important;font-weight: bold !important;" required>
+                <span style="color:red" *ngIf="patientQuerieForm.controls['subject'].hasError('required') && patientQuerieForm.controls['subject'].touched">Title Required</span>
+                <span style="color:red" *ngIf="patientQuerieForm.controls['subject'].hasError('pattern')">{{spaceComment}}</span>
               </li>
             </ul>
         </div>
@@ -338,10 +339,10 @@
         <ul>
         <li>
         <label class="labels" style="font-weight: bold;">EDIT CONTENT</label>
-        <textarea class="input" pattern="\S.*\S" [formControl]="patientQuerieForm.controls['querie']" required style="background-color:inherit !important;height: 65px;resize: none;"></textarea>
+        <textarea class="input" pattern="\S.*\S" [formControl]="patientQuerieForm.controls['querie']" required style="background-color:inherit !important;height: 65px;resize: none;" required></textarea>
         <!-- <input type="text" [formControl]="patientQuerieForm.controls['querie']" class="input" pattern="\S.*\S" required style="background-color:inherit !important;height: 65px;"> -->
-        <span style="color:red" *ngIf="patientQuerieForm.controls['querie'].hasError('pattern') && patientQuerieForm.controls['querie'].touched">{{spaceComment}}</span>
-        
+        <span style="color:red" *ngIf="patientQuerieForm.controls['querie'].hasError('required') && patientQuerieForm.controls['querie'].touched">Content Required</span>
+        <span style="color:red" *ngIf="patientQuerieForm.controls['querie'].hasError('pattern')">{{spaceComment}}</span>
         </li>
         </ul>
         </div>
@@ -376,7 +377,7 @@
         </div>
 
         <!-- delete yes or no popup -->
-        <div class="model model-alerts" *ngIf="isDeleteAlertPopup" style="border-radius: 10px;box-shadow: 0 0 5px #777;margin-top: 120px;"> 
+        <div class="model model-alerts" *ngIf="isDeleteAlertPopup" style="border-radius: 10px;box-shadow: 0 0 5px #777;" [style.margin-top.px]="windowBottom"> 
             <!-- <a class="close" href="javascript:void(0);">Close</a> -->
             
             <div class="model-content">

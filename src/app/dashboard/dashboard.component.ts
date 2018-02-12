@@ -1,4 +1,4 @@
-import { Component, Output, OnInit , EventEmitter} from '@angular/core';
+import { Component, Output, OnInit , EventEmitter,Input} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DatepickerOptions } from 'ng2-datepicker';
 import * as enLocale from 'date-fns/locale/en';
@@ -15,20 +15,27 @@ export class DashboardComponent implements OnInit {
   options: DatepickerOptions = {
     locale: enLocale,
     displayFormat: 'DD/MM/YYYY',
-    barTitleFormat: 'MMMM YYYY',
+    barTitleFormat: 'MMMM YYYY', 
   };
   @Output() public eventType: EventEmitter<any> = new EventEmitter<any>();
   // @Output() public promotinType: EventEmitter<any> = new EventEmitter<any>();
   // @Output() public analyticType: EventEmitter<any> = new EventEmitter<any>();
   // @Output() public settingType: EventEmitter<any> = new EventEmitter<any>();
   // @Output() public publishingType: EventEmitter<any> = new EventEmitter<any>();
-
+  @Input()
+  visitsCount: number;
   querieType: string = 'unanswered';
   promotionTaType;
   analyticsType:string='website';
   AnsAndUnansCount:Array<number>=[];
   queries;
   blogs;
+  calDate;
+  calMonth='';
+  calDay='Today';
+  en = {dayNamesShort: ["SU", "M", "T", "W", "T", "F", "S"]};
+  monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN","JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+  weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
   settingsType:string='profile';
   publishType: string = 'publish';
   selectedDateValue: Date;
@@ -56,7 +63,6 @@ export class DashboardComponent implements OnInit {
               this.queries = localStorage ? JSON.parse(localStorage.getItem('queries')) : 0;
               this.blogs= localStorage? JSON.parse(localStorage.getItem('blogs')) : 0;
           }
-          // console.log(this.currentuser);
           this.changeAmount();
           if(this.router.url == '/publish/online') {
             this.publishType = 'online';
@@ -103,6 +109,16 @@ export class DashboardComponent implements OnInit {
           } else {
             this.promotionTaType = 'designposters';
           }
+          this.calMonth=this.monthNames[this.selectedDateValue.getMonth()];
+         this.calDate=this.selectedDateValue.getDate();
+         var dd;
+              if(this.selectedDateValue.getDate()<10){
+                dd='0'+this.selectedDateValue.getDate();
+              } else{
+                dd=this.selectedDateValue.getDate();
+              }
+         this.calDate=dd;
+        
     }
     
   }
@@ -118,7 +134,6 @@ export class DashboardComponent implements OnInit {
     //   this.eventType.emit(this.settingsType);
     // }
     if (this.router.url.includes('/visits')) {
-      console.log(this.selectedDateValue);
       this.eventType.emit(this.selectedDateValue);
     }
   }
@@ -133,11 +148,11 @@ export class DashboardComponent implements OnInit {
    
 }
 // querie subtab click
-querieTypeClick(type) {
-  this.querieType = type;
-  if(type == 'answered') {
+querieTypeClick(qtype) {
+  this.querieType = qtype;
+  if(qtype == 'answered') {
     this.router.navigate(['queries/answered']);
-  } else if(type == 'popular') {
+  } else if(qtype == 'popular') {
     this.router.navigate(['queries/popular']);
   } else {
     this.router.navigate(['queries']);
@@ -192,10 +207,21 @@ analyticTypeClick(atype) {
 //    this.settingsType = stype;
 //   this.changeAmount();
 // }
+
 selectedVisitDate(selectedDateValue) {
-  console.log(selectedDateValue);
   this.selectedDateValue=selectedDateValue;
   this.changeAmount();
+ 
+var dd;
+if(this.selectedDateValue.getDate()<10){
+  dd='0'+this.selectedDateValue.getDate();
+} else{
+  dd=this.selectedDateValue.getDate();
+}
+
+this.calMonth=this.monthNames[this.selectedDateValue.getMonth()];
+this.calDay=this.weekday[this.selectedDateValue.getDay()];
+this.calDate=dd;
 }
 helpWindow(event){
 window.open('http://getion.in', '_blank');
@@ -204,7 +230,6 @@ window.open('http://getion.in', '_blank');
  getDashboardStatistics() {
     this.dashboardService.getDashboardStatistics().subscribe(
       (dashboardResponse: any) => {
-        console.log(dashboardResponse);
          localStorage.setItem('queries', JSON.stringify({
               unanswered: dashboardResponse.description[0].unanswered,
               answered:dashboardResponse.description[0].answered,

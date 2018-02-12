@@ -15,9 +15,7 @@ export class VisitsService {
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
     return this.http.get(API.GET_VISITS_LIST(currentuser.username, currentuser.pwd,current_date)).map(
       (responseData) => {
-        //console.log(responseData['_body']);
         const key = '_body';
-        console.log(responseData[key]);
         return JSON.parse(responseData[key]);
       });
   }
@@ -106,5 +104,30 @@ getTimeSlotsService(resId, tsDate) {
               return JSON.parse(responseData['_body']);
             });
       }
+  sendReviewLink(values){
+    const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+        return this.http.get(API.SEND_REVIEW_LINK(values,currentuser)).map((responseData)=>{
+          const key = '_body';
+          return JSON.parse(responseData['_body']);
+        })
+  }
+   getVisitDetails(id){
+    const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+        return this.http.get(API.GET_VISITS_DETAIL_VIEW(currentuser.username,currentuser.pwd,id)).map((responseData)=>{
+          const key = '_body';
+          return JSON.parse(responseData['_body']);
+        })
+  }
+
+   blockCalender(visitForm){
+     console.log(visitForm)
+     //console.log(timezone)
+    const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+        return this.http.get(API.BLOCK_CALENDER(currentuser,visitForm)).map((responseData)=>{
+          const key = '_body';
+          return JSON.parse(responseData['_body']);
+        })
+    }
+      
 
 }

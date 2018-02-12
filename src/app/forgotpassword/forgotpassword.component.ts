@@ -26,7 +26,6 @@ export class ForgotpasswordComponent implements OnInit {
   recoveryPassword() {
     this.loginService.forgotPasswordService(this.forgotPasswordForm.value.username).subscribe(
       (loginUserResponse: any) => {
-        console.log(loginUserResponse);
         if (loginUserResponse.status === 'set') {
           // this.storage.session = Object.assign(
           //   this.storage.session, {
@@ -49,19 +48,29 @@ export class ForgotpasswordComponent implements OnInit {
       });
 
   }
-  termsdata:any=[];  
+termsdata:any="";
+heading:any="";
   termsCondition(){
    
     this.isStartLoader = true;
     return this.loginService.termsandcondition()
     .subscribe(
       (termdataResponse: any) => {
-         // console.log(termdataResponse);
+         this.heading="Terms & Conditions";
          this.isAlertPopup = true;
          this.termsdata=termdataResponse.introtext;
-         console.log(this.termsdata);
          this.isStartLoader = false;
-        // console.log(this.termsdata);
+      }) 
+  }
+    privacyPolicy(){
+    this.isStartLoader = true;
+    return this.loginService.privacyPolicy()
+    .subscribe(
+      (termdataResponse: any) => {
+        this.heading="Privacy Policy";
+         this.isAlertPopup = true;
+         this.termsdata=termdataResponse.introtext;
+         this.isStartLoader = false;
       }) 
   }
 

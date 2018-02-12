@@ -41,11 +41,12 @@
           <div class="panel_promotions__grid" *ngFor="let eachblog of ionizedBlogData; let i = index">
             <div class="grid">
               <div class="grid_x_small bx-shadow brd-radius-10">
-                <div class="promo_img"> <img src="{{eachblog.image.url}}" (click)="promotionfullviewimg(eachblog.title)" style="cursor:pointer;">
+                <div class="promo_img"> <img src="{{eachblog.image.url}}" (click)="promotionfullviewimg(eachblog)" style="cursor:pointer;">
                   <div class="promo_download" (click)="downLoadImage(eachblog.image.url)"><a style="cursor: pointer;"><Img src="assets/css/images/download-icon.png"></a></div>
                 </div>
-                <div class="promot_details"> <span class="promo_title">{{ eachblog.title }}</span>
-                  <button class="button btn_small button_seconday ripple" (click)="publishThePromotion(eachblog)"><span>Publish</span></button>
+                <div class="promot_details"> <p class="promo_title protion-title-width" title="{{ eachblog.title }}">{{ eachblog.title }}</p>
+                  <button class="button btn_small button_seconday ripple btn" (click)="publishThePromotion(eachblog)"><span>Publish</span></button>
+                
                 </div>
               </div>
             </div>
@@ -135,7 +136,7 @@
             </div>         
             
             <div style="text-align: center;"> 
-            <button class="button brd-radius-10 bx-shadow ripple" (click)="ionizeThePromotion()" style="height: 40px;width: 60%"><span>Ionize</span></button>
+            <span class="bx-shadow "><button class="button brd-radius-10 ripple btn" (click)="ionizeThePromotion()" style="height: 40px;width: 60%;vertical-align: inherit !important;"><span>Ionize</span></button></span>
           </div>
 
             </div>
@@ -156,7 +157,7 @@
           <h1 class="txt-center"><b>Create your promotional SMS</b></h1>
           <div class="promotions_input">
 
-            <textarea placeholder="Write your text here.." [(ngModel)]="smsText" class="textarea brd-radius-5" (ngModelChange)="showErrorForSmsContent=false;smsTextChange(smsText)" data-gramm_editor="false"></textarea>
+            <textarea (keypress)="omit_special_char($event)" placeholder="Write your text here.." [(ngModel)]="smsText" class="textarea brd-radius-5" (ngModelChange)="showErrorForSmsContent=false;smsTextChange(smsText)" data-gramm_editor="false"></textarea>
             <div class="txt-hint"> {{smsText.length}} / {{noOfMessages}}</div>
           </div>
 
@@ -185,7 +186,7 @@
             </div>
           </div>
 
-           <button class="button btn-sms" (click)="sendToAll()"><b>Send</b></button> 
+           <button class="button btn-sms btn" (click)="sendToAll()"><b>Send</b></button> 
           <!-- <button class="button btn-sms" (click)="showAlertPopup()">Send</button> -->
             <span style="color:red" *ngIf="showErrorForSmsContent">Content Required</span>
              <span style="color:red" *ngIf="showErrorForSms">Group or Phone Number is Required</span>
@@ -329,13 +330,13 @@
 
 
           <!-- Popup For Editor to Start New Blog-->
-  <div class="model model-publish bx-shadow no-padding" *ngIf="isOpenEditor" style="width: 800px !important;height: 400px;top: 20% !important;margin-left: -427px;">
+  <div class="model model-publish bx-shadow no-padding" *ngIf="isOpenEditor" style="width: 800px !important;height: 400px;top: 20% !important;margin-left: -427px;" [style.margin-top.px]="windowBottom">
       <a class="close" style="cursor: pointer;" (click)="isOpenEditor = false;">Close</a>
       <div class="model-titlebar xs-fill-style2" style="background-color:#33cccc !important;">
         {{ionizedPromotionTitle}}
       </div>
          <div class="model-content">
-           <img src="https://s3-ap-southeast-2.amazonaws.com/geg-gug-webapp/images/career/regular/Hospital_Administrator.png" alt="">
+           <p>{{promotionLink}}</p>
        </div>
  </div>
 

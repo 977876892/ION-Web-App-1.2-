@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild,HostListener } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { VisitsService } from '../shared/services/visits/visits.service';
@@ -37,6 +37,7 @@ export class VisitsComponent implements OnInit {
   visitUpdateDetail:any[];
   isModifyData:boolean=false;
   isReviewLinkPopup:boolean=false;
+  isBlockCalPopup:boolean=false;
   phoneZeroComm:boolean=false;
   imageerrorAlert:boolean=false;
   patientDetailsData: any = {};
@@ -52,9 +53,10 @@ export class VisitsComponent implements OnInit {
   select_column=[{title:'Name',value:6,Checked: true,dataKey: "name"},{title:'Doctor',value:6,Checked: true,dataKey: "resname"},{title:'Age',value:1, Checked: true,dataKey: "age"},{title:'Phone',value:2, Checked: true,dataKey: "mobile"},{title:'Email',value:3,Checked: true,dataKey: "email"},{title:'Time',value:4,Checked: true,dataKey: "starttime"},{title:'Status',value:5,Checked: true,dataKey: "request_status"},{title:'Paid_Amnt',value:6,Checked: true,dataKey: "booking_deposit"}];
   // status_fields = [{id: 'new', value: 'New'}, {id: 'accepted', value: 'Accepted'}, {id: 'canceled', value: 'Cancelled'},{id: 'Review', value: 'Review'}];
   @ViewChild('fileInput') fileInput;
+  visitsCount:number=10;
   //@ViewChild('visitsListing') listing;
   isEditVisit: boolean = false;
-  orderVal: string = '';
+  orderVal: string = 'starttime';
   visitsTempData: any = [];
   isAlertPopup: boolean = false;
   alertMessage: string = '';
@@ -64,7 +66,7 @@ export class VisitsComponent implements OnInit {
   isPrinting: boolean = false;
   isAlertPopupError:boolean=false;
   selectedDateValue:Date=new Date();
-  
+ 
   visitForm: FormGroup = this.builder.group({
     firstname: new FormControl(''),
     lastname: new FormControl(''),
@@ -88,6 +90,17 @@ export class VisitsComponent implements OnInit {
     age:new FormControl(''),
     image:new FormControl('')
   });
+  blockCalenderForm:FormGroup=this.builder.group({
+    res_id: new FormControl(''),
+    category: new FormControl(''),
+    block_from:new FormControl(''),
+    block_till:new FormControl(''),
+    block_from_time:new FormControl(''),
+    block_to_time:new FormControl(''),
+    blockAllDay:new FormControl(''),
+    block_detail:new FormControl('')
+  });
+
   visitDownloadForm: FormGroup =this.builder.group({
     selectDuration: new FormControl(''),
     today:new FormControl({value: '', disabled: false}),
@@ -120,6 +133,22 @@ export class VisitsComponent implements OnInit {
     } else {
      //this.getVisits();
      this.getLeadTags();
+       this.route.params.forEach((params: Params) => {
+        if (params.isAddVisitParam != '' && params.isAddVisitParam != undefined) {
+          if(params.isAddVisitParam=='addvisit')
+            {
+                  this.isAddVisit = true;
+                  this.addVisitPopup();
+            }
+            else{
+              this.visitsService.getVisitDetails(params.isAddVisitParam).subscribe(data=>{
+                this.patientDetailsData = data.data[0];
+                this.isShowPatientDetails=true;
+              })
+            }
+              
+        }
+      });
     }
     // if(localStorage.getItem("user")!='')
     // else{
@@ -135,7 +164,7 @@ export class VisitsComponent implements OnInit {
   var date=this.selectedDate;
   var dd:any=date.getDate();
   var mm:any=(date.getMonth()+1);
-
+  
   if(dd<10){
     dd='0'+dd;
   } 
@@ -143,20 +172,33 @@ export class VisitsComponent implements OnInit {
     mm='0'+mm;
   } 
   var current_date=date.getFullYear()+"-"+mm+"-"+dd;
-  console.log(current_date)
   this.visitsService.getVisitsListService(current_date).subscribe(
     (visitsResponse: any) => {
-      //console.log(visitsResponse.data.length);
-      
          this.grouped = _.chain(visitsResponse.data).groupBy('startdate').pairs();
           for(let i = 0; i < this.grouped._wrapped.length; i++) {
               let date = new Date((this.grouped._wrapped[i])[0]).getDate();
               let month = new Date((this.grouped._wrapped[i])[0]).getMonth();
               this.grouped._wrapped[i][0] = months[month] + ' ' + date;
             }
-         // console.log((this.grouped._wrapped));
+          this.visitsCount=12;
           this.visitsTempData = this.grouped._wrapped;
-       
+      //  console.log(this.visitsTempData[0][0])
+      //  console.log(this.visitsTempData[0][1].length)
+    // if(this.selectCalDate == this.visitsTempData[0][0]){
+    //     this.selectedDateApp=this.visitsTempData[0][1].length;
+    //     console.log(this.selectedDateApp);
+    //     console.log(this.selectCalDate)
+    //     localStorage.setItem('visitsAppointment', JSON.stringify({
+    //         totalAppointment:this.selectedDateApp
+    //     }));
+    // }else{
+    //   this.selectedDateApp=0;
+    //   localStorage.setItem('visitsAppointment', JSON.stringify({
+    //     totalAppointment:this.selectedDateApp
+    //    }));
+    //   console.log(this.selectedDateApp);
+    //    console.log(this.selectCalDate);
+    // }
      
     }, (err) => {
       console.log(err);
@@ -165,22 +207,20 @@ export class VisitsComponent implements OnInit {
       this.alertMessage=this.connect_err;
     }, () => {
       this.isStartLoader = false;
-      this.route.params.forEach((params: Params) => {
-        if (params.isAddVisitParam != '' && params.isAddVisitParam != undefined) {
-          console.log(params.isAddVisitParam);
-          this.isAddVisit = true;
-          this.addVisitPopup();
-        }
-      });
       this.getFilterByDoctorsData('');
-      this.getDoctors('');
+      this.getDoctorsForFilter('');
     });
     
 }
   selectedDate=new Date();
+  selectCalDate;
+  selectedDateApp;
 onEventChanged(selectedValue: any) {
-  //console.log(selectedValue);
   this.selectedDate=selectedValue;
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var dd:any=this.selectedDate.getDate();
+  var mm:any=(this.selectedDate.getMonth());
+  this.selectCalDate=months[mm]+" "+dd;
   this.getVisits();
   
 }
@@ -191,12 +231,11 @@ onEventChanged(selectedValue: any) {
 showNovisitsAvailable=false;
 getFilterByDoctorsData(resId) {
   this.showNovisitsAvailable=false;
-  console.log(resId);
  if(resId == undefined || resId == '' || resId == null) {
   this.visitsData = this.visitsTempData;
+  // console.log(this.visitsData);
  }else {
   this.visitsData = [];
-  console.log(this.visitsData);
   this.visitsTempData.forEach((resdata) => {
     const tempArr = [];
     resdata[1].forEach((visitnewdata) => {
@@ -211,7 +250,6 @@ getFilterByDoctorsData(resId) {
  
  });
  }
-console.log(this.visitsData);
 if(this.visitsData.length==0)
   {
     this.showNovisitsAvailable=true;
@@ -223,9 +261,7 @@ stop:boolean = false;
 phoneMinlength:boolean=false;
 
 onTypeNumValid(numValue) { 
-this.numLength=numValue.length;  
-    console.log(numValue);
-   
+this.numLength=numValue.length;
     if(numValue.length > 10 ){
       this.phoneMinlength=true;
       this.phoneZeroComm=false;
@@ -249,18 +285,19 @@ not_select_date_error_msg(){
      this.showBetweenError=false;
    }
     var fromdate=this.visitDownloadForm.value.fromDate;
-    console.log(fromdate);
     this.fromdate=fromdate.getFullYear()+"-"+(fromdate.getMonth()+1)+"-"+fromdate.getDate();
     this.fromDateEmpty=false;
 }
 
 // add a visit call
+categoryRequiredError:boolean=false;
 addVisit() {
-  console.log(this.visitForm.value.phone);
   //this.isStartLoader = true;
-         //console.log(this.numValue.length);
+  if(this.visitForm.value.category==''||this.visitForm.value.category==null)
+    {
+      this.categoryRequiredError=true;
+    }
          this.visitForm.value.comments=this.visitForm.value.comments.replace(/&/g, "%26");
-         console.log(this.visitForm.value.comments);
         if(this.numLength!=10 && this.numLength!=0)
         {
            this.phoneMinlength=true;
@@ -301,7 +338,6 @@ addVisit() {
       
           this.visitForm.value.enddate = this.visitForm.value.startdate;
           this.visitForm.value.name = this.visitForm.value.firstname + ' ' + this.visitForm.value.lastname;
-          console.log(this.visitForm.value.tags);
           if(this.visitForm.value.tags!=null && this.visitForm.value.tags.length!=0 )
             {
                 for(var i=0;i<this.visitForm.value.tags.length;i++)
@@ -320,21 +356,23 @@ addVisit() {
             {
              this.visitForm.value.tags=''; 
             }
-         
-           
-          console.log(this.visitForm.value);
-          
        if (this.visitForm.valid &&  !this.phoneMinlength && !this.phoneZeroComm) {
          this.isAddVisitLoader=true;
           this.visitsService.addVisitService(this.visitForm.value, strUDFs).subscribe(
-          (leadResponse: any) => {
-            console.log(leadResponse);
-            if(leadResponse.status === 'ok') {
+          (addVisitResponse: any) => {
+            console.log(addVisitResponse);
+            if(addVisitResponse.status === 'ok') {
                 this.isAlertPopup = true;
                 this.alertMessage = 'Visit added successfully.';
                 this.isAddVisit = false;
                 this.closeAddAndEditVisit();
                 //this.getVisits();
+            }
+            else if(addVisitResponse.data[0].Error!=""){
+                this.isAlertPopup = true;
+                this.alertMessage = 'Your Selected TimeSlot Already Booked. Please Select Another Date or Time.';
+                //this.isAddVisit = true;
+                //this.closeAddAndEditVisit();
             }
           }, (err) => {
                  this.isAlertPopupError=true;
@@ -347,11 +385,9 @@ addVisit() {
           //   {
           //     this.router.navigate(['/visits']);
           //   }
-           this.clearForm();
+          // this.clearForm();
           });
-          //console.log('form submitted');
         } else {
-          console.log("else");
           this.validateAllFormFields(this.visitForm); //{7}
         }
 
@@ -364,7 +400,6 @@ patientDetails(pid) {
    for (const eachentry of this.visitsTempData) {
      for (const eachdata of eachentry[1]) {
       if(eachdata.id === pid) {
-        console.log(eachdata.birthday);
         if(eachdata.birthday!='0000-00-00' && eachdata.birthday!='')
           {
               eachdata.birthdayshow=this.format(eachdata.birthday, ['DD/MM/YYYY']);
@@ -377,8 +412,14 @@ patientDetails(pid) {
   //this.patientEditDetails(pid);
 }
 
-reviewlink(){
-  console.log(this.reviewForm.value)
+reviewlink(value){
+  if(value == 'appointment'){
+      
+  }
+  else{
+    this.visitsService.sendReviewLink(this.reviewForm.value).subscribe((appoinmentRes:any)=>{
+  })
+  }
 }
 addVisitPopup() {
   this.clearForm();
@@ -389,7 +430,6 @@ getCategeories() {
   this.isAddVisitLoader = true;
   this.visitsService.getCategeoriesService().subscribe(
     (categeoryResponse: any) => {
-      // console.log(visitsResponse.data);
       this.visitCategeoryData = categeoryResponse.data;
       //this.getDoctors(this.visitCategeoryData[0].id_categeories);
     }, (err) => {
@@ -400,42 +440,67 @@ getCategeories() {
     });
 }
 // get doctors list function
-getDoctors(catId) {
-  if(catId!='')
-    {
-      this.isAddVisitLoader=true;
-    }
-    else{
-      this.isStartLoader = true;
-    }
-  //console.log(catId);
-  this.visitsService.getDoctorsService(catId).subscribe(
+getDoctorsForFilters(catId){
+   this.isStartLoader = true;
+    this.visitsService.getDoctorsService(catId).subscribe(
     (doctorsResponse: any) => {
-       console.log(doctorsResponse.data);
-       console.log(catId);
        if(catId=='')
         {
             this.doctorsListForFilter=doctorsResponse.data;
         }
-        else{
-          this.visitForm.patchValue({
-                res_id:''
-              })
-            this.visitDoctorsData = doctorsResponse.data;
-        }
-      
     }, (err) => {
 
     }, () => {
       this.isStartLoader = false;
-      this.isAddVisitLoader=false;
       // this.getDoctorTimeSlots(this.visitDoctorsData[0].id_resources, '2017/10/31');
 
     });
 }
+getDoctorsForFilter(catId) {
+  this.isStartLoader = true;
+   
+  this.visitsService.getDoctorsService(catId).subscribe(
+    (doctorsResponse: any) => {
+       if(catId=='')
+        {
+            this.doctorsListForFilter=doctorsResponse.data;
+        }
+    }, (err) => {
+
+    }, () => {
+      this.isStartLoader = false;
+    });
+}
+getDoctors(catId) {
+  if(catId!='')
+    {
+      this.isAddVisitLoader=true;
+      this.visitsService.getDoctorsService(catId).subscribe(
+      (doctorsResponse: any) => {
+        
+            this.categoryRequiredError=false;
+            this.visitForm.patchValue({
+                  res_id:''
+                })
+            this.visitDoctorsData = doctorsResponse.data;
+          
+      }, (err) => {
+
+      }, () => {
+        this.isAddVisitLoader=false;
+        // this.getDoctorTimeSlots(this.visitDoctorsData[0].id_resources, '2017/10/31');
+      });
+    }
+    else{
+      this.categoryRequiredError=true;
+      // this.visitForm.patchValue({
+      //   res_id:''
+      // })
+    }
+  
+}
   getDoctorsForUpdate(catId) {
   this.isStartLoader = true;
-  //console.log(catId);
   this.visitsService.getDoctorsService(catId).subscribe(
     (doctorsResponse: any) => {
             this.visitDoctorsData = doctorsResponse.data;
@@ -447,10 +512,6 @@ getDoctors(catId) {
 }
 // get time slots function
 getDoctorTimeSlots(resId, tsDate) {
-  console.log(resId);
-  console.log(tsDate);
-   
-  //console.log(tsDate);
   if(tsDate!==undefined && tsDate!='' && resId!='' ){
         //this.isStartLoader = true;
         var month=(tsDate.getMonth()+1);
@@ -465,7 +526,6 @@ getDoctorTimeSlots(resId, tsDate) {
               date = '0' + date;
         }
         var passdate=tsDate.getFullYear()+"-"+month+"-"+date;
-        console.log(passdate);
         this.visitForm.patchValue({
           startdate:passdate
         });
@@ -479,8 +539,6 @@ getDoctorTimeSlots(resId, tsDate) {
                
                 let timeslots=[];
                 let hours=todayDate.getHours();
-                console.log(timeslotResponse.data[0].Message);
-                console.log(typeof timeslotResponse.data[0].Message===undefined);
                 if(timeslotResponse.data[0].Message===undefined)
                   {
                       for(var i=0;i<timeslotResponse.data.length;i++) 
@@ -510,8 +568,6 @@ getDoctorTimeSlots(resId, tsDate) {
             // {
             //     let timeslots=[];
             //     let hours=todayDate.getHours();
-            //     console.log(timeslotResponse.data[0].Message);
-            //     console.log(typeof timeslotResponse.data[0].Message=="undefined");
             //     if(typeof timeslotResponse.data[0].Message=="undefined")
             //       {
             //           for(var i=0;i<timeslotResponse.data.length;i++) 
@@ -555,9 +611,7 @@ getDoctorTimeSlots(resId, tsDate) {
 upload() {
   
   const fileBrowser = this.fileInput.nativeElement;
-  console.log(fileBrowser.files[0]);
   // if (fileBrowser.files && fileBrowser.files[0]) {
-   // console.log(fileBrowser.files[0]);
    if(fileBrowser.files[0])
     {
      
@@ -582,10 +636,8 @@ upload() {
         
         this.authService.uploadImageService(fd).subscribe(res => {
           // do stuff w/my uploaded file
-          console.log(res.description)
           if(res.description==undefined)
           {
-               // console.log("error");
                 this.imageUploadAlert = false;
                 this.imageerrorAlert=true;
           }else{
@@ -658,7 +710,6 @@ patientEditDetails(pid) {
         
         this.visitsService.getTimeSlotsService(eachdata.resource, eachdata.startdate).subscribe(
         (timeslotResponse: any) => {
-          console.log(timeslotResponse.data);
             let selectdate=new Date(eachdata.startdate);
             let todayDate=new Date();
            
@@ -666,8 +717,6 @@ patientEditDetails(pid) {
             {
                 let timeslots=[];
                 let hours=todayDate.getHours();
-                console.log(timeslotResponse.data[0].Message);
-                console.log(typeof timeslotResponse.data[0].Message=="undefined");
                 if(typeof timeslotResponse.data[0].Message=="undefined")
                   {
                       for(var i=0;i<timeslotResponse.data.length;i++) 
@@ -744,11 +793,8 @@ patientEditDetails(pid) {
               else{   
                 eachdata.birthday= this.format(eachdata.birthday, ['YYYY-MM-DD']);
               }
-        console.log(eachdata.birthday);
         //this.patientDetailsData = eachdata;
-        console.log(eachdata);
         if(this.isEditVisit) {
-          console.log(eachdata.mobile.length);
           if(eachdata.mobile.length < 10){
             this.phoneMinlength=true;
           }
@@ -794,8 +840,6 @@ patientEditDetails(pid) {
 // UPDATE VISITS
 visitUpdate() { 
   this.visitNoUpdateSub= this.visitForm.value;
-  console.log(this.visitNoUpdateSub);
-  console.log(this.visitUpdateDetail);
   if(this.visitNoUpdateSub === this.visitUpdateDetail){
     this.isModifyData=true;
   }
@@ -804,8 +848,11 @@ visitUpdate() {
   }
   
   this.visitForm.value.comments=this.visitForm.value.comments.replace(/&/g, "%26");
-  console.log(this.visitForm.value.comments);
   //this.isStartLoader = true;
+  if(this.visitForm.value.category==''||this.visitForm.value.category==null)
+    {
+      this.categoryRequiredError=true;
+    }
    if(this.numLength!=10 && this.numLength!=0)
         {
            this.phoneMinlength=true;
@@ -822,22 +869,16 @@ visitUpdate() {
           this.phoneZeroComm=false;
         }
     for (const eachslot of this.timeSlotsData) {
-      console.log(this.visitForm.value.starttime);
          if(eachslot.id === this.visitForm.value.starttime) {
            this.visitForm.value.starttime = eachslot.timeslot_starttime;
            this.visitForm.value.endtime = eachslot.timeslot_endtime;
          }
     }
-    // console.log(this.visitForm.value);
-    // console.log(this.visitForm.value.request_status);
    
     
     if(this.visitForm.value.request_status!="" && this.visitForm.value.starttime.toString().includes(":") && this.visitForm.value.res_id!='' && this.visitForm.value.category!=''  && !this.phoneMinlength && !this.phoneZeroComm &&this.visitForm.valid && !this.isModifyData) {
-      console.log("update visit");
-      console.log(this.visitForm.value);
       
         var strUDFs="";
-        console.log(this.visitForm.value.sex);
         strUDFs += 2 + ';' + this.visitForm.value.sex + '~';
         if(this.visitForm.value.dob !== '') {
           strUDFs += 3 + ';' + this.visitForm.value.dob + '~';
@@ -848,8 +889,6 @@ visitUpdate() {
       this.isStartLoader=false;
       this.visitsService.updateVisitService(this.visitForm.value,strUDFs).subscribe(
                 (vistUpdateResponse: any) => {
-                  //console.log(vistUpdateResponse.data[0]);
-                  console.log(vistUpdateResponse.data[0].status)
                   if(vistUpdateResponse.data[0].status === 'ok') {
                     this.isStartLoader=false;
                     this.isAddVisitLoader=false;
@@ -935,12 +974,8 @@ clearForm() {
   }
   showTodayOrTomorrowError=false;
   showBetweenError=false;
-  
+  isStartLoaderForPrint=false;
   showPrintScreen() {
-    this.isStartLoader=true;
-    console.log(this.select_column);
-    console.log(this.visitDownloadForm.value);
-    console.log(this.visitDownloadForm.value);
     this.fromdate="";
     this.fromDateEmpty=true;
     if(this.visitDownloadForm.value.selectDuration==0||this.visitDownloadForm.value.selectDuration==''||this.visitDownloadForm.value.selectDuration==null)
@@ -949,9 +984,9 @@ clearForm() {
             {
               if(this.visitDownloadForm.value.tomorrow==''||this.visitDownloadForm.value.tomorrow==null)
                 {
-                     this.showTodayOrTomorrowError=true;
-                      this.showBetweenError=false;
-                      return;
+                    this.showTodayOrTomorrowError=true;
+                    this.showBetweenError=false;
+                    return;
                 }
             }
       }
@@ -965,15 +1000,12 @@ clearForm() {
                 return;
             }
       }
-    
-      this.showTodayOrTomorrowError=false;
-      this.showBetweenError=false;   
-      this.getAppintmentsBetweenDates(this.visitDownloadForm.value);    
-    
+            this.showTodayOrTomorrowError=false;
+            this.showBetweenError=false; 
+            this.getAppintmentsBetweenDates(this.visitDownloadForm.value);
   }
 
     downloadFilteredVisits(){
-      console.log(this.excelOrPdf);
     if(this.excelOrPdf!='')
       {
           if(this.excelOrPdf=='pdf')
@@ -988,8 +1020,6 @@ clearForm() {
                         col.push(column);
                       }
                 })
-                console.log(col);
-                console.log(this.filteredVisits);
                 pdf.autoTable(col, this.filteredVisits, {
                       startY: 60,
                       drawHeaderRow: function(row, data) {
@@ -1023,7 +1053,6 @@ clearForm() {
                 }
             })
               sqlquery=sqlquery.substring(0, sqlquery.length - 1);
-              console.log(sqlquery);
               var query='SELECT  '+sqlquery+' INTO CSV(" visits ",{headers:true}) FROM ?';
               alasql(query, [this.filteredVisits]);
              //this.csvService.download(this.filteredVisits, 'visits');
@@ -1033,7 +1062,6 @@ clearForm() {
 downloadVisits(){
   this.isStartLoader = true;
       this.visitsService.downloadVisits().subscribe(res => {
-        console.log(res);
         this.isStartLoader = false;
         let blob = new Blob([res], { type: 'text/csv' });
         let url = window.URL.createObjectURL(blob);
@@ -1056,7 +1084,6 @@ downloadVisits(){
 // print visits
 printVisits() {
   this.visitsService.downloadVisits().subscribe(res => {
-    console.log(res);
     var response="<html><head><style>table {font-family: arial, sans-serif;border-collapse: collapse;width: 100%;}td, th {border: 1px solid #dddddd;text-align: left;padding: 8px;}tr:nth-child(even) {background-color: #dddddd;}</style></head><body><table><tr><th>Company</th><th>Contact</th><th>Country</th></tr><tr><td>Alfreds Futterkiste</td><td>Maria Anders</td><td>Germany</td></tr></table></body></html>"
      var file = new Blob([res]);
   var fileURL =window.URL.createObjectURL(file);
@@ -1104,8 +1131,6 @@ dobSelected(dob){
                 if (ageMonth < 0 || (ageMonth == 0 && ageDay < 0)) {
                     age =age - 1;
                 }
-                  console.log(age);
-                
                this.visitForm.patchValue({
                  age:age
                })
@@ -1118,6 +1143,8 @@ dobSelected(dob){
     this.visitDoctorsData=[];
     this.timeSlotsData=[];
     this.visitForm.reset();
+    this.blockAllDay='No';
+    this.blockCalenderForm.reset();
     this.isShowImgDeleteButt=false;
     this.phoneZeroComm=false;
     this.isModifyData=false;
@@ -1126,7 +1153,8 @@ dobSelected(dob){
   filteredVisits:any=[];
   getAppintmentsBetweenDates(data){
      //var date=new Date();
-     console.log(data);
+     console.log("loader");
+     this.isStartLoaderForPrint=true;
      var doctor:any="";
       var fromDate:any="";
       var diff_date:any="";
@@ -1139,7 +1167,6 @@ dobSelected(dob){
             }
           else if(data.today)
             {
-              console.log(data.today);
               fromDate=this.format(new Date(), ['YYYY-MM-DD']);
               diff_date = 0;
             }
@@ -1156,27 +1183,18 @@ dobSelected(dob){
         {
           data.selecedDoctor="";
         }
-        console.log(fromDate);
      this.visitsService.getAppintmentsBetweenDates(data.selecedDoctor,fromDate,diff_date).subscribe(res => {
-      console.log(res);
-      this.filteredVisits=res.data;
-        this.filteredVisits.forEach(visit=>{
-          console.log(visit);
-        })
+        this.isStartLoaderForPrint = false;  
+        this.filteredVisits=res.data;
         this.isPrinting = true;
-        this.isStartLoader = false;
-     
-      
-      console.log(this.filteredVisits);
-      this.isPrintClicked = false;
-     
+        this.isPrintClicked = false;
       },(err) => {
         console.log(err);
         this.isAlertPopupError=true;
         this.alertMessage=this.connect_err;
-        this.isStartLoader = false;
+        this.isStartLoaderForPrint = false;
       }, () => {
-        this.isStartLoader = false;
+          this.isStartLoaderForPrint = false;
       })
   }
     autoComplete=[];
@@ -1187,7 +1205,6 @@ dobSelected(dob){
            if(element.title!=='all')
             this.autoComplete.push(element.title);
           });
-       // console.log(this.leadtagsForFilter);
       },(err) => {
       }, () => {
       })
@@ -1204,7 +1221,6 @@ dobSelected(dob){
        this.visitsService.deleteAppointment(this.deleteId).subscribe(res => {
          this.isAlertPopup=true;
          this.alertMessage="Appointment Deleted Successfully.";
-      console.log(res);
       },(err) => {
          this.isAlertPopupError=true;
          this.alertMessage=this.connect_err;
@@ -1213,5 +1229,73 @@ dobSelected(dob){
         this.isStartLoader = false;
       })
     }
+    closeDetailView(){
+      this.route.params.forEach((params: Params) => {
+        if (params.isAddVisitParam != '' && params.isAddVisitParam != undefined) {
+          this.router.navigate(['visits']);
+        }});
+    }
+    windowBottom:number;
+           @HostListener("window:scroll", [])
+            onWindowScroll()  {
+              if(!this.isShowPatientDetails && !this.isAddVisit && !this.isEditVisit)
+                {
+                    this.windowBottom= window.pageYOffset;
+                }
+          }
+
+blockAllDay='No';
+block_allday(event){
+  console.log(event)
+  if(event == true){
+    this.blockAllDay='Yes';
+  }
+  else if(event == false){
+    this.blockAllDay='No';
+  }
+}
+block_calender(){
+  // var block_all_date={
+  //       block_from_date:this.format(this.blockCalenderForm.value.block_from, ['YYYY-MM-DD']),
+  //       block_till_date:this.format(this.blockCalenderForm.value.block_till, ['YYYY-MM-DD']),
+  //       block_from_time:this.format(this.blockCalenderForm.value.block_from, ['hh.mm']),
+  //       block_till_time:this.format(this.blockCalenderForm.value.block_till, ['hh.mm']),
+  //       blockAllDay:this.blockAllDay
+  // }
+  this.blockCalenderForm.patchValue({
+        block_from:this.format(this.blockCalenderForm.value.block_from, ['YYYY-MM-DD']),
+        block_till:this.format(this.blockCalenderForm.value.block_till, ['YYYY-MM-DD']),
+        block_from_time:this.format(this.blockCalenderForm.value.block_from, ['hh:mm']),
+        block_to_time:this.format(this.blockCalenderForm.value.block_till, ['hh:mm']),
+        blockAllDay:this.blockAllDay
+  })
+if(this.blockCalenderForm.valid){
+  
+  if(this.blockCalenderForm.value.block_detail == null ||this.blockCalenderForm.value.block_detail == ''){
+    this.blockCalenderForm.value.block_detail='';
+  }
+    this.isAddVisitLoader=true;
+    this.visitsService.blockCalender(this.blockCalenderForm.value).subscribe(res => {
+            console.log(res)
+            this.isBlockCalPopup=false;
+            this.isAddVisitLoader=false;
+            this.alertMessage="Block calender added successfully.";
+            this.isAlertPopupError=true;
+            this.closeAddAndEditVisit();
+          },(err) => {
+            console.log(err);
+            this.isAlertPopupError=true;
+            this.alertMessage=this.connect_err;
+            this.isStartLoaderForPrint = false;
+          }, () => {
+            this.isAddVisitLoader=false;
+          });
+    }else{
+      //this.isAddVisitLoader=false;
+      this.validateAllFormFields(this.blockCalenderForm);
+    }
+  ;
+}
+
 
 }

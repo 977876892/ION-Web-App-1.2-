@@ -53,8 +53,6 @@ export class QueriesService {
      }
      // Adding answer to querie
      addAnswerToQuerie(replyData, qId,publishOrNotValue,attachments) {
-       console.log(publishOrNotValue);
-       
       const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
       return this.http.get(API.ADD_ANSWER_TO_QUERIE(qId, replyData, currentuser.id, currentuser.username, currentuser.pwd,publishOrNotValue,attachments)).map(
         (responseData) => {
@@ -132,7 +130,6 @@ export class QueriesService {
        });
     }
      quickReplyUpdateService(content,editId){
-          console.log(content);
          return this.http.get(API.UPDATE_QUICK_REPLY(content,editId)).map(
        (responseData) => {
           const key = '_body';

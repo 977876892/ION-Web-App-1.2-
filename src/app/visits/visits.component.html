@@ -5,26 +5,24 @@
 </style> -->
 <div class="container">
   <div class="panel">
-        <app-dashboard (eventType)="onEventChanged($event)"></app-dashboard>
-
+        <app-dashboard (eventType)="onEventChanged($event)" [visitsCount]="visitsCount"></app-dashboard>
     <div class="panel-rt panel-rt__extend panel_bg__sty_3 ">
             <app-header></app-header>
       <div class="panel">
           <div class="loader" *ngIf="isStartLoader"></div>
-        <div class="visits_main">
+        <div class="visits_main"> 
           <div class="search-filter">
             <div class="filter-items">
               <div class="filters filters-inline" >
               <label class="labels">Sort By:</label>
               <select class="drp-down filters-inline-sel" [(ngModel)]="orderVal">
-                  <option [selected]="true" value="">Default</option>
+                  <option [selected]="true" value="starttime">Default</option>
                   <option value="name">Name</option>
                 </select>
               <!-- <a class="drp-down">Name</a>
               <ul class="drp-down-list">
                 <li>Name</li>
-
-              </ul> -->
+              </ul>  -->
               </div>
 
               <div class="filters filters-inline">
@@ -45,7 +43,8 @@
             
                         
             <div class="filter-add filters-inline" style="position: relative;">
-        <button class="button add-review" (click)="$event.stopPropagation();isReviewLinkPopup = !isReviewLinkPopup">Review Link</button>
+        <!-- <button class="button add-review" (click)="$event.stopPropagation();isReviewLinkPopup = !isReviewLinkPopup">Review Link</button> -->
+        <button class="button add-review" (click)="addVisitPopup();isBlockCalPopup = !isBlockCalPopup">Block</button>
       <button class="button add-icon" (click)="addVisitPopup(); isAddVisit = !isAddVisit">Add Visit</button>
       <a class="downloads" (click)="downloadVisits()"><img src="assets/css/images/download-icon-2.png" width="33" height="30"></a>
 			<a style="cursor: pointer;" (click)="printOptionsClick('printSectionId');" class="print"><img src="assets/css/images/print-icon.png" width="33" height="31"></a>
@@ -75,8 +74,8 @@
                             </li>
                           <br>
                           <li  class="actions">
-                              <button class="button profile-action ripple" type="submit" (click)="reviewlink()">Send  Appointment</button> &#160;&#160;
-                              <button class="button profile-action ripple" type="submit" (click)="reviewlink()">Send  Review Link</button> 
+                              <button class="button profile-action ripple btn" type="submit" (click)="reviewlink('appointment')">Send  Appointment</button> &#160;&#160;
+                              <button class="button profile-action ripple btn" type="submit" (click)="reviewlink('reviewlink')">Send  Review Link</button> 
                           </li>
                       </ul>
                       </div>
@@ -87,60 +86,55 @@
 
    </div> <!-- Visits search Ends -->
 
-		<div class="table-data">
-
-		<table class="visits-table-data" cellpadding="0" cellspacing="0" width="100%">
-        <tr class="titles">
-          <th>&nbsp;</th>
-          <th style="padding:0px;" class="visit_01"></th>
-          <th class="txt-uppercae">Name</th>
-          <!-- <th class="txt-uppercae">Age</th> -->
-          <th class="txt-uppercae">Phone</th>
-          <!-- <th class="txt-uppercae">Email</th> -->
-          <th class="txt-uppercae">Doctor</th>
-          <th class="txt-uppercae" style="width: 130px !important;">Time</th>
-          <th class="txt-uppercae v_sta">Status</th>
-          <th class="txt-uppercae paid_amt">Paid Amt</th>
-        </tr>
-    </table>
+		<div class="table-data"> 
+      <table class="users855">
+          <thead>
+              <tr class="header_users855">
+                <th class="row-1 row-ID"></th>
+                <th class="row-2 row-name">Name</th>
+                <th class="row-3 row-email">Phone</th>
+                <th class="row-4 row-job">Doctor</th>
+                <th class="row-2 row-job">Time</th>
+                <th class="row-3 row-job">Status</th>
+                <th class="row-4 row-email">Paid Amt</th>
+                <th class="row-2 row-ID"></th>
+                <th class="row-2 row-ID"></th>
+              </tr>
+            </thead>
+      </table>
+        <table class="users855" *ngFor= "let booking of visitsData; let i = index">
+            <thead>
+              <tr class="v_user354">
+                <th class="row-1 row-ID bookinG">{{booking[0]}}</th>
+                <th class="row-2 row-name"></th>
+                <th class="row-3 row-email"></th>
+                <th class="row-4 row-job"></th>
+                <th class="row-4 row-job"></th>
+                <th class="row-2 row-job"></th>
+                <th class="row-4 row-email"></th>
+                <th class="row-2 row-ID"></th>
+                <th class="row-2 row-ID"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr  *ngFor="let eachdata of booking[1] | orderBy: orderVal; let j = index">
+               <td (click)="patientDetails(eachdata.id);" *ngIf="eachdata.image!=''"><img src="{{eachdata.image}}" style="width: 34px;height: 34px;border-radius: 50%;cursor:pointer;"></td>
+                <td (click)="patientDetails(eachdata.id);" *ngIf="eachdata.image==''" style="cursor:pointer;"><span class="avatar avatar-r">{{ eachdata.nametag }}</span></td>
+                <td (click)="patientDetails(eachdata.id);" title="{{ eachdata.name }}">{{ eachdata.name }}</td>
+                <td>{{ eachdata.mobile }}</td>
+                <td>{{ eachdata.resname }}</td>
+                <td>{{ eachdata.display_starttime }}</td>
+                <td  *ngIf="eachdata.request_status == 'new'" ><span class="new_full">{{ eachdata.request_status }}</span></td>
+                <td  class="status" *ngIf= "eachdata.request_status == 'Canceled'||eachdata.request_status == 'canceled'" ><a class="reject">Cancelled</a></td>
+                <td  class="status" *ngIf="eachdata.request_status == 'accepted'" ><a class="accept">{{ eachdata.request_status }}</a></td>
+                <td  *ngIf="eachdata.request_status == 'Review'" ><span class="review_full">{{ eachdata.request_status }}</span></td>
+                <td>Rs.{{eachdata.booking_deposit }}</td>
+                <td class="v-edit" (click)="visitEdit(eachdata.id);"><a style="cursor: pointer;" class="edit">edit</a></td>
+                <td class="v-delete" (click)="showDeleteAlert(eachdata.id);"><a style="cursor: pointer;" class="edit">edit</a></td>
+              </tr>
+            </tbody>
+          </table>
       <div style="text-align: center;margin-top: 10px;" *ngIf="showNovisitsAvailable">No Appointments Available.</div>
-<table class="visits-table-data" cellpadding="0" cellspacing="0" width="100%" *ngFor= "let booking of visitsData; let i = index">
-
-  <tr class="heading">
-
-    <th>{{booking[0]}}</th>
-  </tr>
-  <tr *ngFor="let eachdata of booking[1] | orderBy: orderVal; let j = index">
-        <td (click)="patientDetails(eachdata.id);" *ngIf="eachdata.image!=''"><img src="{{eachdata.image}}" style="width: 34px;height: 34px;border-radius: 50%;cursor:pointer;"></td>
-        <td (click)="patientDetails(eachdata.id);" *ngIf="eachdata.image==''" style="cursor:pointer;"><span class="avatar avatar-r">{{ eachdata.nametag }}</span></td>
-        <td class="v-name xs-pad-10 visit_styling" (click)="patientDetails(eachdata.id);" style="cursor:pointer;width: 86px !important;">
-            <div style="width:85px !important; white-space: nowrap;overflow: hidden !important;text-overflow: ellipsis;" title="{{ eachdata.name }}"> {{ eachdata.name }}</div>
-        </td>
-        <!-- <td class="v-age xs-pad-10">{{ eachdata.age }}</td> -->
-        <td class="v-mobile xs-pad-10 visit_styling" style="width: 97px !important;">{{ eachdata.mobile }}</td>
-        <!-- <td class="v-email xs-pad-10">{{ eachdata.email }}</td> -->
-        <td class="v-doctor xs-pad-10 visit_styling_doc">{{ eachdata.resname }}</td>
-        <td class="v-time xs-pad-10 visit_styling">{{ eachdata.display_starttime }}</td>
-        <td class="status xs-pad-10" *ngIf="eachdata.request_status == 'new'" style="padding-left: 0px !important;"><span class="new_full">{{ eachdata.request_status }}</span></td>
-        <td class="status xs-pad-10" *ngIf= "eachdata.request_status == 'Canceled'||eachdata.request_status == 'canceled'" style="padding-left: 0px !important;"><a class="reject">Cancelled</a></td>
-        <td class="status xs-pad-10" *ngIf="eachdata.request_status == 'accepted'" style="padding-left: 0px !important;"><a class="accept">{{ eachdata.request_status }}</a></td>
-        <td class="status xs-pad-10" *ngIf="eachdata.request_status == 'Review'" style="padding-left: 0px !important;"><span class="review_full">{{ eachdata.request_status }}</span></td>
-        <td class="v-amount xs-pad-10">{{ eachdata.booking_deposit }}</td>
-        <td class="v-edit xs-pad-10" (click)="visitEdit(eachdata.id);"><a style="cursor: pointer;" class="edit">edit</a></td>
-         <td class="v-delete xs-pad-10" (click)="showDeleteAlert(eachdata.id);"><a style="cursor: pointer;" class="edit">edit</a></td>
-  </tr>
-
-  </table>
-
-   <!-- <tr class="heading">
-	<th>&nbsp;</th>
-    <th>Oct 20</th>
-
-  </tr> -->
-
-
-
-
 		</div>
 			<!-- Visitors bottom table block -->
 
@@ -154,9 +148,9 @@
       <!-- add visit Popup -->
   <div class="model model-add_leads bx-shadow" *ngIf="isAddVisit || isEditVisit">
       <div class="loader" *ngIf="isAddVisitLoader"></div>
-      <a class="close" style="cursor: pointer;" (click)="isAddVisit = false;isEditVisit = false;closeAddAndEditVisit();">Close</a>
+      <a class="close" style="cursor: pointer;" (click)="isAddVisit = false;isEditVisit = false;closeAddAndEditVisit();categoryRequiredError=false;">Close</a>
 
-       <div class="model-content">
+       <div class="model-content" style="padding: 3px 15px 3px 15px;">
        <h2  *ngIf="!isEditVisit">New Appointment Booking</h2>
        <h2  *ngIf="isEditVisit">Edit Appointment Booking</h2>
       <div class="lt-div">
@@ -192,8 +186,8 @@
       <div class="rt-div">
           <form [formGroup]="visitForm" novalidate="novalidate">
         <div class="appointment-block bx-border-stl-2" *ngIf="isAddVisit || isEditVisit">
-          <div class="heading" *ngIf="isAddVisit">ADD APPOINTMENT DETAILS</div>
-          <div class="heading" *ngIf="isEditVisit">EDIT APPOINTMENT DETAILS</div>
+          <div class="heading visit_form" *ngIf="isAddVisit">ADD APPOINTMENT DETAILS</div>
+          <div class="heading visit_form" *ngIf="isEditVisit">EDIT APPOINTMENT DETAILS</div>
     <div class="form-section">
         <div class="form-section-top visit_chan">
         <ul>
@@ -202,16 +196,15 @@
         <select class="drp-down xs-fill-wt" (change)="getDoctors(categeryID.value)" [formControl]="visitForm.controls['category']" #categeryID required tabindex="1" autofocus>
           <option [selected]="true" value="">Select a speciality</option>
           <option *ngFor="let eachcategeory of visitCategeoryData" [value]="eachcategeory.id_categories">
-                {{eachcategeory.name}}
+                {{eachcategeory.name}} 
             </option>
         </select>
-          <span class="booking_error" *ngIf="visitForm.controls['category'].hasError('required') && visitForm.controls['category'].touched">Please Select Category</span>
-
+          <span class="booking_error" *ngIf="categoryRequiredError&&visitForm.controls['category'].hasError('required') && visitForm.controls['category'].touched">Please Select Category</span>
         </li>
         <li>
          <label class="labels">SELECT DATE</label>
           <!-- <date-picker [formControl]="visitForm.controls['startdate']" format="L" required></date-picker> -->
-          <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD MMM, YYYY" [formControl]="visitForm.controls['startdate']" autoClose="true" (onSelect)="getDoctorTimeSlots(doctorID.value, selectedDate.value)"  required #selectedDate placeHolder="dd-mm-yyyy" min="{{stopDates}}" tabindex="3"></owl-date-time>
+          <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD MMM, YYYY" [formControl]="visitForm.controls['startdate']" autoClose="true" (onSelect)="getDoctorTimeSlots(doctorID.value, selectedDate.value)" #selectedDate placeHolder="dd-mm-yyyy" min="{{stopDates}}" tabindex="3" required></owl-date-time>
           <!-- <input type="date" class="input xs-fill-wt" (change)="getDoctorTimeSlots(doctorID.value, selectedDate.value)" [formControl]="visitForm.controls['startdate']" required #selectedDate> -->
           <span class="booking_error" *ngIf="visitForm.controls['startdate'].hasError('required') && visitForm.controls['startdate'].touched">Date Is Required</span>
           <span class="booking_error" *ngIf="visitForm.controls['startdate'].hasError('minlength') && visitForm.controls['startdate'].touched"> Please Select Date.</span>
@@ -258,11 +251,11 @@
             <option [selected]="true" value="">Select time slot</option>
             <option *ngFor="let eachtimeslot of timeSlotsData" [value]="eachtimeslot.id" [disabled]="eachtimeslot.booked!='Available' || eachtimeslot.isDisabled">
                 <!-- {{eachtimeslot.startendtime}}({{eachtimeslot.booked}}) -->
-                {{eachtimeslot.display_starttime}}
-			<!--	{{eachtimeslot.startendtime}}-->
+                <!-- {{eachtimeslot.display_starttime}} -->
+				        {{eachtimeslot.startendtime}}
             </option>
         </select>
-           <span class="booking_error" *ngIf="visitForm.controls['starttime'].hasError('required') && visitForm.controls['starttime'].touched">Please Select Timeslots</span>
+           <span class="booking_error" *ngIf="visitForm.controls['starttime'].hasError('required') && visitForm.controls['starttime'].touched">Please Select Timeslot</span>
             <!-- <span style="color:red" *ngIf="visitForm.controls['starttime'].touched && timeChange && isEditVisit">Please Select Timeslots</span> -->
         </li>
            <!-- <li *ngIf="!isAddVisit">
@@ -413,8 +406,8 @@
 
   
         <div class="actions" *ngIf="!isEditVisit">
-        <button class="button profile-action ripple" type="submit" (click)="addVisit()"  tabindex="16">ADD APPOINTMENT</button> &#160;&#160;
-        <button class="button cancel-action" (click)="isAddVisit = false;closeAddAndEditVisit();" style="margin-top: 1px;"  tabindex="17">cancel</button>
+        <button class="button profile-action ripple btn" type="submit" (click)="addVisit()"  tabindex="16">ADD APPOINTMENT</button> &#160;&#160;
+        <button class="button cancel-action" (click)="isAddVisit = false;closeAddAndEditVisit();categoryRequiredError=false;" style="margin-top: 1px;"  tabindex="17">cancel</button>
         </div>
 
 
@@ -422,8 +415,8 @@
         <div class="form-section" *ngIf="isEditVisit">
           <div class="form-section-top">
               <div class="actions">
-                  <button class="button profile-action ripple" type="submit" (click)="visitUpdate()">Update</button>&#160;&#160;
-                  <button class="button cancel-action" (click)="isEditVisit=false;closeAddAndEditVisit();" style="margin-top: 1px;">cancel</button>
+                  <button class="button profile-action ripple btn" type="submit" (click)="visitUpdate()">Update</button>&#160;&#160;
+                  <button class="button cancel-action" (click)="isEditVisit=false;closeAddAndEditVisit();categoryRequiredError=false;" style="margin-top: 1px;">cancel</button>
             </div>
           </div>
           <div style="color:red;font-size:12px;text-align: center;margin-top: 10px;" *ngIf="isModifyData">Please Modify The Data.</div>
@@ -435,7 +428,7 @@
       </div>
         <!-- add visit Popup end-->
         <!-- Popup patient details-->
-  <div class="model model-profile-view bx-shadow no-padding" *ngIf="isShowPatientDetails">
+  <div class="model model-profile-view bx-shadow no-padding" *ngIf="isShowPatientDetails" [style.margin-top.px]="windowBottom">
     <a class="close" style="cursor: pointer;" (click)="isShowPatientDetails = false;">Close</a>
     <div class="model-titlebar" style="height: 62px;line-height: 62px;">
     <span class="model-title"> PATIENT DETAILS</span>
@@ -558,7 +551,7 @@
   <div class="model model-add_leads bx-shadow model-popup" *ngIf="isPrintClicked">
     <a class="close" href="javascript:void(0);" (click)="isPrintClicked=false;visitDownloadForm.reset();showTodayOrTomorrowError=false;
     showBetweenError=false;fromdate='';fromDateEmpty=true;">Close</a>
-    <div class="loader" *ngIf="isStartLoader"></div>
+    <div class="loader" *ngIf="isStartLoaderForPrint"></div>
      <div class="model-content">
       <div class="appointment-block bx-border-stl-2">
         <div class="heading vis--down-pop__heading">DOWNLOAD & PRINT DETAILS</div>
@@ -567,7 +560,7 @@
       <div class="form-section-top">
           <div>
                <div class="m-b-20 d-inline-b sele">
-                <label class="labels d-block">Select Duration</label>
+                <label class="labels d-block" style="margin-bottom: 15px;">Select Duration</label>
                   <span class="flt-div flt-gender pull-left">
                       <input type="radio" [checked]="true" [formControl]="visitDownloadForm.controls['selectDuration']" value="0"/>
                       <label></label>   </span>
@@ -617,7 +610,7 @@
 
              </div>
                 <div class="m-t-60 d-block Column" >
-                  <label class="labels d-block">Select Column</label>
+                  <label class="labels d-block" style="margin-bottom: 10px;">Select Column</label>
 
                       <!-- <span class="input-wrap  ">
                            <label class="checkbox"><input type="checkbox"><span class="d-inline-b">Age</span></label>
@@ -633,7 +626,7 @@
                    </span>
               </div>
               <div class="">
-                  <label class="labels">Doctor Name</label>
+                  <label class="labels" style="margin-bottom: 8px;">Doctor Name</label>
                   <div class="clearfix">
                       <div class="wrap-48 pull-left" style="width:44% !important;">
                         <select class="drp-down xs-fill-wt visits-download-doc-sel" [formControl]="visitDownloadForm.controls['selecedDoctor']" style="background-color: #ffffff !important;">
@@ -643,7 +636,7 @@
                             </option>
                         </select>
               </div>
-                       <div class="wrap-48 pull-left generate"><a class="btn btn-black text-uppercase btn-block btn-lg btn-regular brd-radius-50 align-center" (click)="showPrintScreen();isStartLoader=true;" style="cursor: pointer;">Generate Report</a> </div>
+                       <div class="wrap-48 pull-left generate"><a class="btn btn-black text-uppercase btn-block btn-lg btn-regular brd-radius-50 align-center" (click)="showPrintScreen();" style="cursor: pointer;">Generate Report</a> </div>
                   </div>
               </div>
 
@@ -664,7 +657,7 @@
        <!-- Popup Print report 2-->
   <div class="model bx-shadow isPrinting" *ngIf="isPrinting" style="width: auto;" [ngClass]="{'no_visit_printscreen':filteredVisits.length == 0}">
     <a class="close" (click)="isPrinting = false;visitDownloadForm.reset();excelOrPdf='excel'">Close</a>
-    <div class="loader" *ngIf="isStartLoader"></div>
+    <!-- <div class="loader" *ngIf="isStartLoader"></div> -->
    <span *ngIf="filteredVisits.length != 0">
      <div class="model-content brd-radius-5 bx-border-stl-2">
          <div class="table-data m-b-40" id="printSectionId" style="overflow-x: inherit !important;">
@@ -742,6 +735,78 @@
 
     </div>
 
+
+
+        <!-- block callender popup-->
+<div class="model model-add_leads bx-shadow model-popup" *ngIf="isBlockCalPopup" style="width:700px !important;margin-left: -332px !important;">
+  <a class="close" href="javascript:void(0);" (click)="isBlockCalPopup=false;closeAddAndEditVisit();">Close</a>
+  <div class="loader" *ngIf="isAddVisitLoader"></div>
+    <div class="model-content">
+    <div class="appointment-block bx-border-stl-2" style="margin: 20px !important;">
+        <div class="heading vis--down-pop__heading12" style="top: -37px !important;font-weight: 600">BLOCK CALENDER</div>
+        <form [formGroup]="blockCalenderForm" novalidate="novalidate">
+        <div class="form-section">
+            <div class="form-section-top visit_chan block_cal">
+            <ul>
+                <li>
+                    <label class="labels">SELECT SPECIALITY</label>
+                    <select class="drp-down xs-fill-wt" (change)="getDoctors(categeryID.value)" [formControl]="blockCalenderForm.controls['category']"  #categeryID required autofocus  tabindex="1">
+                      <option [selected]="true" value="">Select a speciality</option>
+                      <option *ngFor="let eachcategeory of visitCategeoryData" [value]="eachcategeory.id_categories">
+                            {{eachcategeory.name}} 
+                        </option>
+                    </select>
+                    <span class="booking_error" *ngIf="blockCalenderForm.controls['category'].hasError('required') && blockCalenderForm.controls['category'].touched">Please Select Category</span>
+                </li>
+                <li>
+                    <label class="labels">BLOCK FROM</label>
+                     <owl-date-time  hideClearButton="true" dateFormat=" DD MMM, YYYY hh:mm A" placeHolder="dd-mm-yyyy" [formControl]="blockCalenderForm.controls['block_from']" required #dt  tabindex="3"></owl-date-time>
+                     <span class="booking_error" *ngIf="blockCalenderForm.controls['block_from'].hasError('required') && blockCalenderForm.controls['block_from'].touched">Date Is Required</span>
+                     <span class="booking_error" *ngIf="blockCalenderForm.controls['block_from'].hasError('minlength') && blockCalenderForm.controls['block_from'].touched"> Please Select Date.</span>
+                </li>
+                <li>
+                    <label class="labels">ALL DAYS</label>
+                    <div  class="input-wrap dow_print_back" style="border: 1px solid #d6d6d6 !important;">
+                      All Day 
+                      <div style="margin-left: 60%;"><ui-switch size="small" color="#33cccc" (change)="block_allday($event)" tabindex="5"></ui-switch></div>
+                      
+                    </div>
+                </li>
+            </ul>
+            <ul>
+                <li>
+                    <label class="labels">SELECT DOCTOR</label>
+                    <select class="drp-down xs-fill-wt" [formControl]="blockCalenderForm.controls['res_id']" #doctorID required tabindex="2">
+                      <option [selected]="true" value="">Select a doctor</option>
+                      <option *ngFor="let eachdoctor of visitDoctorsData" [value]="eachdoctor.id_resources" >
+                            {{eachdoctor.name}}
+                      </option>
+                    </select>
+                    <span class="booking_error" *ngIf="blockCalenderForm.controls['res_id'].hasError('required') && blockCalenderForm.controls['res_id'].touched">Please Select Doctor</span>                    
+                </li>
+                <li>
+                    <label class="labels">BLOCK TILL</label>
+                    <owl-date-time  hideClearButton="true" dateFormat=" DD MMM, YYYY hh:mm A" [formControl]="blockCalenderForm.controls['block_till']" placeHolder="dd-mm-yyyy" required #dt tabindex="4"></owl-date-time>
+                    <span class="booking_error" *ngIf="blockCalenderForm.controls['block_till'].hasError('required') && blockCalenderForm.controls['block_till'].touched">Date Is Required</span>
+                    <span class="booking_error" *ngIf="blockCalenderForm.controls['block_till'].hasError('minlength') && blockCalenderForm.controls['block_till'].touched"> Please Select Date.</span>
+                  </li>
+                <li style="margin-top: 40px;">
+                    <textarea class="input block_detail001" placeholder="BLOCK DETAILS"  style="background-color:#ededed !important;height: 45px;resize: none;" [formControl]="blockCalenderForm.controls['block_detail']" tabindex="6"></textarea>
+                </li>
+            </ul>
+            </div>
+            <div class="actions" style="margin-top: 13px;">
+                <button class="button profile-action ripple btn" type="submit" style="width:23%;" (click)="block_calender()" >SAVE</button> &#160;&#160;
+                <button class="button cancel-action" (click)="isBlockCalPopup = false;closeAddAndEditVisit();" style="margin-top: 1px;"  tabindex="17">cancel</button>
+           </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
    <!-- iserrorpopup -->
    <div class="model model-alerts" *ngIf="isAlertPopupError" style="margin-top: 275px;box-shadow: 0 0 5px #777;">
     <!-- <a class="close" href="javascript:void(0);">Close</a> -->
@@ -797,4 +862,4 @@
  
 </div>
 <!-- Container ends -->
-<div class="overlay" *ngIf="isAddVisit || isPrinting || isPrintClicked || imageUploadAlert || isEditVisit || isShowPatientDetails || isStartLoader || isAlertPopup || isAddVisitLoader||isDeleteAlert || isAlertPopupError"></div>
+<div class="overlay" *ngIf="isAddVisit || isPrinting || isPrintClicked || imageUploadAlert || isEditVisit || isShowPatientDetails || isStartLoader || isAlertPopup || isAddVisitLoader||isDeleteAlert || isAlertPopupError || isBlockCalPopup"></div>

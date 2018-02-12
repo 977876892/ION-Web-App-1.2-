@@ -49,8 +49,6 @@ export class AnalyticsComponent implements OnInit {
   isStartLoader: boolean = false;
   curentYear;
   ngOnInit() {
-
-    console.log(this.router.url);
     if (localStorage.getItem('user') == null || localStorage.getItem('user') == '') {
       this.router.navigate(['login']);
     } else {
@@ -61,7 +59,6 @@ export class AnalyticsComponent implements OnInit {
         else{
           this.getAnalytics();
           this.estimated=0;
-         // console.log(this.router.url == '/analytics/appointments');
           if (this.router.url == '/analytics') {
               this.showQueryAnalytics=false;
               this.showVisitAnalytics=false;
@@ -93,7 +90,6 @@ export class AnalyticsComponent implements OnInit {
   }
 
   // onEventChanged(atype: any) {
-  //   console.log(atype);
   //   if (atype === 'website') {
   //      this.showQueryAnalytics=false;
   //     this.showVisitAnalytics=false;
@@ -712,7 +708,6 @@ export class AnalyticsComponent implements OnInit {
                             (analyticsResponse: any) => {
                               var indiaRank,worldRank;
                                 xml2js.parseString(analyticsResponse._body, function (err, result) {
-                                  console.log(result);
                                 if(typeof result.ALEXA.SD[0].COUNTRY=="undefined")
                                   {
                                       indiaRank="No Country Rank";
@@ -781,7 +776,6 @@ export class AnalyticsComponent implements OnInit {
                         this.showBlogTable=false;
                       }
                       else{
-                      console.log(blogs);
                       this.publishedBlogsTable=blogs.description;
                       this.showBlogTable=true;
                       }
@@ -842,7 +836,6 @@ export class AnalyticsComponent implements OnInit {
           queriesByCategory(){
             this.analyticsService.queriesByCategory().subscribe(
                 (questions: any) => {
-                  console.log(questions.description);
                   if(questions.description.length==0)
                     {
                         this.showQuestionByCategory=false;
@@ -895,8 +888,6 @@ export class AnalyticsComponent implements OnInit {
               this.showNoMonthlyVisits=false;
               this.showNoYearlyData=false;
               this.showNoRevenueAndVistsAvailable=false;
-              
-              console.log(dateChange);
               this.showMonthlyDrop=false;
               this.showMonthlyLineChart=false;
               this.showMonthlyBarChart=false;
@@ -927,7 +918,6 @@ export class AnalyticsComponent implements OnInit {
                 this.showDailyLineChart=false;
                         this.analyticsService.daywiseLineChart(dateChange).subscribe(
                           (visistDaywiseLineReport: any) => {
-                            console.log(visistDaywiseLineReport);
                             if(visistDaywiseLineReport.data.length==0)
                               {
                                 this.showDailyLineChart=false;
@@ -953,8 +943,6 @@ export class AnalyticsComponent implements OnInit {
                                         this.visitDailyLineChartData[0].data[i]=countRequest;
                                       }
                                       i++;
-                                    // console.log(this.visitDailyLineChartLabels);
-                                    // console.log(this.visitDailyLineChartData);
                                   }
                                     this.showDailyLineChart=true;
                               }
@@ -975,7 +963,6 @@ export class AnalyticsComponent implements OnInit {
                         this.showDailyBarChart=false;
                         this.analyticsService.daywiseBarChart(dateChange).subscribe(
                           (visistDaywiseBarReport: any) => {
-                            console.log(visistDaywiseBarReport);
                             if(visistDaywiseBarReport.data.length==0)
                               {
                                   this.showDailyBarChart=false;
@@ -1022,8 +1009,6 @@ export class AnalyticsComponent implements OnInit {
                                           } 
                                       i++;
                                     }
-                                    //console.log(this.visitsDailyBarChartLabels);
-                                    //console.log(this.visitDailyBarChartData);
                                     this.showDailyBarChart=true;
                               }
                           if(this.showDailyBarChart||this.showDailyLineChart)
@@ -1056,8 +1041,9 @@ export class AnalyticsComponent implements OnInit {
          
           public years = [
             // { name: "2010",code: "2010"},{name: "2011",code: "2011"}, { name: "2012",code: "2012"},
-            // {name: "2013",code: "2013"},{name: "2014",code: "2014"},{name: "2015",code: "2015"},
-            // {name: "2016",code: "2016"},
+            // {name: "2013",code: "2013"},{name: "2014",code: "2014"},
+           // {name: "2015",code: "2015"},
+            {name: "2016",code: "2016"},
             {name: "2017",code: "2017"}, {name: "2018",code: "2018"},
             {name: "2019",code: "2019"},{name: "2020",code: "2020"},{name: "2021",code: "2021"}
             ];
@@ -1076,17 +1062,12 @@ export class AnalyticsComponent implements OnInit {
               selectedYear=year;
               this.defaultMon=this.getmonth;
               this.defaultYear=year;
-              
-              console.log( this.defaultMon);
-              console.log(this.defaultYear);
             }
             else{
               selectedMonth=selectedMonth;
               selectedYear=selectedYear;
             }
-               console.log(selectedMonth);
-               console.log(selectedYear);
-               this.isStartLoader=true;
+              this.isStartLoader=true;
               this.showDate=false;
               this.showDailyLineChart=false;
               this.showDailyBarChart=false;
@@ -1122,16 +1103,13 @@ export class AnalyticsComponent implements OnInit {
                     }
                     else{
                         var visitLineData=visistMonthwiseLineChartReport.data;
-                        console.log(visistMonthwiseLineChartReport);
                         for(var i=0;i<visitLineData.length;i++)
                         {
                           this.visitMonthyLineChartLabels[i]=visitLineData[i].yearweek;
                           this.visitMonthlyLineChartData[0].data[i]=visitLineData[i].count_requests;
                         }
                         this.showMonthlyLineChart=true;
-                    }    
-                        // console.log(this.visitMonthyLineChartLabels);
-                        // console.log(this.visitMonthlyLineChartData); 
+                    }
                 },(err)=>{
                   this.isAlertPopup=true;
                   this.isStartLoader=false;
@@ -1151,7 +1129,6 @@ export class AnalyticsComponent implements OnInit {
                 var accepted_boolean=true,cancelled_boolean=true;
                 this.analyticsService.monthWiseBarChart(selectedMonth,selectedYear).subscribe(
                 (visistMonthwiseBarChartReport: any) => {
-                  console.log(visistMonthwiseBarChartReport);
                   if(visistMonthwiseBarChartReport.data.length==0)
                     {
                      
@@ -1160,7 +1137,6 @@ export class AnalyticsComponent implements OnInit {
                          var visitBarData=visistMonthwiseBarChartReport.data;
                         for(var i=0;i<visitBarData.length;i++)
                         {
-                          //console.log(visitBarData[i].week);
                           this.visitsMonthlyBarChartLabels[i]=visitBarData[i].week;
                           this.visitMonthlyBarChartData[0].data[i]=visitBarData[i].accepted_count;
                           this.visitMonthlyBarChartData[1].data[i]=visitBarData[i].canceled_count;
@@ -1180,8 +1156,6 @@ export class AnalyticsComponent implements OnInit {
                             }
                         }
                         this.showMonthlyBarChart=true;
-                        // console.log(this.visitsMonthlyBarChartLabels);
-                        // console.log(this.visitMonthlyBarChartData); 
                     }
                       if(accepted_boolean||cancelled_boolean)
                         {
@@ -1220,7 +1194,6 @@ export class AnalyticsComponent implements OnInit {
               if(selectYear == undefined){
                 selectYear=year;
               }
-               console.log(selectYear);
               this.isStartLoader=true;
               this.showDate=false;
               this.showDailyLineChart=false;
@@ -1255,7 +1228,6 @@ export class AnalyticsComponent implements OnInit {
                                 else{
                                       var visistYearwise=[],month;
                                       visistYearwise=visistYearwiseLineReport.data;
-                                     // console.log(visistYearwise);
                                       for(var x=0;x<12;x=x+1){
                                           
                                           if(x==0){month="Jan"}if(x==1){month="Feb"}if(x==2){month="Mar"}if(x==3){month="Apr"}
@@ -1265,8 +1237,6 @@ export class AnalyticsComponent implements OnInit {
                                           {
                                               if(typeof visistYearwise[j].sdate !="undefined" && parseInt(visistYearwise[j].sdate)==(x+1))
                                               {
-                                                console.log(j+"if");
-                                                console.log(visistYearwise[j].monthly_count);
                                                   this.visitYearlyLineChartLabels[x]=month;
                                                   this.visitYearlyLineChartData[0].data[x]=visistYearwise[j].monthly_count;
                                                   break;
@@ -1302,7 +1272,6 @@ export class AnalyticsComponent implements OnInit {
                   (visistYearwiseBarReport: any) => {
                     var month,colObj,visistYearwise;
                     visistYearwise=visistYearwiseBarReport.data;
-                    console.log(visistYearwiseBarReport);
                     for(var x=0;x<12;x++){
                         var acceptCount=0,cancelledCount=0;
                       for(var j=0;j<visistYearwise.length;j++){
@@ -1351,10 +1320,7 @@ export class AnalyticsComponent implements OnInit {
                             else{
                               this.isStartLoader=false;
                               this.showNoYearlyData=true;
-                            }
-                    
-                    //console.log(this.visitsYearlyBarChartLabels);
-                    //console.log(this.visitYearlyBarChartData);             
+                            }          
                 })
             }
           //visit analytics year wise
@@ -1392,14 +1358,12 @@ export class AnalyticsComponent implements OnInit {
                     this.showByRevenue=false;
                     this.analyticsService.doctorWiseRevenue().subscribe(
                     (doctorWiseRevenue: any) => {
-                      console.log(doctorWiseRevenue);
                       if(doctorWiseRevenue.count.length==0)
                         {
                           this.showByRevenue=false;
                         }
                         else{
                             this.doctorWiseRevenueDataForTable=doctorWiseRevenue.count;
-                     // console.log(this.doctorWiseRevenueDataForTable);
                             var doctorWiseRevenue=doctorWiseRevenue.count;
                             for(var i=0;i<doctorWiseRevenue.length;i++)
                             {
@@ -1407,8 +1371,6 @@ export class AnalyticsComponent implements OnInit {
                               this.doctorWiseRevenueData[i]=doctorWiseRevenue[i].total_amount;
                             }
                             this.showByRevenue=true;
-                            // console.log(this.doctorWiseRevenueLabels);
-                            // console.log(this.doctorWiseRevenueData); 
                         }
                       
                     },(err)=>{
@@ -1430,7 +1392,6 @@ export class AnalyticsComponent implements OnInit {
                           this.showByVisits=false;
                         }
                         else{
-                           console.log(doctorWiseVisits);
                             this.doctorWiseVisitsDataForTable=doctorWiseVisits.count;
                             var doctorWiseVisits=doctorWiseVisits.count;
                             for(var i=0;i<doctorWiseVisits.length;i++)
@@ -1439,8 +1400,6 @@ export class AnalyticsComponent implements OnInit {
                               this.doctorWiseVisitsData[i]=doctorWiseVisits[i].total_visits;
                             }
                             this.showByVisits=true;
-                            // console.log(this.doctorWiseVisitsLabels);
-                            // console.log(this.doctorWiseVisitsData); 
                         }
                           if(this.showByRevenue||this.showByVisits)
                             {

@@ -1,4 +1,4 @@
-import { Component, Output, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, Output, OnInit, ElementRef, ViewChild,HostListener } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { QueriesService } from '../shared/services/queries/queries.service';
 import { FormBuilder, FormControl, FormGroup,FormArray } from '@angular/forms';
@@ -108,17 +108,17 @@ querieEditOrDelete(event: any) {
       this.router.navigate(['login']);
     } else {
       this.getCategories();
-      this.route.params.forEach((params: Params) => {
-        this.getQueriesBasedOnUrlStauts();
-        if (params.qId !== '' && params.qId !== undefined) {
-          console.log(params.qId);
-          this.querieID = params.qId;
-        }
-      });
+      this.getQueriesBasedOnUrlStatus();
+        
+      // this.route.params.forEach((params: Params) => {
+      //   if (params.qId !== '' && params.qId !== undefined) {
+      //     this.querieID = params.qId;
+      //   }
+      // });
     }
   }
-   getQueriesBasedOnUrlStauts(){
-     console.log("venkat");
+   getQueriesBasedOnUrlStatus(){
+     this.queriesData=[];
       if (this.router.url == '/queries') {
         this.queriesTab='unanswered';
         this.querieTypeText = 'unanswered';
@@ -133,7 +133,6 @@ querieEditOrDelete(event: any) {
       
       }
       else if (this.router.url == '/queries/popular') {
-        console.log("popular");
         this.queriesTab='popular';
         this.querieTypeText = 'popular';
         this.startFrom=0;
@@ -147,10 +146,9 @@ querieEditOrDelete(event: any) {
  getQueries() {
   this.isStartLoader = true;
   this.showNoQueriesAvailable=false;
-  this.queriesData=[];
+  //this.queriesData=[];
   this.quriesService.getAllQueries(this.startFrom,this.limit).subscribe(
     (queriesResponse: any) => {
-      console.log(queriesResponse); 
       this.fetchingQueriesLength=queriesResponse.posts.length;
       this.queriesData = this.queriesData.concat(queriesResponse.posts);
       if(this.queriesData.length==0)
@@ -179,15 +177,13 @@ querieEditOrDelete(event: any) {
  // Getting All answered queries
  fetchingQueriesLength=0;
  getAllAnsweredQueries() {
-  this.queriesData=[];
+  //this.queriesData=[];
   this.isStartLoader = true;
   this.showNoQueriesAvailable=false;
   this.quriesService.getAnsweredQueries(this.startFrom,this.limit).subscribe(
     (queriesResponse: any) => {
       this.fetchingQueriesLength=queriesResponse.posts.length;
       this.queriesData = this.queriesData.concat(queriesResponse.posts);
-      // console.log(queriesResponse);
-      // this.queriesData = queriesResponse.posts;
       if(this.queriesData.length==0)
         {
           this.showNoQueriesAvailable=true;
@@ -214,10 +210,9 @@ querieEditOrDelete(event: any) {
  getAllUnansweredQueries() {
   this.isStartLoader = true;
   this.showNoQueriesAvailable=false;
-  this.queriesData=[];
+  //this.queriesData=[];
   this.quriesService.getUnAnsweredQueries(this.startFrom,this.limit).subscribe(
     (queriesResponse: any) => {
-      console.log(queriesResponse);
       this.fetchingQueriesLength=queriesResponse.posts.length;
       this.queriesData = this.queriesData.concat(queriesResponse.posts);
       //this.queriesData = queriesResponse.posts;
@@ -247,7 +242,6 @@ getDetailsEachQuerie(id) {
   this.isStartLoader = true;
   this.quriesService.getDetailQuerie(id).subscribe(
     (queriesResponse: any) => {
-      console.log(queriesResponse);
       this.eachQuerieData = queriesResponse.posts;
     }, (err) => {
           this.isAlertPopup=true;
@@ -268,7 +262,6 @@ getDetailsEachQuerie(id) {
 isReplyEmpty=false;
 // Answer to a querie
 answerAQuerie(replyData, qId) {
-  console.log(qId);
   if(this.publishOrNot==true)
       {
         this.publishOrNotValue=0;
@@ -278,14 +271,12 @@ answerAQuerie(replyData, qId) {
       }
   //return;
   replyData=replyData.trim();
-  console.log(replyData);
   if(replyData=='')
     {
       this.isReplyEmpty=true;
     }
     else{
       var attachments="";
-      console.log(this.imageSrc);
       if(this.imageSrc.length>0)
         {
           attachments="&attachments="+this.imageSrc.length;
@@ -293,16 +284,13 @@ answerAQuerie(replyData, qId) {
             attachments=attachments+"&attachment"+(key+1)+"="+image;
           })
         }
-        console.log(attachments);
         
         this.isStartLoader = true;
-        console.log(btoa(replyData));
         this.quriesService.addAnswerToQuerie(btoa(replyData), qId,this.publishOrNotValue,attachments).subscribe(
         (qResponse: any) => {
-          console.log(qResponse);
           this.imageSrc=[];
           this.isAlertPopup=true;
-          this.alertMessage="Reply Added Successfully."
+          this.alertMessage="Reply Added Successfully.";
           // this.queriesData = qResponse;
         }, (err) => {
                console.log(err);
@@ -333,7 +321,6 @@ answerAQuerie(replyData, qId) {
 //   this.isQuickReply = true;
 //   this.quriesService.getQuerieReplyTemplates().subscribe(
 //     (queriesResponse: any) => {
-//       console.log(queriesResponse);
 //       this.querieTemplatesData = queriesResponse.description;
 //     }, (err) => {
 
@@ -347,7 +334,6 @@ addQuerieTemplate(tempData) {
   this.isStartLoader = true;
   this.quriesService.addQuerieReplyTemplate(btoa(tempData)).subscribe(
     (qResponse: any) => {
-      console.log(qResponse);
       this.isAddtoQuickReply=false;
       // this.queriesData = qResponse;
     }, (err) => {
@@ -391,7 +377,6 @@ showTemplates(index) {
 //     }
 // }
   downloadQuries(){
-    console.log("download");
     this.isStartLoader=true;
     this.quriesService.dowmloadQuries().subscribe(
     (qResponse: any) => {
@@ -422,7 +407,6 @@ getCategories(){
  
   this.quriesService.getQueryCategories().subscribe(
     (categories: any) => {
-      console.log(categories.description);
       this.categoriesList=categories.description;
      // this.downloadFile(categories); 
     }, (err) => {
@@ -433,7 +417,6 @@ getCategories(){
 }
 showTrasferError=false;
 transferQuery(catid){
-  console.log(catid);
   
   if(catid!='')
     {
@@ -441,10 +424,9 @@ transferQuery(catid){
         this.isStartLoader=true;
         this.quriesService.queryTrasfer(catid,this.questionId).subscribe(
           (queryTranser: any) => {
-            console.log(queryTranser);
             this.isStartLoader=false;
             this.isShowTransferQuery = false;
-              this.getQueriesBasedOnUrlStauts();
+            this.getQueriesBasedOnUrlStatus();
           }, (err) => {
             this.isStartLoader = false;
             this.isAlertPopup=true;
@@ -470,7 +452,6 @@ categorySelected(catid)
         }
   showQueries(eachquerie) {
   let navItem: any;
-  //console.log(eachquerie);
   this.imageSrc=[];
   if(this.queriesData.length > 0) {
     for (navItem of this.queriesData) {
@@ -515,7 +496,6 @@ querieEditClick(querieData) {
    this.quriesService.editQuerieService(this.singleQuerieData.id, btoa(this.patientQuerieForm.value.subject),
      btoa(this.patientQuerieForm.value.querie)).subscribe(
      (updatedResponse: any) => {
-       console.log(updatedResponse);
       this.isQuerieEdit = false;
       this.isStartLoader=false;
       this.alertMessage = updatedResponse.description;
@@ -525,9 +505,13 @@ querieEditClick(querieData) {
             this.queriesData.forEach(query => {
             if(this.singleQuerieData.id==query.id)
               {
-                console.log(query);
                 query.content=this.patientQuerieForm.value.querie;
                 query.title=this.patientQuerieForm.value.subject;
+                if(this.eachQuerieData[0].id===this.singleQuerieData.id)
+                  {
+                      this.querieTitle=this.patientQuerieForm.value.subject;
+                      this.eachQuerieData[0].content=this.patientQuerieForm.value.querie;
+                  }
               }
           });
         }
@@ -561,7 +545,6 @@ showNoTemplatesAvailable=false;
   this.getDetailsEachQuerie(eachquerie.id);
  this.quriesService.getQuerieReplyTemplates().subscribe(
    (queriesResponse: any) => {
-     console.log(queriesResponse);
      this.querieTemplatesData = queriesResponse.description;
      if(this.querieTemplatesData.length==0)
       {
@@ -584,16 +567,22 @@ showNoTemplatesAvailable=false;
 
 querytemplate:any;
 
-quickReplyEdit(template){
-  // console.log(content); 
-  // console.log(id);
-  this.querytemplate=template;
-  this.editContent=template.content;
-  this.editId=template.id;
-  this.isEditClick=true;
-   this.querieTemplatesData.forEach(temp=>{
-             if(temp.id==template.id)
-                  template.isShown=false;
+quickReplyEdit(index){
+
+  //this.querytemplate=template;
+ 
+ // this.isEditClick=true;
+   this.querieTemplatesData.forEach((temp,i)=>{
+          if(index==i)
+          {
+              this.editContent=temp.content;
+              this.editId=temp.id;
+              temp.isShown=false;
+          }
+          else{
+              temp.isShown=true;
+          }
+                  
           })
   // if(this.editId == template.id){
   //    this.isEditClick=true;
@@ -602,24 +591,20 @@ quickReplyEdit(template){
   //  }
 } 
 
-cancelQuickReply(){
-   console.log(this.querytemplate.id);
-   this.querieTemplatesData.forEach(temp=>{
-             if(temp.id==this.querytemplate.id)
-                  this.querytemplate.isShown=true;
-          })
+cancelQuickReply(index){
+   this.querieTemplatesData[index].isShown=true;
+  //  this.querieTemplatesData.forEach(temp=>{
+  //                 temp.isShown=true;
+  //         })
 }
 
 quickReplySave(content,editId){
-  //console.log(editId);
  //content=content.replace(/&/g, "%26");
  this.isStartLoader = true;
   this.quriesService.quickReplyUpdateService(btoa(content),editId).subscribe(res=>{
-     console.log("success");
      this.isEditClick=false;
 
      this.querieTemplatesData.forEach(template => {
-       console.log(template);
        if(template.id==editId)
         {
           template.content=content;
@@ -663,7 +648,6 @@ uploadImage() {
     this.isStartLoader = true;
     this.imageerrorAlert = false;
     this.imageUploadAlert = false;
-   // console.log(fileBrowser.files[0]);
     const fd = new FormData();
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
     for(var key=0;key<fileBrowser.files.length;key++)
@@ -684,10 +668,8 @@ uploadImage() {
     
     this.authService.uploadImageService(fd).subscribe(res => {
       // do stuff w/my uploaded file
-    //  console.log(res.description[0].url);
       if(res.description==undefined)
       {
-           // console.log("error");
             this.imageUploadAlert = false;
             this.imageerrorAlert=true;
       }else{
@@ -715,7 +697,6 @@ uploadImage() {
 eachQueries:any=[];
 deleteQuery(eachQuerie){
     this.eachQueries=eachQuerie;
-    console.log(this.eachQueries);
     this.isDeleteAlertPopup=true;
     this.alertText="Are You Want To Delete The Query?";
  }
@@ -732,12 +713,11 @@ deleteQuerieTemplate(tId) {
 }
 
 deleteAndIonizeAlertPopup(){
+   this.isDeleteAlertPopup=false;
     if(this.isDeleteTemplate  == true){
           this.isStartLoader = true;
           this.quriesService.deleteQuerieTemplateData(this.deleteid).subscribe(
          (qResponse: any) => {
-           console.log(qResponse);
-           this.isDeleteAlertPopup=false;
            this.isDeleteTemplate  =false;
            this.isStartLoader = false;
            this.getQuerieTemplates(this.selectedQuery);
@@ -752,7 +732,6 @@ deleteAndIonizeAlertPopup(){
      });
    }
    else if(this.isIonizeQuery== true){
-    //  console.log(this.eachquerie);
       this.isDeleteAlertPopup=false;
        var title="";
         var content="";
@@ -763,7 +742,6 @@ deleteAndIonizeAlertPopup(){
         });
         this.quriesService.getDetailQuerie(this.eachquerie.id).subscribe(
           (queriesResponse: any) => {
-                  console.log(queriesResponse.posts);
                   title=queriesResponse.posts[0].title;
                   const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
                   for(var i=0;i<queriesResponse.posts.length;i++)
@@ -798,7 +776,6 @@ deleteAndIonizeAlertPopup(){
                                     }        
                             }                   
                     }
-                  console.log(content);
                   this.createTheBlogForm.patchValue({
                       title: title,
                       content:content,
@@ -812,7 +789,6 @@ deleteAndIonizeAlertPopup(){
                   this.publishService.createTheBlogService(this.createTheBlogForm.value,'')
                   .subscribe(
                         (updateblogResponse: any) => {
-                          console.log(updateblogResponse);
                           this.isStartLoader=false;
                           this.isAlertPopup = true;
                           this.alertMessage = "Your ionize Request is Taken."
@@ -834,11 +810,9 @@ deleteAndIonizeAlertPopup(){
                 }); 
    }
    else{
-      //  console.log(this.eachQueries);
         this.isStartLoader = true;
         this.quriesService.deleteQuery(this.eachQueries.id).subscribe(res => {
             this.queriesData.forEach((querie,key) => {
-              console.log(key);
                 if(querie.id===this.eachQueries.id)
                   {
                     this.queriesData.splice(key,1);
@@ -893,8 +867,12 @@ deleteAndIonizeAlertPopup(){
                     this.isStartLoader = false;
         })
       }
+      omit_special_char(event) {
+                var k;  
+                k = event.charCode; // k = event.keyCode;  (Both can be used)       
+                return(k!=60 &&k!=62);
+        }
       ionizeTheQuery(eachquerie){
-     //   console.log(eachquerie);
         this.isDeleteAlertPopup=true;
         this.alertText="Are You Want To Ionize The Query?";
         this.isIonizeQuery=true;
@@ -908,15 +886,12 @@ deleteAndIonizeAlertPopup(){
         // });
         // this.quriesService.getDetailQuerie(eachquerie.id).subscribe(
         //   (queriesResponse: any) => {
-        //           console.log(queriesResponse.posts);
         //           title=queriesResponse.posts[0].title;
         //           for(var i=0;i<queriesResponse.posts.length;i++)
         //             {
         //                   content=content+"<p>"+queriesResponse.posts[i].content +"</p><br>";
         //             }
-        //           console.log(content);
         //           const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
-        //           console.log(currentuser);
         //           this.createTheBlogForm.patchValue({
         //               title: title,
         //               content:content,
@@ -930,7 +905,6 @@ deleteAndIonizeAlertPopup(){
         //           this.publishService.createTheBlogService(this.createTheBlogForm.value,'')
         //           .subscribe(
         //                 (updateblogResponse: any) => {
-        //                   console.log(updateblogResponse);
         //                   this.isStartLoader=false;
         //                   this.isAlertPopup = true;
         //                   this.alertMessage = "Your ionize Request is Taken."
@@ -947,6 +921,12 @@ deleteAndIonizeAlertPopup(){
                     
         //         }); 
             }
+       windowBottom:number;
+           @HostListener("window:scroll", [])
+            onWindowScroll()  {
+              if(!this.isDeleteAlertPopup ||!this.isAlertPopup)
+                this.windowBottom= window.pageYOffset;
+          }
               
 }
 
@@ -960,7 +940,6 @@ export class QuerySearchPipe implements PipeTransform {
 
   constructor() { }
   public transform(value, keys: string, term: string) {
-    // console.log(term);
     if (!term) return value;
     return (value || []).filter((item) => keys.split(',').some(key => item.hasOwnProperty(key) && new RegExp(term, 'gi').test(item[key])));
 

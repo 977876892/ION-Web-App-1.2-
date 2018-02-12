@@ -26,6 +26,7 @@ export class SettingsComponent implements OnInit {
        })
  }
 }
+  isAlertPopupForError=false;
   showProfile: boolean=true;
   showContactus:boolean=false;
   showSubscription:boolean=false;
@@ -108,7 +109,6 @@ export class SettingsComponent implements OnInit {
       this.router.navigate(['login']);
     } else {
       this.getIonSubscriptionDetails();
-        console.log(localStorage.getItem('user'));
       const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
       this.profileForm.patchValue({
         firstname: currentuser.firstname,
@@ -120,7 +120,6 @@ export class SettingsComponent implements OnInit {
         profile_pic:currentuser.profilepic
       })
       this.userDetails = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
-console.log(this.userDetails);
       this.dropdownSettings = {
               singleSelection: false,
               text:"Select Query",
@@ -133,7 +132,6 @@ console.log(this.userDetails);
       this.settingsService.selectCategoriesService()
       .subscribe(
         (userdataResponse: any) => {
-            //console.log(userdataResponse);
            this.dropdownList=userdataResponse.description;
            for(let i=0;i<this.dropdownList.length;i++){
             this.getcategoryname=this.dropdownList[i].category_name;
@@ -155,8 +153,6 @@ console.log(this.userDetails);
                 //     }
                 // );
           }
-         //  console.log(this.allcategoryname);
-         //  console.log(this.dropdownList);
         });
     }
      if(this.router.url == '/settings') {
@@ -221,10 +217,8 @@ console.log(this.userDetails);
   // }
   
   clickedOnDottedLine(index) {
-    // console.log(id);
     // this.isDeleteButtonClick=!this.isDeleteButtonClick;
     // this.userMangement_select_card_delete=id;
-    //console.log(this.usersList);
     this.usersList.forEach(user=>{
       user.isClickOnDottedLine=false;
     })
@@ -237,7 +231,6 @@ console.log(this.userDetails);
   // }
   }
   userCardDelete(){
-    //console.log("id");
      this.usersList.forEach(user=>{
          user.isClickOnDottedLine=false;
        })
@@ -248,19 +241,17 @@ console.log(this.userDetails);
     this.isDeleteAlertPopup=false;
     this.isStartLoader=true;
     this.settingsService.DeleteUserService(this.userMangement_select_card_delete).subscribe(res=>{
-      console.log(res);
       this.isStartLoader=false;
       this.getUserData();
     },(err)=>{
       this.isStartLoader=false;
-      this.isAlertPopup=true;
+      this.isAlertPopupForError=true;
       this.isDeleteAlertPopup=false;
       this.alertMessage=this.connect_err;
     })
   }
   onTypeNumValid(numValue) { 
-    //this.numLength=numValue.length; 
-    console.log(numValue.length)
+    //this.numLength=numValue.length;
         if(numValue.length > 10){
           this.phoneMinlength=true;
         }
@@ -269,8 +260,6 @@ console.log(this.userDetails);
         }
     }
   profile_sub() {
-    console.log(this.profileForm.value);
-    console.log((this.profileForm.value.phone).toString().length);
     if((this.profileForm.value.phone).toString().length!=10)
     {
        this.phoneMinlength=true;
@@ -307,10 +296,9 @@ console.log(this.userDetails);
       this.isAlertPopup=true;
       this.alertMessage="Profile Updated Successfully.";
      this.isShowImgDeleteButt=false;
-         console.log(localStorage.getItem('user'));
               },(err)=>{
                 this.isStartLoader = false; 
-                this.isAlertPopup=true;
+                this.isAlertPopupForError=true;
                 this.alertMessage=this.connect_err;
               },()=>{});
      }else{
@@ -333,21 +321,19 @@ console.log(this.userDetails);
       this.queryBoxAlert=false;
     //this.userDetailsForm.value.query_des
     this.isStartLoader=true;
-     console.log(query_des);
      this.settingsService.postAskYourQuery(query_des).subscribe(data =>{
       this.isAlertPopup=true;
       this.alertMessage="Your Query Successfully Added"
       this.isStartLoader=false;
       this.query_des='';
      },(err)=>{
-       this.isAlertPopup=true;
+       this.isAlertPopupForError=true;
        this.alertMessage=this.connect_err;
        this.isStartLoader=false;
      },()=>{});
     }
   }
   query_text(query_des){
-    console.log(query_des)
     if( query_des == ''){
       this.queryBoxAlert=true;
        }else{
@@ -360,9 +346,7 @@ console.log(this.userDetails);
 uploadprofilepic() {
   this.isStartLoader=true;
   const fileBrowser = this.fileInput.nativeElement;
-  console.log(fileBrowser.files[0]);
   // if (fileBrowser.files && fileBrowser.files[0]) {
-   // console.log(fileBrowser.files[0]);
    if(fileBrowser.files[0])
     {
      
@@ -387,10 +371,8 @@ uploadprofilepic() {
         
         this.authService.uploadImageService(fd).subscribe(res => {
           // do stuff w/my uploaded file
-          console.log(res)
           if(res.description==undefined)
           {
-               // console.log("error");
                 this.imageUploadAlert = false;
                 this.imageerrorAlert=true;
           }else{
@@ -406,7 +388,7 @@ uploadprofilepic() {
         
         },(err) => {
           this.isStartLoader = false; 
-          this.isAlertPopup=true;
+          this.isAlertPopupForError=true;
           this.alertMessage=this.connect_err;
         }, () => {
           this.fileInput.nativeElement.value = '';
@@ -423,47 +405,47 @@ uploadprofilepicDelete(){
     profile_pic:''
   })
   this.imageSrc="";
-   this.isShowImgDeleteButt=false;
-  console.log( this.imageSrc);
+  this.isShowImgDeleteButt=false;
   this.imageerrorAlert=false;
   this.imageUploadAlert = false;
   this.isStartLoader=false;
 
 }
   changepassword(pwditem){
-    //console.log(pwditem);
     this.isStartLoader=true;
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
-    //console.log(currentuser.pwd);
     if (currentuser.pwd == btoa(pwditem.oldpwd)) {
             if (pwditem.newpwd == pwditem.conpwd){
                   this.settingsService.changePwdListService(pwditem.newpwd)
                   .subscribe(data => {
-                      console.log("success");
                       this.isStartLoader=false;
                       this.isAlertPopup=true;
                       this.alertMessage="Password Changed Successfully.";
               },(err)=>{
-                this.isAlertPopup=true;
+                this.isAlertPopupForError=true;
                 this.alertMessage=this.connect_err;
                 this.isStartLoader=false;
               });
-            }else{console.log("newpwd and conpwd not matching");}
+            }else{
+            }
     }else {
-      console.log(" error ");
     }
   }
 
  getUserData(){
-   console.log("test");
    this.isStartLoader=true;
+   const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
    this.settingsService.getUsersListService().subscribe(
      (userdataResponse: any) => {
-         console.log(userdataResponse);
-        this.usersList=userdataResponse.description;
-        // this.usersList.forEach(user=>{
-        //   user.email=user.email.split("@");
-        // })
+        //console.log(this.usersList);
+        userdataResponse.description.forEach((user,index)=>{
+          if(user.id==currentuser.id)
+            {
+              console.log(index);
+              userdataResponse.description.splice(index,1);
+            }
+        })
+         this.usersList=userdataResponse.description;
         this.isStartLoader=false;
      },(err)=>{
       this.isStartLoader = false; 
@@ -499,12 +481,9 @@ uploadprofilepicDelete(){
     }else{
        this.isStartLoaderForUserPopup=true;
       this.userid=userId;
-      console.log(userId);
       this.settingsService.getUserDetails(userId).subscribe(
         (userdataResponse: any) => {
-            console.log(userdataResponse);
              this.userGroups.forEach(group=>{
-               console.log(userdataResponse.groups===group.value);
                if(parseInt(userdataResponse.groups)===group.value)
                 {
                   group.checked=true;
@@ -514,14 +493,12 @@ uploadprofilepicDelete(){
             // for (let key in userdataResponse.groups) {
             //   for(let user of this.userGroups)
             //     {
-            //       console.log(user.value == parseInt(key));
             //       if(user.value == parseInt(key))
             //         {
             //             user.checked=true;
             //         }
             //     }
             // }
-            console.log(userdataResponse.category_id);
             if(userdataResponse.category_id!=null)
               {
                 for(let key of userdataResponse.category_id)
@@ -546,7 +523,7 @@ uploadprofilepicDelete(){
             })
         },err=>{
           this.isStartLoaderForUserPopup=false;
-          this.isAlertPopup=true;
+          this.isAlertPopupForError=true;
           this.isShowUserPopup = false;
           this.alertMessage=this.connect_err;
         },()=>{ this.isStartLoaderForUserPopup=false;})
@@ -563,10 +540,7 @@ selectedGroup(i){
 }
  selectCategory=[];
  onItemSelect(item:any){
-     console.log(item);
-     //console.log(this.itemName);
      this.selectCategory.push(item.itemid);
-    // console.log(this.selectCategory);
  }
 
 ids:any;
@@ -574,23 +548,18 @@ isAlertPopup=false;
 alertMessage="";
 groupClick(group)
 {
-    console.log(group);
-    this.userDetailsForm.value.groups=group;
+    this.userDetailsForm.patchValue({
+        groups:group
+    })
     this.isGroupsRequied=false;
 }
  
 addNewUser(){
-  // console.log(this.userDetailsForm.value.password);
-  // console.log(this.userDetailsForm.value.reTypePassword);
-
+ 
   var categeries="";
-  console.log(this.userDetailsForm.value);
     for(let cat of this.selectedItems){
             categeries=categeries+cat.id+",";
     }
-        console.log(categeries);
-
-        //console.log(ids);
         //this.userDetailsForm.value.groups=ids;
         if(this.userDetailsForm.value.groups=='' ||this.userDetailsForm.value.groups==null){
           this.isGroupsRequied=true;
@@ -598,17 +567,13 @@ addNewUser(){
         this.userDetailsForm.value.categories=categeries;
         if(this.userDetailsForm.value.password == this.userDetailsForm.value.reTypePassword){
           this.pwdNotMatch=false;
-          console.log(this.pwdNotMatch);
-          console.log("true");
                 if(this.userDetailsForm.valid && !this.isGroupsRequied)
                   {
                       this.isStartLoaderForUserPopup=true;
                       this.settingsService.addNewUserService(this.userDetailsForm.value)
                  .subscribe(
-                        data => {console.log(data);
+                        data => {
                           //this.isStartLoader=true;
-                          
-
                           if(data.message=="The username is already taken, try another.")
                             {
                                this.alertMessage=data.message;
@@ -627,12 +592,11 @@ addNewUser(){
                                     this.isAlertPopup=true;
                                     this.closeUserPopUp();
                                     //this.getUserData();
-                                    console.log("success");
                               }
                          },
                         err => {
                           this.isStartLoaderForUserPopup=false;
-                          this.isAlertPopup=true;
+                          this.isAlertPopupForError=true;
                           this.alertMessage=this.connect_err;
                         }
                   );
@@ -643,8 +607,6 @@ addNewUser(){
           }
           else{
                 this.pwdNotMatch=true;
-                 console.log(this.pwdNotMatch);
-                 console.log("false");
          // this.isShowUserPopup=true;
           }
         
@@ -652,28 +614,26 @@ addNewUser(){
  }
   updateUser(){
     if(this.userDetailsForm.value.password != this.userDetailsForm.value.reTypePassword){
-       console.log("false");
        this.pwdNotMatch=true;
 
      }
      else{
         this.pwdNotMatch=false;
         var ids="",categeries="";
-         for(let groups of this.userGroups)
-          {
-            if(groups.checked)
-              {
-                  ids=ids+groups.value+",";
-              }
-          }
+        if(this.userDetailsForm.valid){
+        //  for(let groups of this.userGroups)
+        //   {
+        //     if(groups.checked)
+        //       {
+        //           ids=ids+groups.value+",";
+        //       }
+        //   }
           for(let cat of this.selectedItems){
                   categeries=categeries+cat.id+",";
           }
-              console.log(categeries);
-              console.log(ids);
-              this.userDetailsForm.value.groups=ids;
+              //this.userDetailsForm.value.groups=ids;
               this.userDetailsForm.value.categories=categeries;
-              console.log( this.userDetailsForm.value);
+           
               //this.isStartLoader=true;
               this.isStartLoaderForUserPopup=true;
                this.settingsService.updateUserService(this.userDetailsForm.value,this.userid)
@@ -681,17 +641,29 @@ addNewUser(){
                       data => {
                         // this.isStartLoader=false;
                         this.isStartLoaderForUserPopup=false;
+                        this.closeUserPopUp();
                         this.isAlertPopup=true;
                         this.alertMessage="User Updated Successfully."
-                         this.closeUserPopUp();
+                         const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+                  
+                        //  if(currentuser.id===this.userid)
+                        //   {
+                        //     currentuser.username=this.userDetailsForm.value.username;
+                        //     //localStorage.getItem("user").username="";
+                        //     localStorage.setItem("user",JSON.stringify(currentuser));
+                        //   }
                          //this.getUserData();
-                        console.log(data);console.log("success");},
+                      },
                       err =>{
                        this.isStartLoader=false;
-                       this.isAlertPopup=true;
+                       this.isAlertPopupForError=true;
                        this.alertMessage=this.connect_err;
                       }
                 );
+        }
+        else{
+              this.validateAllFormFields(this.userDetailsForm);
+            }
           }
   
  }
@@ -709,14 +681,15 @@ selectedIds=[];
  }
  
  OnItemDeSelect(item:any){
-     console.log(item);
-     console.log(this.userselectedItems);
+   console.log(item);
  }
  onSelectAll(items: any){
-     console.log(items);
+   this.selectedItems=[];
+   this.selectedItems=items;
+   console.log(items);
  }
  onDeSelectAll(items: any){
-     console.log(items);
+   this.selectedItems=[];
  }
     closeUserPopUp()
     {
@@ -740,7 +713,6 @@ selectedIds=[];
           });
       }
     // blockUser(value){
-    //     //console.log(value);
     //     this.userDetailsForm.value.blockUser=value;
     // }
     //   receiveMail(value){
@@ -751,13 +723,12 @@ selectedIds=[];
     subscriptionEnd:any=[];
     getIonSubscriptionDetails(){
       this.settingsService.getIonSubscriptionDetails().subscribe(data=>{
-          console.log(data.description[0]);
           this.subscriptionDetails=data.description[0];
           this.subscriptionStart=data.description[0].subscription.split(" ");
           this.subscriptionEnd=data.description[0].expiration.split(" ");
       },
       err=>{
-        this.isAlertPopup=true;
+        this.isAlertPopupForError=true;
         this.alertMessage=this.connect_err;
         this.isStartLoader=false;
       },()=>{})
@@ -769,7 +740,6 @@ selectedIds=[];
   this.imageerrorAlert=false;
   const fileBrowser = this.fileInput.nativeElement;
    if (fileBrowser.files && fileBrowser.files[0]) {
-   // console.log(fileBrowser.files[0]);
     const fd = new FormData();
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
     fd.append('file', fileBrowser.files[0]);
@@ -781,7 +751,6 @@ selectedIds=[];
     
     this.authService.uploadImageService(fd).subscribe(res => {
       // do stuff w/my uploaded file
-   //   console.log(res);
         if(res.description==undefined)
         {
               this.imageerrorAlert=true;
@@ -795,8 +764,7 @@ selectedIds=[];
                 })
                   setTimeout (() => {
                     this.isStartLoader = false;
-              console.log("Hello from setTimeout");
-            }, 2000)
+                  }, 2000)
         }
         //this.userDetailsForm.value.image=this.imageSrc;
        // this.isStartLoader = false;
@@ -805,7 +773,7 @@ selectedIds=[];
         this.fileInput.nativeElement.value = '';
         this.isStartLoader = false;
         this.isStartLoader=false;
-        this.isAlertPopup=true;
+        this.isAlertPopupForError=true;
         this.alertMessage=this.connect_err;
      }, () => {
        this.isStartLoaderForUserPopup=false;
@@ -820,7 +788,6 @@ selectedIds=[];
    this.isShowImgDeleteButt=false;
    this.imageerrorAlert=false;
   // this.imageUploadAlert = false;
- // console.log(this.userDetailsForm.controls['image'].value);
 }
 passwordchanges(){
   this.pwdNotMatch=false;
@@ -837,7 +804,6 @@ isScrolled: boolean = false;
       
       if(!this.isShowUserPopup)
         {
-            //console.log(windowHeight + window.pageYOffset);
             this.windowBottom=window.pageYOffset;
         }
     }

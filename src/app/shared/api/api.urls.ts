@@ -13,6 +13,9 @@ export class API {
   public static TERM_CONDITIONS() {
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/request/get/k2/items?id=56`);
   }
+  public static PRIVACY_POLICY() {
+    return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/request/get/k2/items?id=61`);
+  }
   // Forgotpassword Api url
   public static FORGOT_PASSWORD_API(emailId) {
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=user&action=get&resource=reset&
@@ -32,12 +35,10 @@ export class API {
     ${authkey}&user_id=${category}&limitstart=${limitStart}&limit=10`);
   }
   public static GET_BLOG_TAGS(auth){
-    console.log(`${IonServer.ION_SERVER}/index.php?option=com_api&app=easyblog&resource=tags&format=raw&key=${auth}&limitstart=0&title=""`);
      return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_api&app=easyblog&resource=tags&format=raw&key=${auth}&limitstart=0&title=""`);
   }
   //get Categorirs
   public static GET_CATEGORIES(teamid){
-    console.log(`${IonServer.ION_SERVER}/index.php/request?action=clienttags&module=ionplanner&resource=planner&userid=${teamid}`);
      return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?action=clienttags&module=ionplanner&resource=planner&userid=${teamid}`);
   }
   public static GET_BLOG_TYPES(key,publishid){
@@ -45,7 +46,6 @@ export class API {
   }
   public static CREATE_TRENDING_TOPIC(topic,date)
   { 
-    console.log(`${IonServer.ION_SERVER}/index.php/request?action=post&module=ionplanner&resource=planner&created_by=${topic.created_by}&title=${topic.title}&start_date=${date}&color=red&description=cardiology&end_date=${date}&tags=${topic.tag}`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?action=post&module=ionplanner&resource=planner&created_by=${topic.created_by}&title=${topic.title}&start_date=${date}&color=red&description=cardiology&end_date=${date}&tags=${topic.tag}`);
   }
 
@@ -55,29 +55,26 @@ export class API {
       return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?action=post&module=feeds&resource=feedaction&
       userid=${userid}&feed_id=${feedid}&feedaction=Congratulate`);
   }
+     public static CONGRATULATED(feedid,userid){
+      return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?action=post&module=feeds&resource=feedaction&
+      userid=${userid}&feed_id=${feedid}&feedaction=Congratulated`);
+  }
   // update replay queries api url
   public static UPDATE_QUICK_REPLY(content,editId) {
-    console.log(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=put&resource=edittemplate&id=${editId}&content=${content}`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=put&resource=edittemplate&id=${editId}&content=${content}&type=html`);
   }
   // getting all queries api url
   public static GET_ALL_QUERIES(userId,username,startFrom,limit) {
-    console.log(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=get&resource=posts&
-    username=${username}&&limitstart=${startFrom}&limit=${limit}&featured=1`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=get&resource=posts&
     username=${username}&&limitstart=${startFrom}&limit=${limit}&featured=1&publish=1`);
   }
   // getting unanswered queries api url.
   public static GET_UNANSWERED_QUERIES(userId, username,startFrom,limit) {
-    console.log(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=get&resource=posts&
-    username=${username}&limitstart=${startFrom}&limit=${limit}&status=0`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=get&resource=posts&
     username=${username}&limitstart=${startFrom}&limit=${limit}&status=0&publish=1`);
   }
   // getting answered queries api url.
   public static GET_ANSWERED_QUERIES(userId, username,startFrom,limit) {
-    console.log(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=get&resource=posts&
-    username=${username}&status=1&limitstart=${startFrom}&limit=${limit}&publish=1`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=get&resource=posts&
     username=${username}&limitstart=${startFrom}&limit=${limit}&publish=1&status=1`);
   }
@@ -85,14 +82,10 @@ export class API {
    public static ADD_ANSWER_TO_QUERIE(qId, replyData, uId, username, pwd,publishOrNotValue,attachments) {
      if(attachments=="")
       {
-        console.log(this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=post&resource=reply&
-        encode=true&private=${publishOrNotValue}&pwd=${pwd}&question_id=${qId}&reply=${replyData}&user_id=${uId}&username=${username}&type=html`));
         return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=post&resource=reply&
           encode=true&private=${publishOrNotValue}&pwd=${pwd}&question_id=${qId}&reply=${replyData}&user_id=${uId}&username=${username}&type=html`);
       }
       else{
-        console.log(this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=post&resource=reply&
-    encode=true&private=${publishOrNotValue}&pwd=${pwd}&question_id=${qId}&reply=${replyData}&user_id=${uId}&username=${username}${attachments}`));
         return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=post&resource=reply&
           encode=true&private=${publishOrNotValue}&pwd=${pwd}&question_id=${qId}&reply=${replyData}&user_id=${uId}&username=${username}${attachments}&type=html`);
       }
@@ -109,8 +102,6 @@ export class API {
   }
    // add querie template api url.
    public static ADD_QUERIE_TEMPLATE(id, title) {
-     console.log(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=post&resource=addtemplate&
-    userid=${id}&title=${title}&content=${title}&type=html`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=post&resource=addtemplate&
     userid=${id}&title=${title}&content=${title}&type=html`);
   }
@@ -120,20 +111,16 @@ export class API {
     id=${id}&type=delete`);
   }
   public static DELETE_QUERY(username,pwd,questionid){
-    console.log(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=delete&resource=querydelete&username=${username}&pwd=${pwd}&id=${questionid}&encode=true`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=delete&resource=querydelete&username=${username}&pwd=${pwd}&id=${questionid}&encode=true`);
   }
   public static MAKE_AS_POPULAR(username,pwd,questionid){
-    console.log(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=put&resource=update&featured=1&id=${questionid}&username=${username}&pwd=${pwd}&encode=true`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=put&resource=update&featured=1&id=${questionid}&username=${username}&pwd=${pwd}&encode=true`);
   }
    public static MAKE_AS_UNPOPULAR(username,pwd,questionid){
-    console.log(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=put&resource=update&featured=0&id=${questionid}&username=${username}&pwd=${pwd}&encode=true`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=put&resource=update&featured=0&id=${questionid}&username=${username}&pwd=${pwd}&encode=true`);
   }
   // get dashboard statistics api url
   public static GET_DASHBOARD_STATISTICS(userId) {
-    console.log(userId);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?action=ionizeddraftreport&
     userid=${userId}&resource=posts&module=ionize`);
   }
@@ -146,8 +133,6 @@ export class API {
   }
   // get categories 
   public static GET_QUERIES_CATEGORIES(id){
-    console.log(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=get&
-    resource=getcategories&userid=${id}`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=get&
     resource=getcategories&userid=${id}`);
   }
@@ -164,35 +149,26 @@ export class API {
 
   // get dashboard feeds api url
   public static GET_DASHBOARD_FEEDS(userId) {
-    console.log(this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?action=get&module=feeds&resource=getfeeds&userid=${userId}`));
-    return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?action=get&module=feeds&resource=getfeeds&
-    userid=${userId}`);
+    return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?action=get&module=feeds&resource=getfeeds&userid=${userId}`);
   }
   // Get notifications api
   public static GET_DASHBOARD_NOTIFICATIONS(userId,auth_key) {
-    console.log(`${IonServer.ION_SERVER}/index.php?option=com_api&format=raw&app=easyblog&resource=latest&
-    user_id=${userId}&key=${auth_key}&promos=2&status=1`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_api&format=raw&app=easyblog&resource=latest&
     user_id=${userId}&key=${auth_key}&promos=2&status=1`);
   }
   // get promotions api url
   public static GET_PROMOTIONS(userId) {
-    
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_api&format=raw&app=easyblog&
     resource=category&parentid=87&format=nested`);
   }
   // send sms using tags
   public static SEND_SMS_USING_TAGS(tags,message,username,pwd){
-    console.log(`${IonServer.ION_SERVER}/index.php/request/sendSmsByTags/contacts/contacts?
-    sendType=server&tags=${tags}&message=${message}&username=${username}&pwd=${pwd}&encode=true`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request/sendSmsByTags/contacts/contacts?
-    sendType=server&tags=${tags}&message=${message}&username=${username}&pwd=${pwd}&encode=true`);
+    sendType=server&tags=${tags}&username=${username}&pwd=${pwd}&encode=true&message=${message}`);
   }
    public static SEND_SMS_USING_NUMBERS(phoneNo,message,username,pwd){
-     console.log(`${IonServer.ION_SERVER}/index.php/request/sendSmsByPhoneNumb/contacts/contacts?
-     sendType=server&phone=${phoneNo}&message=${message}&username=${username}&pwd=${pwd}&encode=true`)
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request/sendSmsByPhoneNumb/contacts/contacts?
-    sendType=server&phone=${phoneNo}&message=${message}&username=${username}&pwd=${pwd}&encode=true`);
+    sendType=server&phone=${phoneNo}&username=${username}&pwd=${pwd}&encode=true&message=${message}`);
   }
   // get promotions ionized blogs api url
   public static GET_iONIZED_PROMOTIONS(userId,authkey) {
@@ -209,20 +185,11 @@ export class API {
   }
    // get VISITS api url
    public static GET_VISITS_LIST(username, pwd,date) {
-     console.log(`${IonServer.ION_SERVER}/index.php?option=com_rsappt_pro3&controller=json_x&fileout=yes&format=raw&
-     task=get_adm_bookings&adm=1&list_type=upcoming&usr=${username}&pwd=${pwd}&encode=true&sd=${date}`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_rsappt_pro3&controller=json_x&
     fileout=yes&format=raw&task=get_adm_bookings&adm=1&list_type=upcoming&usr=${username}&pwd=${pwd}&encode=true&sd=${date}&publish=1`);
   }
    // add VISIT api url
    public static ADD_VISIT(visitObj, udfObj) {
-     console.log(this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_rsappt_pro3&controller=json_x&fileout=yes&
-    format=raw&task=insertBooking&res_id=${visitObj.res_id}&name=${visitObj.name}&email=
-    ${visitObj.email}&phone=${visitObj.phone}&startdate=${visitObj.startdate}&starttime=${visitObj.starttime}&enddate=
-    ${visitObj.enddate}&endtime=${visitObj.endtime}&booked_seats=1&comment=${visitObj.comments}&coupon_used=&credit_used=0&booking_deposit=
-    ${visitObj.booking_deposit}&booking_total=${visitObj.booking_total}&request_status=${visitObj.request_status}&
-    fa=No&user_id=${visitObj.user_id}&
-    image=${visitObj.image}&category=${visitObj.category}&udf_values_info=${udfObj}&tags=${visitObj.tags}`));
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_rsappt_pro3&controller=json_x&fileout=yes&
     format=raw&task=insertBooking&res_id=${visitObj.res_id}&name=${visitObj.name}&email=
     ${visitObj.email}&phone=${visitObj.phone}&startdate=${visitObj.startdate}&starttime=${visitObj.starttime}&enddate=
@@ -231,15 +198,17 @@ export class API {
     fa=No&user_id=${visitObj.user_id}&
     image=${visitObj.image}&category=${visitObj.category}&udf_values_info=${udfObj}&tags=${visitObj.tags}`);
   }
+  //get visit Details 
+  public static GET_VISITS_DETAIL_VIEW(username, pwd,id){
+    return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_rsappt_pro3&controller=json_x&fileout=yes&format=raw&task=get_booking_detail&usr=${username}&pwd=${pwd}&encode=true&req_id=${id}&adm=1`);
+}
   // update visits api call
   public static UPDATE_VISIT(username, pwd,visitObj,strUDFs) {
-    console.log(this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_rsappt_pro3&controller=json_x&fileout=yes&format=raw&task=adm_update_booking&req_id=${visitObj.req_id}&res_id=${visitObj.res_id}&startdate=${visitObj.startdate}&starttime=${visitObj.starttime}&enddate=${visitObj.enddate}&endtime=${visitObj.endtime}&booked_seats=1&coupon_used=&credit_used=0&booking_deposit=${visitObj.booking_deposit}&booking_total=${visitObj.booking_total}&request_status=${visitObj.request_status}&fa=No&user_id=${visitObj.user_id}&category=${visitObj.category}&usr=${username}&pwd=${pwd}&encode=true&payment_status=pending&name=${visitObj.name}&phone=${visitObj.phone}&email=${visitObj.email}&comment=${visitObj.comments}&ce_id=${visitObj.ce_id}&photo=${visitObj.image}&udf_values_info=${strUDFs}`));
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_rsappt_pro3&controller=json_x&fileout=yes&format=raw&task=adm_update_booking&req_id=${visitObj.req_id}&res_id=${visitObj.res_id}&startdate=${visitObj.startdate}&starttime=${visitObj.starttime}&enddate=${visitObj.enddate}&endtime=${visitObj.endtime}&booked_seats=1&coupon_used=&credit_used=0&booking_deposit=${visitObj.booking_deposit}&booking_total=${visitObj.booking_total}&request_status=${visitObj.request_status}&fa=No&user_id=${visitObj.user_id}&category=${visitObj.category}&usr=${username}&pwd=${pwd}&encode=true&payment_status=pending&name=${visitObj.name}&phone=${visitObj.phone}&email=${visitObj.email}&comment=${visitObj.comments}&ce_id=${visitObj.ce_id}&photo=${visitObj.image}&udf_values_info=${strUDFs}`);
   }
+
    // delete VISITS api url
    public static DELETE_VISIT(username, pwd, id) {
-     console.log(`${IonServer.ION_SERVER}/index.php?option=com_rsappt_pro3&controller=json_x&fileout=yes&
-    format=raw &task=delete_visits&usr=${username}&pwd=${pwd}&encode=true&id=${id}`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_rsappt_pro3&controller=json_x&fileout=yes&
     format=raw &task=delete_visits&usr=${username}&pwd=${pwd}&encode=true&id=${id}`);
   }
@@ -255,26 +224,19 @@ export class API {
   }
    // get doctors api url
    public static GET_DOCTORS_LIST(username, pwd, catId) {
-     console.log(`${IonServer.ION_SERVER}/index.php?option=com_rsappt_pro3&controller=json_x&fileout=yes&
-    format=raw&task=get_adm_resources&usr=${username}&pwd=${pwd}&adm=1&encode=true`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_rsappt_pro3&controller=json_x&fileout=yes&
-    format=raw&task=get_adm_resources&usr=${username}&pwd=${pwd}&adm=1&encode=true`);
+    format=raw&task=get_adm_resources&usr=${username}&pwd=${pwd}&cat_id=${catId}&adm=1&encode=true`);
   }
   // get doctors time slots api url 
   public static GET_DOCTORS_TIME_SLOTS_LIST(resId, tsData, username, pwd) {
-    console.log(`${IonServer.ION_SERVER}/index.php?option=com_rsappt_pro3&controller=json_x&fileout=yes&
-    format=raw&task=get_timeslots&admin=Yes&res_id=${resId}&ts_date=${tsData}&usr=${username}&pwd=${pwd}&
-    adm=1&encode=true`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_rsappt_pro3&controller=json_x&fileout=yes&
     format=raw&task=get_timeslots&admin=Yes&res_id=${resId}&ts_date=${tsData}&usr=${username}&pwd=${pwd}&
     adm=1&encode=true`);
   }
    public static GET_APPOINTMENTS_BETWEEN_DATES(resId, startDate,days, username, pwd) {
-    console.log(`${IonServer.ION_SERVER}/index.php?option=com_rsappt_pro3&controller=json_x&fileout=yes&format=raw&task=get_adm_bookings&list_type=between&sd=${startDate}&offset=${days}&usr=${username}&pwd=${pwd}&res_id=${resId}&adm=1&encode=true`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_rsappt_pro3&controller=json_x&fileout=yes&format=raw&task=get_adm_bookings&list_type=between&sd=${startDate}&offset=${days}&usr=${username}&pwd=${pwd}&res_id=${resId}&adm=1&encode=true`);
   }
    public static DELETE_APPOINTMENT(username, pwd,id) {
-   // console.log(`${IonServer.ION_SERVER}/index.php?option=com_rsappt_pro3&controller=json_x&fileout=yes&format=raw&task=get_adm_bookings&list_type=between&sd=${startDate}&offset=${days}&usr=${username}&pwd=${pwd}&res_id=${resId}&adm=1&encode=true`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_rsappt_pro3&controller=json_x&fileout=yes&format=raw&task=delete_visits&usr=${username}&pwd=${pwd}&encode=true&id=${id}`);
   }
 
@@ -287,11 +249,6 @@ export class API {
 
    // add Leads api url
    public static ADD_LEAD(leadObj) {
-     console.log(`${IonServer.ION_SERVER}/index.php/request/post/contacts/contacts?type=${leadObj.ptype}&
-    age=${leadObj.age}&firstname=${leadObj.firstname}&surname=${leadObj.surname}&mobile=${leadObj.phone}&
-    email=${leadObj.email}&dob=${leadObj.dob}&sex=${leadObj.sex}&purpose=${leadObj.purpose}&image=${leadObj.image}&
-    area=${leadObj.area}&city=${leadObj.city}&pincode=&remarks=${leadObj.remarks}&
-    userid=${leadObj.uid}&contactTags=${leadObj.ctags}&tagflag=1&misc=lead`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request/post/contacts/contacts?type=${leadObj.ptype}&
     age=${leadObj.age}&firstname=${leadObj.firstname}&surname=${leadObj.surname}&mobile=${leadObj.phone}&
     email=${leadObj.email}&dob=${leadObj.dob}&sex=${leadObj.sex}&purpose=${leadObj.purpose}&image=${leadObj.image}&
@@ -300,11 +257,6 @@ export class API {
   }
   // update lead api url
   public static UPDATE_LEAD(leadObj,username,password){
-    console.log(`${IonServer.ION_SERVER}/index.php/request/put/contacts/contacts?id=${leadObj.id}&
-    type=${leadObj.ptype}&age=${leadObj.age}&firstname=${leadObj.firstname}&surname=${leadObj.surname}&
-    mobile=${leadObj.phone}&email=${leadObj.email}&dob=${leadObj.dob}$&sex=${leadObj.sex}&purpose=&image=${leadObj.image}&
-    area=${leadObj.area}&city=${leadObj.city}&pincode=522413&remarks=${leadObj.remarks}&userid=${leadObj.uid}&
-    contactTags=${leadObj.ctags}&tagflag=1&username=${username}&pwd=${password}&encode=true`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request/put/contacts/contacts?id=${leadObj.id}&
     type=${leadObj.ptype}&age=${leadObj.age}&firstname=${leadObj.firstname}&surname=${leadObj.surname}&
     mobile=${leadObj.phone}&email=${leadObj.email}&dob=${leadObj.dob}$&sex=${leadObj.sex}&purpose=&image=${leadObj.image}&
@@ -313,17 +265,11 @@ export class API {
   }
    // get Leads by filter api url
    public static GET_LEADS_BY_FILTER(userId, username, pwd,filterObj) {
-     console.log(`${IonServer.ION_SERVER}/index.php/request/get/contacts/contacts?user_id=${userId}&
-    username=${username}&pwd=${pwd}&encode=true&source=${filterObj.source}&withemail=${filterObj.includesEmail}&
-    withphone=${filterObj.includesPhone}&age=20-30&gender=${filterObj.gender}&filtertag=${filterObj.tags}`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request/get/contacts/contacts?user_id=${userId}&
     username=${username}&pwd=${pwd}&encode=true&source=${filterObj.source}&withemail=${filterObj.includesEmail}&
     withphone=${filterObj.includesPhone}&age=20-30&gender=${filterObj.gender}&filtertag=${filterObj.tags}&status=1`);
   }
   public static GET_ALL_LEADS_LIMIT(teamId, username, pwd,start,limit,filterObj) {
-   console.log(`${IonServer.ION_SERVER}/index.php/request/get/contacts/contacts?user_id=${teamId}&
-   username=${username}&pwd=${pwd}&encode=true&limitstart=${start}&limit=${limit}&source=${filterObj.source}&withemail=${filterObj.includesEmail}&
-    withphone=${filterObj.includesPhone}&age=${filterObj.age}&gender=${filterObj.gender}&filtertag=${filterObj.tags}&status=1`);
    return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request/get/contacts/contacts?user_id=${teamId}&
    username=${username}&pwd=${pwd}&encode=true&limitstart=${start}&limit=${limit}&source=${filterObj.source}&withemail=${filterObj.includesEmail}&
     withphone=${filterObj.includesPhone}&age=${filterObj.age}&gender=${filterObj.gender}&filtertag=${filterObj.tags}&status=1`);
@@ -336,18 +282,15 @@ export class API {
   //add tags to all contacts
 
   public static ADD_TAGS_TO_CONTACTS(teamid,tags,contacts){
-    console.log(`${IonServer.ION_SERVER}/index.php/request/addTags/contacts/contacts?user_id=${teamid}&tags=${tags}&contacts=${contacts}`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request/addTags/contacts/contacts?user_id=${teamid}&tags=${tags}&contacts=${contacts}`)
   }
   //GET DOWNLOAD LEADS
   public static GET_DOWNLOAD_LEADS(id,username, pwd){
-    
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request/get/contacts/contacts?user_id=${id}&username=${username}&pwd=${pwd}&encode=true&csv=1`);
   }
   //DELETE LEADS
 
   public static DELETE_LEADS(userId,username, pwd,ids){
-    console.log(`${IonServer.ION_SERVER}/index.php/request/delete/contacts/contacts?userid=${userId}&username=${username}&pwd=${pwd}&id=${ids}`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request/delete/contacts/contacts?userid=${userId}&username=${username}&pwd=${pwd}&id=${ids}&encode=true`)
   }
   
@@ -369,9 +312,6 @@ export class API {
 
   // vists month wise accepted(line chart) api url.
   public static GET_MONTH_LINE(selectedMonth,selectedYear,username, pwd) {
-    console.log(`${IonServer.ION_SERVER}/index.php?option=com_rsappt_pro3&controller=json_reports&
-      fileout=yes&format=raw&task=get_adm_bookings&list_type=byweek&status=accepted&sd=`+selectedYear+`-`+selectedMonth+`&
-      usr=${username}&pwd=${pwd}&encode=true`);
       return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_rsappt_pro3&controller=json_reports&
       fileout=yes&format=raw&task=get_adm_bookings&list_type=byweek&status=accepted&sd=`+selectedYear+`-`+selectedMonth+`&
       usr=${username}&pwd=${pwd}&encode=true`);
@@ -385,9 +325,6 @@ export class API {
 
   // vists year wise accepted(line chart) api url.
   public static GET_YEAR_LINE(selectedYear,username, pwd) {
-    console.log(`${IonServer.ION_SERVER}/index.php?option=com_rsappt_pro3&controller=json_reports&
-      fileout=yes&format=raw&task=get_adm_bookings&list_type=yearly&sd=`+selectedYear+`&usr=${username}&pwd=${pwd}&
-      encode=true`);
       return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_rsappt_pro3&controller=json_reports&
       fileout=yes&format=raw&task=get_adm_bookings&list_type=yearly&sd=`+selectedYear+`&usr=${username}&pwd=${pwd}&
       encode=true`);
@@ -411,15 +348,11 @@ export class API {
 
   // category wise queries api url.
   public static GET_QUERIES_CATEGORY(teamid) {
-    console.log(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=get&
-      resource=monthlyquerylist&userid=`+teamid);
       return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=get&
       resource=monthlyquerylist&userid=`+teamid);
   }
   // month wise(last one year) queries api url.
   public static GET_QUERIES_LAST_YEAR(teamid){
-    console.log(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=get&
-    resource=monthlyquerylist&userid=`+teamid+`&type=yearly`);
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=easydiscuss&action=get&
     resource=monthlyquerylist&userid=`+teamid+`&type=yearly`);
   }
@@ -462,24 +395,18 @@ public static EDIT_BLOG(blogid, authkey) {
 }
 // blog details view api url
 public static BLOG_DETAIL_VIEW(blogId, authkey) {
-  console.log(`${IonServer.ION_SERVER}/index.php?option=com_api&format=raw&app=easyblog&resource=blog&
-  id=${blogId}&key=${authkey}`);
   return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_api&format=raw&app=easyblog&resource=blog&
   id=${blogId}&key=${authkey}`);
 }
 // get all blog comments
 public static GET_BLOG_COMMENTS(blogId,userid) {
-  console.log(`${IonServer.ION_SERVER}/index.php/request?action=fullview&module=ionplanner&resource=planner
-  &type=blog&id=${blogId}&userid=${userid}`);
   return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?action=fullview&module=ionplanner&resource=planner
   &type=blog&id=${blogId}&userid=${userid}`);
 }
 // add blog comments
-public static ADD_BLOG_COMMENTS(blogId, username, pwd) {
-  console.log(`${IonServer.ION_SERVER}/index.php/request?resource=planner&action=reply&module=ionplanner&
-  type=blog&id=${blogId}&usr=${username}&pwd=${pwd}&encode=true`);
+public static ADD_BLOG_COMMENTS(blogId, username, pwd,images) {
   return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?resource=planner&action=reply&module=ionplanner&
-  type=blog&id=${blogId}&usr=${username}&pwd=${pwd}&encode=true`);
+  type=blog&id=${blogId}&usr=${username}&pwd=${pwd}&imgs=${images}&encode=true`);
 }
 // calendar api
 public static GET_PUBLISH_CALENDAR(userid) {
@@ -488,7 +415,6 @@ public static GET_PUBLISH_CALENDAR(userid) {
 }
 // get calendar by month api
 public static GET_PUBLISH_CALENDAR_BY_MONTH(key, category, month) {
-  console.log(`${IonServer.ION_SERVER}/index.php?option=com_api&format=raw&app=easyblog&resource=calendar&key=${key}&category_id=${category}&from=${month}`);
   return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_api&format=raw&app=easyblog&resource=calendar&key=${key}&category_id=${category}&from=${month}`);
 }
 public static GET_BLOGS_COUNT_IN_CALENDAR(userid,fromDate){
@@ -501,22 +427,16 @@ public static TRENDING_TOPICS_ALL(userId) {
 }
 // trending topics calendar api
 public static TRENDING_TOPICS_BY_MONTH(userId, month) {
-  console.log(`${IonServer.ION_SERVER}/index.php/request?action=trendingbytags&module=ionplanner&
-  resource=planner&userid=${userId}&from=${month}`);
   return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?action=trendingbytags&module=ionplanner&
   resource=planner&userid=${userId}&from=${month}`);
 }
 // add trending topics calendar api
 // public static ADD_TRENDING_TOPIC(trendObj) {
-//   console.log(`${IonServer.ION_SERVER}/index.php/request?action=post&module=ionplanner&resource=planner&
-//   created_by=${trendObj.created_by}&title=${trendObj.title}&start_date=${trendObj.start_date}&color=red&
-//   description=${trendObj.description}&end_date=${trendObj.end_date}&tags=${trendObj.tag}`);
 //   return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?action=post&module=ionplanner&resource=planner&
 //   created_by=${trendObj.created_by}&title=${trendObj.title}&start_date=${trendObj.start_date}&color=red&
 //   description=${trendObj.description}&end_date=${trendObj.end_date}&tags=${trendObj.tag}`);
 // }
 public static ADD_TOPIC_TO_CALENDAR(key,topics){
-  console.log(`${IonServer.ION_SERVER}/index.php?option=com_api&format=raw&app=easyblog&resource=ionize&key=${key}&topics=${topics}`);
   return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_api&format=raw&app=easyblog&resource=ionize&key=${key}&topics=${topics}`);
 }
 public static GET_USERS_DATA(authkey) {
@@ -524,7 +444,6 @@ public static GET_USERS_DATA(authkey) {
   key=${authkey}`);
 }
 public static GET_USER_DATA(id,key) {
-  console.log(`${IonServer.ION_SERVER}/index.php?option=com_api&format=raw&app=users&resource=users&key=${key}&id=${id}`);
   return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_api&format=raw&app=users&resource=users&key=${key}&id=${id}`);
 }
 public static ADD_USER_PROFILE(){
@@ -542,13 +461,17 @@ public static ION_SUBSCRIPTION(userid){
   return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=user&action=get&resource=profiledata&userid=${userid}`);
 }
 public static DELETE_USER_CARD(id){
-  console.log(`${IonServer.ION_SERVER}/index.php?option=com_api&app=users&resource=users&format=raw&id=${id}`);
   return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_api&app=users&resource=users&format=raw&id=${id}`);
 }
 public static GET_MESSAGES_COUNT(teamid,tags){
-  console.log(`${IonServer.ION_SERVER}/index.php/request/leadcount/contacts/contacts?user_id=${teamid}&tags=${tags}`);
   return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request/leadcount/contacts/contacts?user_id=${teamid}&tags=${tags}`);
 }
 
+public static SEND_REVIEW_LINK(values,currentuser){
+  return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=contacts&resource=contacts&action=review&user_id=${currentuser.id}&email=${values.patientMailId}&mobile=${values.patientMobileNumber}`);
+}
 
+public static BLOCK_CALENDER(currentuser,visitForm){
+  return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_rsappt_pro3&controller=json_x&fileout=yes&format=raw&task=adm_save_bookoff&usr=${currentuser.username}&pwd=${currentuser.pwd}&encode=true&res_id=${visitForm.res_id}&bo_offdate=${visitForm.block_from}&bo_offdate2=${visitForm.block_till}&bo_starttime=${visitForm.block_from_time}&bo_endtime=${visitForm.block_to_time}&bo_pub=1&bo_fullday=${visitForm.blockAllDay}&description=${visitForm.block_detail}`);
+}
 }

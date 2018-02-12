@@ -107,7 +107,6 @@ addPromotionService(promotionid,content,image,promotionTitle) {
     //   '&excerpt=' +
     //   '&permalink=' +
     //   '&key='+currentuser.auth;
-    //   console.log(resData);
 
     //let options = new RequestOptions({ headers });
    return this.http.post(API.ADD_PROMOTION(),body).map(
@@ -117,7 +116,7 @@ addPromotionService(promotionid,content,image,promotionTitle) {
      },
    );
  }
-  updateThePromotion(promotionid,image,promotionTitle) {
+  updateThePromotion(promotionid,image,promotionTitle,categoryId) {
   const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
     let options;
     var newDate=new Date();
@@ -148,7 +147,7 @@ addPromotionService(promotionid,content,image,promotionTitle) {
       '&tags=' +
       '&frontpage=' + 
       '&allowcomment=1' +
-      '&category_id=' +currentuser.publishid +
+      '&category_id=' +categoryId +
       '&publish_down= 0000-00-00' +
       '&blogpassword=' +
       '&robots=' +
@@ -184,8 +183,6 @@ addPromotionService(promotionid,content,image,promotionTitle) {
       //     key:currentuser.auth,
       //     id:blogData.postid
       //  }
-      
-      console.log(resData);
         options = new RequestOptions({ headers });
         return this.http.put(API.CREATE_NEW_BLOG(), resData, options).map(
           (responseData) => {

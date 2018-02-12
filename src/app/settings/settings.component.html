@@ -170,7 +170,7 @@
                             <tr class="sub">
                                 <td></td>
                                 <td>
-                                    <input type="submit"  (click)="profile_sub()" value="Submit" style="padding:10px;">
+                                    <input type="submit"  (click)="profile_sub()" value="Submit" style="padding:10px;" class="btn">
                                     <!--<button style="margin-top:8px;padding:10px;background-color:#33cccc;cursor: pointer;" (click)="profile_sub(item)">Submit</button>-->
                                     <!-- <button style="margin-top:8px;padding:10px;background-color:#33cccc;cursor: pointer;">Edit</button> -->
 
@@ -218,7 +218,7 @@
                         <tr>
                             <td></td>
                             <td>
-                                <input type="submit" value="Submit" (click)="changepassword(pwditem)" style="padding:10px;">
+                                <input type="submit" value="Submit" (click)="changepassword(pwditem)" style="padding:10px;" class="btn">
                             </td>
                         </tr>
 
@@ -581,8 +581,10 @@
                                 <td>
                                      USER NAME
                                      <br>
-                                    <input type="text" placeholder="User Name" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['username']" required>  <br>
+                                    <input type="text" placeholder="User Name" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['username']" required *ngIf="isAddUser"> 
+                                    <input type="text" placeholder="User Name" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['username']" required *ngIf="!isAddUser" [attr.disabled]="true">   <br>                                   
                                     <span style="color:red" *ngIf="userDetailsForm.controls['username'].hasError('required') && userDetailsForm.controls['username'].touched"> Please Enter The User Name. </span>
+                                    <!-- <span style="color:red" *ngIf="userDetailsForm.controls['username'].hasError('required') && userDetailsForm.controls['username'].touched"> Please Enter The User Name. </span> -->
                               
                                 </td>
                                 <td>
@@ -662,7 +664,7 @@
                         <div *ngIf="isGroupsRequied" style="margin-top: 15px;">
                          <span style="color:red"> Please Select Group. </span></div>
                     <br><br><br><br>
-                    <div  style="margin-top: -50px;"><angular2-multiselect [data]="allcategoryname" [(ngModel)]="selectedItems" [settings]="dropdownSettings" (onSelect)="onItemSelect($event)" (onDeSelect)="OnItemDeSelect($event)" (onSelectAll)="onSelectAll($event)" (onDeSelectAll)="onDeSelectAll($event)"></angular2-multiselect> </div>                    
+                    <div class="multisele" style="margin-top: -50px;"><angular2-multiselect [data]="allcategoryname" [(ngModel)]="selectedItems" [settings]="dropdownSettings" (onSelect)="onItemSelect($event)" (onDeSelect)="OnItemDeSelect($event)" (onSelectAll)="onSelectAll($event)" (onDeSelectAll)="onDeSelectAll($event)"></angular2-multiselect> </div>                    
                     <table style="width:100%;margin-top:15px;" class="popup_input">
                         <!-- <tr>
                             <td>
@@ -672,7 +674,7 @@
                                         <input type="checkbox" style="margin: 12px;"> General Enquiry
                                  </div>
                             </td>
-                            <td>
+                            <td> 
                                     PERMISSION
                                     <br>
                                      <div style="width:90%;height:37px;border-radius: 50px;margin-top:10px;border:1px solid grey;">
@@ -704,11 +706,11 @@
                             </tr>  -->
                             <tr>
                                 <td>
-                                    <button style="width:90%;height:37px;background-color:#33cccc;cursor: pointer;border-radius:50px;color:white;" (click)="addNewUser()" *ngIf="isAddUser"><b>ADD USER</b></button>
-                                    <button style="width:90%;height:37px;background-color:#33cccc;cursor: pointer;border-radius:50px;color:white;" (click)="updateUser()" *ngIf="!isAddUser"><b>UPDATE</b></button>
+                                    <button style="width:90%;height:37px;background-color:#33cccc;cursor: pointer;border-radius:50px;color:white;" (click)="addNewUser()" *ngIf="isAddUser" class="btn"><b>ADD USER</b></button>
+                                    <button style="width:90%;height:37px;background-color:#33cccc;cursor: pointer;border-radius:50px;color:white;" (click)="updateUser()" *ngIf="!isAddUser" class="btn"><b>UPDATE</b></button>
                                 </td>
                                 <td>
-                                    <button style="width:90%;height:37px;background-color:#555;cursor: pointer;border-radius:50px;color:white;" (click)="closeUserPopUp()"><b>CANCEL</b></button>
+                                    <button style="width:90%;height:37px;background-color:#555;cursor: pointer;border-radius:50px;color:white;" (click)="closeUserPopUp()" class="btn"><b>CANCEL</b></button>
                                 </td>
                             </tr>
                     </table>
@@ -731,6 +733,18 @@
                   </div>
                  </div>
      </div>
+                <div class="model model-alerts" *ngIf="isAlertPopupForError" [style.margin-top.px]="windowBottom" style="box-shadow: 0 0 5px #777;"> 
+                <!-- <a class="close">Close</a> -->
+                
+                <div class="model-content">
+                 <p>{{ alertMessage }}</p>           
+                <div class="btn_actions">
+                  <div class="button btn-ok" (click)="isAlertPopupForError = false;">ok</div>
+                  <!-- <div class="button btn-dismiss" (click)="isAlertPopup = false;">cancel</div> -->
+              
+                  </div>
+                 </div>
+     </div>
          <!-- alert -->
 <!-- delete yes or no popup -->
 <div class="model model-alerts" *ngIf="isDeleteAlertPopup" [style.margin-top.px]="windowBottom+100" style="border-radius: 10px;box-shadow: 0 0 5px #777;">
@@ -748,4 +762,4 @@
     </div>
    
           <!-- Popup -->  
-<div class="overlay" *ngIf="isShowUserPopup||isAlertPopup ||isStartLoader || isDeleteAlertPopup"></div>
+<div class="overlay" *ngIf="isShowUserPopup||isAlertPopup ||isStartLoader || isDeleteAlertPopup||isAlertPopupForError"></div>

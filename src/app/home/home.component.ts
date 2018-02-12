@@ -9,18 +9,22 @@ import { FormBuilder, FormControl, FormGroup,FormArray } from '@angular/forms';
 import { LeadsService,DataService } from '../shared/services/leads/leads.service';
 import { IonServer } from '../shared/globals/global';
 import { PublishService } from '../shared/services/publish/publish.service';
+import { QueriesService } from '../shared/services/queries/queries.service';
 declare var require: any;
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  providers: [DashboardService, PromotionsService,AuthserviceService,LeadsService,PublishService],
+  providers: [DashboardService, PromotionsService,AuthserviceService,LeadsService,PublishService,QueriesService],
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
 dashboardData: any = [];
 dashboardFeedData: any = [];
 blogCommentsData: any = [];
+quriesResponse:any=[];
+questionId: any = '';
 loginUserId: number;
+homeimageSrc: any = [];
 sliderFullView:any=[]; 
 today=new Date();
 stopDates=this.today.getFullYear()+"-"+(this.today.getMonth()+1)+"-"+this.today.getDate();
@@ -29,6 +33,9 @@ imageSrc: any = '';
 notificationsData: any = [];
 isPromoPopupOpen: boolean = false;
 isSelectSlider:boolean=false;
+publishOrNot:boolean=false;
+publishOrNotValue:number=1;
+isAddtoQuickReply:boolean=false;
 isEditLead: boolean = false;
 imageerrorAlert:boolean=false;
 imageUploadAlert: boolean = false;
@@ -39,14 +46,17 @@ connect_err=IonServer.nointernet_connection_err;
 isSelectAddLeads:boolean=false;
 alertMessage: string = '';
 isShowImgDeleteButt:boolean=false;
+isSelectReplayPop:boolean=false;
 promotionsData: any = [];
 public imageSources: string[] = [];
 public config: ICarouselConfig;
 isSelectBlog: boolean = false;
 images: any[] = [];
 leadId: number;
+isReplyEmpty=false;
 phoneMinlength:boolean=false;
 @ViewChild('fileInput') fileInput;
+@ViewChild('fileQuerieInput') fileQuerieInput;
 tags: string = '';
 isAlertPopup: boolean = false;
 spaceComment=IonServer.Space_Not_required;  
@@ -80,7 +90,7 @@ autoComplete=[];
 
 public carouselBannerItems: Array<any> = [];
 public carouselBanner: NgxCarousel;
-constructor(private router: Router,private leadsService: LeadsService,private authService: AuthserviceService,private builder: FormBuilder, private dashboardService: DashboardService, private promotionService: PromotionsService,private Publishservice:PublishService) {
+constructor(private router: Router,private leadsService: LeadsService,private authService: AuthserviceService,private builder: FormBuilder, private dashboardService: DashboardService, private promotionService: PromotionsService,private Publishservice:PublishService,private quriesService: QueriesService) {
 
  }
 
@@ -109,16 +119,12 @@ constructor(private router: Router,private leadsService: LeadsService,private au
       }
     }]);
     // OneSignal.push(function () {
-    //   console.log('Register For Push');
-
     //   OneSignal.push(["registerForPushNotifications"])
     // });
     OneSignal.push(function () {
       // Occurs when the user's subscription changes to a new value.
       OneSignal.on('subscriptionChange', function (isSubscribed) {
-       // console.log("The user's subscription state is now:", isSubscribed);
         OneSignal.getUserId().then(function (userId) {
-          // console.log("User ID is", userId);
         });
       });
     });
@@ -175,7 +181,6 @@ get user(): any {
     this.isStartLoader = true;
     this.dashboardService.getDashboardStatistics().subscribe(
       (dashboardResponse: any) => {
-        console.log(dashboardResponse);
          localStorage.setItem('queries', JSON.stringify({
               unanswered: dashboardResponse.description[0].unanswered,
               answered:dashboardResponse.description[0].answered,
@@ -198,8 +203,6 @@ get user(): any {
   }
 selectPromo(eachpromotion){
   this.router.navigate(['promotions/promotiondemo',eachpromotion.id,eachpromotion.avatar,eachpromotion.title]);
-  // console.log("promo");
-  // console.log(eachpromotion);
 }
   // Get dashboard feeds
   getDashboardFeeds() {
@@ -207,7 +210,6 @@ selectPromo(eachpromotion){
     this.dashboardService.getDashboardFeeds().subscribe(
       (dashboardResponse: any) => {
         this.dashboardFeedData = dashboardResponse.description;
-         console.log( this.dashboardFeedData);
       }, (err) => {
         this.isStartLoader = false;
         this.isAlertPopup=true;
@@ -223,7 +225,6 @@ selectPromo(eachpromotion){
     this.dashboardService.getDashboardNotificationFeeds().subscribe(
       (feedsResponse: any) => {
         this.notificationsData = feedsResponse.data;
-        console.log(this.notificationsData);
       }, (err) => {
         this.isStartLoader = false;
         this.isStartLoader = false;
@@ -231,9 +232,6 @@ selectPromo(eachpromotion){
         this.alertMessage=this.connect_err;
       }, () => {
         this.isStartLoader = false;
-              
-       // this.images.push('http://www.dashboard.getion.in/images/ion/180/resize-IMG-20171112-1731465a40a2b48924e0.44920380.png');
-        console.log(this.images);
         this.config = {
           verifyBeforeLoad: true,
           log: false,
@@ -248,7 +246,6 @@ selectPromo(eachpromotion){
 
   }
   public carouselBannerLoad() {  
-    //console.log("load"); 
     const len = this.carouselBannerItems.length;
     if (this.notificationsData.length > 0 && len==0 ) {
       this.carouselBannerItems=this.notificationsData;
@@ -256,7 +253,6 @@ selectPromo(eachpromotion){
       //   this.carouselBannerItems=this.images;
       // }
     }
-    console.log(this.carouselBannerItems);
   }
   getBlogComments(bid) {
     this.blogCommentsData=[];
@@ -265,9 +261,7 @@ selectPromo(eachpromotion){
     this.isStartLoader = true;
     this.Publishservice.getBlogCommentsService(bid).subscribe(
       (blogResponse: any) => {
-        console.log(blogResponse);
         this.blogCommentsData = blogResponse.description;
-        console.log( this.blogCommentsData);
       }, (err) => {
         this.isStartLoader = false;
         this.isAlertPopup=true;
@@ -277,15 +271,11 @@ selectPromo(eachpromotion){
       });
   }
   testingFunction(id){
-      console.log(id);
       this.isStartLoader = true;
       this.Publishservice.getBlogDetailViewService(id).subscribe(
         (blogResponse: any)=>{
-         // console.log(blogResponse);
         this.sliderFullView=blogResponse;
         this.isSelectSlider=true;
-        console.log(this.sliderFullView);
-        console.log( this.blogCommentsData);
       },(err)=> {
         this.isStartLoader = false;
         this.isSelectSlider=false;
@@ -309,7 +299,6 @@ selectPromo(eachpromotion){
     this.isStartLoader = true;
     this.promotionService.getPromotionsData().subscribe(
       (promotionResponse: any) => {
-        console.log(promotionResponse);
         this.promotionsData = promotionResponse;
       }, (err) => {
         this.isStartLoader = false;
@@ -324,11 +313,24 @@ selectPromo(eachpromotion){
   // congratulate
 
   congaratulate(id){
-   // console.log("congratulate");
+    this.isStartLoader = true;
     this.dashboardService.congartulate(id).subscribe(
       (congratulateResponse: any) => {
         // this.notificationsData = feedsResponse.data[0];
-        console.log(congratulateResponse);
+        this.getDashboardFeeds();
+      }, (err) => {
+       // this.isStartLoader = false;
+        this.isAlertPopup=true;
+        this.alertMessage=this.connect_err;
+      }, () => {
+        //this.isStartLoader = false;
+      });
+    
+  }
+     congaratulated(id){
+    this.dashboardService.congartulated(id).subscribe(
+      (congratulateResponse: any) => {
+        // this.notificationsData = feedsResponse.data[0];
         this.getDashboardFeeds();
       }, (err) => {
         this.isStartLoader = false;
@@ -368,8 +370,6 @@ upload() {
     
     this.authService.uploadImageService(fd).subscribe(res => {
       // do stuff w/my uploaded file
-      console.log(res);
-      
       if(res.description==undefined){
         this.imageUploadAlert = false;
         this.imageerrorAlert=true;
@@ -393,12 +393,16 @@ upload() {
  uploadImgeDelete(){
   this.imageSrc="";
    this.isShowImgDeleteButt=false;
-  console.log(this.imageSrc);
   this.imageerrorAlert=false;
   this.imageUploadAlert = false;
 }
 clearForm() {
   this.imageSrc='';
+  this.imgsize='';
+  this.isReplyEmpty=false;
+  this.isAddtoQuickReply=false;
+  this.imgerror='';
+  this.homeimageSrc=[];
   this.leadForm.reset();
   this.isShowImgDeleteButt=false;
   this.gender[0].checked=true;
@@ -446,7 +450,6 @@ calculateAge(dateOfBirth, dateToCalculate) {
                  if (ageMonth < 0 || (ageMonth == 0 && ageDay < 0)) {
                      age =age - 1;
                  }
-                 console.log(age);
                  this.leadForm.patchValue({
                    age:age
                  })
@@ -454,7 +457,6 @@ calculateAge(dateOfBirth, dateToCalculate) {
 
  onTypeNumValid(numValue) { 
   this.numLength=numValue.length; 
-      console.log(numValue);
       if(numValue.length > 10 ){
         this.phoneMinlength=true;
       }
@@ -465,9 +467,6 @@ calculateAge(dateOfBirth, dateToCalculate) {
 // add lead call
 
 addLeads() {
-   console.log(this.leadForm.value);
-   //console.log(this.leadId);
-  
   if(this.numLength!=10 && this.numLength!=0)
          {
             this.phoneMinlength=true;
@@ -477,7 +476,6 @@ addLeads() {
          }
    this.tags="";
   // //this.leadForm.value.id=this.leadId;
-  // console.log( this.leadForm.value);
   this.isStartLoader = true;
  
   if(this.leadForm.value.dob!="0000-00-00" && this.leadForm.value.dob!='')
@@ -488,13 +486,11 @@ addLeads() {
   this.leadForm.value.dob=created_date;
   }
   
- //  console.log(this.leadForm.value.ctags);
        if(this.leadForm.value.ctags !==undefined && this.leadForm.value.ctags.length != 0)
        {
            for(let i=0; i<this.leadForm.value.ctags.length; i++)
              {
                // this.tags +=this.leadForm.value.ctags[i].value +",";
-               //  console.log(this.tags);
              if(typeof this.leadForm.value.ctags[i].value != "undefined")
                {
                    this.tags +=this.leadForm.value.ctags[i].value + ',';
@@ -513,7 +509,6 @@ addLeads() {
        if (this.leadForm.valid  &&  !this.phoneMinlength ) {
                  this.leadsService.addLeadService(this.leadForm.value).subscribe(
                      (leadResponse: any) => {
-                       console.log(leadResponse);
                        if(leadResponse.status === 'success' ||leadResponse.status==='ok') {
                          this.isAlertPopup = true;
                          this.alertMessage = 'Lead added successfully.';
@@ -544,5 +539,148 @@ addLeads() {
    });
    this.isStartLoader=false;
 }
+
+replayQueries(id){
+  this.isStartLoader=true;
+  this.questionId=id;
+    this.quriesService.getDetailQuerie(id).subscribe((querieRes: any)=>{
+      this.quriesResponse=querieRes.posts;
+      this.isStartLoader = false;
+      this.isSelectReplayPop=true;
+    },(err)=>{
+      this.isAlertPopup=true;
+      this.isSelectReplayPop=false;
+      this.alertMessage=this.connect_err;
+      this.isStartLoader = false;
+    },()=>{});
+}
+// upload publish comment image
+uploadImage() {
+  
+  const fileBrowser = this.fileQuerieInput.nativeElement;
+  // if (fileBrowser.files && fileBrowser.files[0]) {
+    if(fileBrowser.files[0].size/1024/1024 > 9) {
+      this.imageUploadAlert = true;
+      this.imageerrorAlert = false;
+      // this.imageSrc = "";
+      this.fileQuerieInput.nativeElement.value = '';
+      return false;
+    }
+    this.isStartLoader = true;
+    this.imageerrorAlert = false;
+    this.imageUploadAlert = false;
+    const fd = new FormData();
+    const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+    for(var key=0;key<fileBrowser.files.length;key++)
+     {
+        if(key==0)
+          fd.append('file', fileBrowser.files[key]);
+       else{
+         fd.append('file'+key, fileBrowser.files[key]);
+       }
+        
+     }
+    //fd.append('file', fileBrowser.files[0]);
+    fd.append('userid', currentuser.id);
+    fd.append('username', currentuser.username);
+    fd.append('password', currentuser.pwd);
+    fd.append('encode', 'true');
+    fd.append('auth_key', currentuser.auth);
+    
+    this.authService.uploadImageService(fd).subscribe(res => {
+      // do stuff w/my uploaded file
+      if(res.description==undefined)
+      {
+            this.imageUploadAlert = false;
+            this.imageerrorAlert=true;
+      }else{
+        res.description.forEach(image=>{
+          this.homeimageSrc.push(image.url);
+        })
+       //this.homeimageSrc.push(res.description.url);
+        this.isStartLoader = false;          
+      }
+    },(err) => {
+      this.isStartLoader = false;
+      this.isAlertPopup=true;
+      this.alertMessage=this.connect_err;
+     }, () => {
+      this.fileQuerieInput.nativeElement.value = '';
+      this.isStartLoader = false;
+    });
+}
+  removeImage(index){
+    this.homeimageSrc.splice(index,1);
+    this.imageerrorAlert=false;
+    this.imageUploadAlert = false;
+  }
+
+  answerAQuerie(replyData, qId){
+    if(this.publishOrNot==true)
+    {
+      this.publishOrNotValue=0;
+    }
+    else{
+      this.publishOrNotValue=1;
+    }
+    replyData=replyData.trim();
+    if(replyData=='')
+    {
+      this.isReplyEmpty=true;
+    }
+    else{
+      var attachments="";
+      if(this.homeimageSrc.length>0)
+        {
+          attachments="&attachments="+this.homeimageSrc.length;
+          this.homeimageSrc.forEach((image,key)=>{
+            attachments=attachments+"&attachment"+(key+1)+"="+image;
+          })
+        }
+        
+        this.isStartLoader = true;
+        this.quriesService.addAnswerToQuerie(btoa(replyData), qId,this.publishOrNotValue,attachments).subscribe(
+        (qResponse: any) => {
+          this.homeimageSrc=[];
+          this.isSelectReplayPop=false;
+          this.isAlertPopup=true;
+          this.alertMessage="Reply Added Successfully."
+        }, (err) => {
+               console.log(err);
+               this.isStartLoader=false;
+               this.isAlertPopup=true;
+               this.alertMessage=this.connect_err;
+        }, () => {
+          this.isStartLoader = false;
+                if (this.isAddtoQuickReply) {
+                        this.quriesService.addQuerieReplyTemplate(btoa(replyData)).subscribe(
+                          (qResponse: any) => {
+                            this.isAddtoQuickReply=false;
+                          }, (err) => {
+                            this.isStartLoader = false;
+                            this.isAlertPopup=true;
+                            this.alertMessage=this.connect_err;
+                          }, () => {
+                            this.isStartLoader = false;
+                          });
+                }
+        });
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 

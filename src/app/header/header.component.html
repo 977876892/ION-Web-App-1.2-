@@ -6,7 +6,54 @@
     <div class="user__status_popbody bx-shadow brd-radius-15 transfer_pop" style="z-index:10; width: 450px;border-radius: 20px !important;">
         <div class="title"></div>
         <div class="content_notification">
-            <ul>
+          <ul>
+            <li *ngFor="let eachfeed of notificationFeedData | slice:0:10;">
+                <table>
+                    <tr>
+                      <td>
+                          <ul>
+                            <li style="float:left;width: 23%;padding: 5px;"> 
+                                <img *ngIf="eachfeed.avatar == ''" src="assets/css/images/profile_no_img.png" width="65" height="65" alt="">
+                                <img *ngIf="eachfeed.avatar != ''" src="{{ eachfeed.avatar }}" width="65" height="65" alt="Hospital Feed">
+                            </li>
+                            <li style="float:left;width: 74%;     word-break: break-all;">
+                              <span class="lg-text home--hosp-fld__txt" >
+                                <p [innerHTML]="eachfeed.content.split(':')[0]"></p>
+                              </span> 
+                              <span class="lg-text home--hosp-fld__txt"><p [innerHTML]="eachfeed.content.split(':')[1]"></p></span>
+                             <div class="feed_info_stamp">{{eachfeed.since}} ago</div>
+                            </li>
+
+                          </ul>
+                      </td>
+                    </tr>
+                    <!-- <tr>
+                      <td align="center">
+                          <div class="feed_actions txt-center"  style="cursor: pointer;">
+                              <a *ngIf="eachfeed.action == 'Publish' && eachfeed.context.includes('blog')" class="view_link" [routerLink]="['/publish']">
+                                    <div>{{eachfeed.action}}</div>
+                                  </a>
+                               <a *ngIf="eachfeed.action == 'View' && eachfeed.context.includes('blog')" class="view_link" [routerLink]="['/publish/online']">
+                                    <div>{{ eachfeed.action }}</div>
+                                  </a>
+                                <a *ngIf="eachfeed.action == 'View' && eachfeed.context.includes('visit')"  class="view_link" [routerLink]="['/visits']">
+                                    <div>{{ eachfeed.action }}</div>
+                                  </a>
+                                  <a *ngIf="eachfeed.action == 'Reply'" routerLink="/queries/{{eachfeed.context_id}}" class="view_link">
+                                      <div>{{ eachfeed.action }}</div>
+                                  </a>
+                                  <a *ngIf="eachfeed.action == 'Congratulate'" (click)="congaratulate(eachfeed.id)" class="view_link">
+                                      <div>{{ eachfeed.action }}</div>
+                                  </a>
+                              <a *ngIf="eachfeed.action == 'Congratulated'" > <img src="assets/images/congractulation-icon.png">
+                              <div>{{ eachfeed.action }}</div>
+                              </a> </div>
+                      </td>
+                    </tr> -->
+                  </table>
+            </li>
+          </ul>
+            <!-- <ul>
                 <li class="brd-radius-5" *ngFor="let eachfeed of notificationFeedData | slice:0:10;" style="padding: 6px;border-radius: 10px;box-shadow: 0 0 5px #bbbbbb;margin-bottom:18px;">
                   <div class="feed_image" style="padding: 10px;">
                     <img *ngIf="eachfeed.avatar == ''" src="assets/css/images/profile_no_img.png" width="65" height="65" alt="">
@@ -37,20 +84,20 @@
                     <div>{{ eachfeed.action }}</div>
                     </a> </div>
                 </li>
-              </ul>
+              </ul> -->
         </div>
     </div>
 </div> 
       <a style="cursor: pointer;" class="no-margin" (click)="feedsNotification();$event.stopPropagation(); ">
           <img src="assets/css/images/Notifications.png" width="29" height="31" style="vertical-align: middle;">
         </a>
-        <a href="javascript:void(0)" class="calender" [routerLink]="['/publish/calendar']"><div class="cal-date">{{todayDate}}</div></a>
-        <a class="add_new" href="javascript:void(0)" (click)="isPromoPopupOpen = true;addNew()" style="    margin-right: 0px !important;">
+        <a style="cursor: pointer;" class="calender" [routerLink]="['/publish/calendar']"><div class="cal-date">{{todayDate}}</div></a>
+        <a class="add_new" (click)="isPromoPopupOpen = true;addNew()" style="margin-right: 0px !important;cursor: pointer;">
             <img src="assets/css/images/add-now-butt-140-x40.png" alt="" style="object-fit: cover;">
           </a>
         <a (click)="searchCall();" style="cursor: pointer;" class="Search no-margin"><img src="assets/css/images/search-icon1.png" width="29" height="31"></a>
         <!-- <a style="cursor: pointer;" class="calender" [routerLink]="['/publish/calendar']">{{todayDate}}</a> -->
-      <button class="button rounded ripple" (click)="logout();" type="submit">Logout</button>
+      <button class="button rounded ripple" (click)="logout();" type="submit">Log out</button>
     </div>
   </div>
 
@@ -66,11 +113,11 @@
  <h2>Hello Dr. {{ user.name }},
  <span style="font-size: 44px;">What would you to the start on?</span></h2>
 
-  <div class="actions" style="width:95% !important;">
+  <div class="actions home552" style="width:95% !important;">
   <a style="cursor: pointer;" routerLink="/visits/addvisit" class="visit brd-radius-15 xs-bg-white new_add"><img src="assets/images/add-visits-icon.png"><br>Add Visit</a>
   <a (click) = "isSelectPromo = true; isPromoPopupOpen = false" class="promo brd-radius-15 xs-bg-white new_add" style="float: left !important;cursor: pointer;"><img src="assets/images/add-promo-icon.png"><br>Add Promo</a>
   <a (click)="isPromoPopupOpen = false;isSelectAddLeads=true" class="promo brd-radius-15 xs-bg-white new_add" style="float:right !important;cursor: pointer;"><img src="assets/images/lead_icon.png" height="40" width="40"><br>Add Lead</a>
-  <a style="cursor: pointer;" (click) = "isSelectBlog=true; isSelectPromo = false; isPromoPopupOpen = false" class="blog brd-radius-15 xs-bg-white"><img src="assets/images/add-blog-icon.png" align="absmiddle">Start a new Blog</a>
+  <a style="cursor: pointer;" (click) = "isSelectBlog=true; isSelectPromo = false; isPromoPopupOpen = false" class="blog brd-radius-15 xs-bg-white home_new022"><img src="assets/images/add-blog-icon.png" align="absmiddle">Start a new Blog</a>
   
   
   </div> 
@@ -159,12 +206,12 @@
       </div>  
     <!-- Popup -->
   <div class="model model-add_leads bx-shadow" *ngIf="isSearchPopup" style="width: 925px;top:6%;margin-left: -471px;border-radius: 5px;">
-    <a class="close" href="javascript: void(0);" (click)="isSearchPopup = false;searchtext='';">Close</a>
+    <a class="close" style="cursor: pointer;" (click)="isSearchPopup = false;searchtext='';">Close</a>
     <div class="panel" style="height: 520px !important;min-height: inherit;">
         <div class="loader" *ngIf="isStartLoader"></div>
         <div class="panel_box panel_box_search  xs-box-padding ">
             <div class="">
-                <input type="text" class="input search input-h input-full" placeholder="Search by patient details, speciality, query.." [(ngModel)]="searchtext" (ngModelChange)="searchCall(searchtext)">
+                <input type="text" class="input search input-h input-full" placeholder="Search by patient details, speciality, query.." [(ngModel)]="searchtext" (ngModelChange)="searchCall(searchtext)" autofocus>
             </div>
             <div *ngIf="isNoResult" style="margin-top:10px;">No Results Available</div>
             <div  class="search_data">
@@ -318,7 +365,7 @@
       </li>
       <li>
       <label class="labels">Email</label> 
-      <input type="email" class="input" maxlength="40" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+[.]+[a-z]{1,4}$" [formControl]="leadForm.controls['email']" required>
+      <input type="email" class="input" maxlength="40" pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{1,63}$" [formControl]="leadForm.controls['email']" required>
       <span class="required_comments" *ngIf="leadForm.controls['email'].hasError('required') && leadForm.controls['email'].touched">{{email_required_comm}}</span>
       <span class="required_comments" *ngIf="leadForm.controls['email'].hasError('pattern') && leadForm.controls['email'].touched">{{invalid_email_comm}}</span>
       </li>
@@ -404,8 +451,8 @@
         <br>
       
       <div class="actions">
-      <button class="button profile-action ripple" type="submit">Submit</button><br>
-      <button class="button cancel-action" (click)="isSelectAddLeads = false;clearForm()">cancel</button>
+      <button class="button profile-action ripple btn" type="submit">Submit</button>
+      <button class="button cancel-action" (click)="isSelectAddLeads = false;clearForm()" style="margin-top: 1px;margin-left: 10px;">cancel</button>
       </div>
     </form>
       

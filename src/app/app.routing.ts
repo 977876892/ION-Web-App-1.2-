@@ -33,7 +33,7 @@ const appRoutes: Routes = [
   { path: 'analytics/questionsData', component: AnalyticsComponent },
   { path: 'analytics/appointments', component: AnalyticsComponent },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: 'queries/:qId', component: QueriesComponent },
+ // { path: 'queries/:qId', component: QueriesComponent },
   { path: 'promotions/:view', component: PromotionsComponent },
   { path: 'promotions/:view/:id/:avatar/:title', component: PromotionsComponent },
   // { path: 'promotions/:view', component: PromotionsComponent },

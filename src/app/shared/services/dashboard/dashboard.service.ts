@@ -49,8 +49,6 @@ export class DashboardService {
   }
 
   getBlogs(limitStart) {
-    console.log(limitStart);
-
     return this.http.get(API.GET_BLOGS('', '', 1)).map(
       (responseData) => {
         const key = '_body';
@@ -61,6 +59,15 @@ export class DashboardService {
   congartulate(feedid){
      const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
         return this.http.get(API.CONGRATULATE(feedid,currentuser.id)).map(
+      (responseData) => {
+        const key = '_body';
+        return JSON.parse(responseData[key]);
+      },
+    );
+  }
+  congartulated(feedid){
+     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+        return this.http.get(API.CONGRATULATED(feedid,currentuser.id)).map(
       (responseData) => {
         const key = '_body';
         return JSON.parse(responseData[key]);

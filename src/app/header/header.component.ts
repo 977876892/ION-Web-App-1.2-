@@ -77,7 +77,6 @@ export class HeaderComponent implements OnInit {
     }
 }
   ngOnInit() {
-    console.log(localStorage.getItem('user')==null);
     
     if(localStorage.getItem('user')=='' ||localStorage.getItem('user')==null){
     }
@@ -95,9 +94,7 @@ export class HeaderComponent implements OnInit {
     }
   }
   // offClickHandler(event: any) {
-  //     console.log(this.feedsNotificationClick);
   //     if (!this.feedsNotificationClick._emitter.closed) {
-  //       //console.log(this.isFeedsNotification);
   //       if(this.isFeedsNotification){
   //           this.isFeedsNotification=false;
   //       }
@@ -121,8 +118,7 @@ topNotification:any=[];
  getNotificationFeeds() {
   this.dashboardService.getDashboardFeeds().subscribe(
     (notificationResponse: any) => {
-      this.notificationFeedData = notificationResponse.description;
-       console.log( this.notificationFeedData);     
+      this.notificationFeedData = notificationResponse.description;    
     }, (err) => {
       this.isAlertPopup=true;
       this.alertMessage=this.connect_err;
@@ -135,20 +131,18 @@ feedsNotification(){
   this.isFeedsNotification=!this.isFeedsNotification;
   this.getNotificationFeeds();
 }
-searchtext="";  
+searchtext:string="";  
 searchCall(searchtext) {
   PublishComponent.showDraft=false;
   PublishComponent.showIonize=false;
   PublishComponent.showPublished=false;
   PublishComponent.showIonized=false;
   this.isSearchPopup = true;
-  console.log(searchtext);
   if(typeof searchtext!="undefined" && searchtext.length>4)
     {
       this.isStartLoader = true;
       this.searchService.getSearchAllService(searchtext).subscribe(
           (searchTextResponse: any) => {
-              console.log(searchTextResponse);
               this.searchResposne=searchTextResponse.description;
               this.isStartLoader=false;
               this.isNoResult=false;
@@ -166,7 +160,8 @@ searchCall(searchtext) {
           });
     }
         else{
-          if(searchtext.length<4)
+          console.log(searchtext)
+          if(searchtext===undefined||searchtext.length<4)
             {
               this.isNoResult=false;
             }
@@ -184,7 +179,6 @@ searchCall(searchtext) {
     this.isStartLoader = true;
     this.promotionService.getPromotionsData().subscribe(
       (promotionResponse: any) => {
-        console.log(promotionResponse);
         this.promotionsData = promotionResponse;
       }, (err) => {
         this.isStartLoader = false;
@@ -195,8 +189,6 @@ searchCall(searchtext) {
   }
   selectPromo(eachpromotion){
   this.router.navigate(['promotions/promotiondemo',eachpromotion.id,eachpromotion.avatar,eachpromotion.title]);
-  // console.log("promo");
-  // console.log(eachpromotion);
 }
  // upload image
  upload() {
@@ -224,7 +216,6 @@ searchCall(searchtext) {
     
     this.authService.uploadImageService(fd).subscribe(res => {
       // do stuff w/my uploaded file
-      console.log(res);
       
       if(res.description==undefined){
         this.imageUploadAlert = false;
@@ -247,7 +238,6 @@ searchCall(searchtext) {
  uploadImgeDelete(){
   this.imageSrc="";
    this.isShowImgDeleteButt=false;
-  console.log(this.imageSrc);
   this.imageerrorAlert=false;
   this.imageUploadAlert = false;
 }
@@ -302,15 +292,13 @@ calculateAge(dateOfBirth, dateToCalculate) {
                  if (ageMonth < 0 || (ageMonth == 0 && ageDay < 0)) {
                      age =age - 1;
                  }
-                 console.log(age);
                  this.leadForm.patchValue({
                    age:age
                  })
          }
 
  onTypeNumValid(numValue) { 
-  this.numLength=numValue.length; 
-      console.log(numValue);
+  this.numLength=numValue.length;
       if(numValue.length > 10 ){
         this.phoneMinlength=true;
       }
@@ -319,8 +307,6 @@ calculateAge(dateOfBirth, dateToCalculate) {
       }
   }
 addLeads() {
-  console.log(this.leadForm.value);
-  //console.log(this.leadId);
  
  if(this.numLength!=10 && this.numLength!=0)
         {
@@ -331,7 +317,6 @@ addLeads() {
         }
   this.tags="";
  // //this.leadForm.value.id=this.leadId;
- // console.log( this.leadForm.value);
  this.isStartLoader = true;
 
  if(this.leadForm.value.dob!="0000-00-00" && this.leadForm.value.dob!='')
@@ -342,13 +327,11 @@ addLeads() {
  this.leadForm.value.dob=created_date;
  }
  
-//  console.log(this.leadForm.value.ctags);
       if(this.leadForm.value.ctags !==undefined && this.leadForm.value.ctags.length != 0)
       {
           for(let i=0; i<this.leadForm.value.ctags.length; i++)
             {
               // this.tags +=this.leadForm.value.ctags[i].value +",";
-              //  console.log(this.tags);
             if(typeof this.leadForm.value.ctags[i].value != "undefined")
               {
                   this.tags +=this.leadForm.value.ctags[i].value + ',';
@@ -367,7 +350,6 @@ addLeads() {
       if (this.leadForm.valid  &&  !this.phoneMinlength ) {
                 this.leadsService.addLeadService(this.leadForm.value).subscribe(
                     (leadResponse: any) => {
-                      console.log(leadResponse);
                       if(leadResponse.status === 'success' ||leadResponse.status==='ok') {
                         this.isAlertPopup = true;
                         this.alertMessage = 'Lead added successfully.';

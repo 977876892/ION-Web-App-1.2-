@@ -13,7 +13,8 @@
       <div class="login_box bx-shadow">
         <h1 class="heading" >Hello!<br>
           <span style="font-weight: bold;">Enter Login Details</span></h1>
-           <span class="form-error" *ngIf="errorMessage" style="color: #f00">{{errorMessage}}</span>
+           <!-- <span class="form-error" *ngIf="errorMessage" style="color: #f00">{{errorMessage}}</span> -->
+           <span class="form-error" *ngIf="errorMessage" style="color: #f00">Your username or password is incorrect.</span>
           <span class="form-error" *ngIf="errorMessageEmpty" style="color: #f00">{{errorMessageEmpty}}</span>
        
            <form [formGroup]="loginForm" (ngSubmit)="signIn()" novalidate="novalidate">
@@ -47,11 +48,11 @@
             <button (click)="signIn();"  class="btn button button-secondary btn_login no-border rounded ripple" type="submit"><span>Log In</span></button>
           </div>
          <div class="form-filed reset-password"> 
-          <a href="#" class="forgot-password txt-center" routerLink="/forgotpassword">Help, i forgot my login details ></a> 
+          <a href="#" class="forgot-password txt-center" routerLink="/forgotpassword">Help, I forgot my login details ></a> 
           </div>
           <div class="form-filed terms-conditions">
             
-           <a style="cursor:pointer;color: white;" class="forgot-password txt-center" (click)="termsCondition()"><span style="border-bottom: 1px solid white;">privacy policy</span> & <span style="border-bottom: 1px solid white;">terms of service</span></a> 
+           <a style="cursor:pointer;color: white;" class="forgot-password txt-center"><span style="border-bottom: 1px solid white;" (click)="privacyPolicy()"> privacy policy</span> & <span style="border-bottom: 1px solid white;" (click)="termsCondition()">terms of service</span></a> 
           
           </div>
           
@@ -75,14 +76,12 @@
     <a class="close" style="cursor: pointer;" (click)="isAlertPopup = false; isEditLead=false;clearForm();">Close</a>
    
     
-     <h2>Terms & Conditions</h2>
+     <h2>{{heading}}</h2>
     
     <div class="rt-div" style="width: 67%;">
-      <div class="form-section" >
-   
+      <div class="form-section">
       <div class="form-section-top" style="width: 990px;height:800px;overflow:auto;">        
-        <p [innerHTML]="termsdata"></p> 
-      
+        <p [innerHTML]="termsdata" style="font-size: 14px;font-weight: 100;"></p>
       </div>
       
       <div class="actions">

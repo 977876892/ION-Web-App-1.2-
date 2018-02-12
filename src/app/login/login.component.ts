@@ -25,15 +25,12 @@ export class LoginComponent implements OnInit {
     private loginService: AuthserviceService) {}
 
   ngOnInit() {
-   // console.log(window.bota(this.loginForm.value.password));
   }
   // Singn function
   signIn() {
-    console.log(this.loginForm.value)
     if(this.loginForm.value.password == '' && this.loginForm.value.username==''){
       this.errorMessageEmpty = 'Please Enter Username And Password';
       this.errorMessage="";
-      console.log(this.loginForm.value)
     }else{
     this.isStartLoader = true;
     this.loginService.loginUser(this.loginForm.value).subscribe(
@@ -41,9 +38,7 @@ export class LoginComponent implements OnInit {
          if (loginUserResponse.code === '200') {
            this.loginService.getCommonDetails(loginUserResponse.teamid).subscribe(
                 (commonDetails: any) => {
-                  console.log(loginUserResponse);
                   loginUserResponse.groups.split(",");
-                  console.log(commonDetails);
                         // this.isStartLoader = false;
                         localStorage.setItem('user', JSON.stringify({
                         id: loginUserResponse.id,
@@ -57,7 +52,7 @@ export class LoginComponent implements OnInit {
                         aboutme: loginUserResponse.aboutme,
                         role: loginUserResponse.role,
                         profilepic: loginUserResponse.profile_image,
-                        cliniclogo:loginUserResponse.clinic_logo,
+                        cliniclogo:commonDetails.description[0].clinic_logo,
                         analyticId: commonDetails.description[0].ganalytics,
                         username: this.loginForm.value.username,
                         pwd: btoa(this.loginForm.value.password),
@@ -76,7 +71,6 @@ export class LoginComponent implements OnInit {
  
                 })
          }
-         // console.log(loginUserResponse);
           }, (err) => {
             this.isStartLoader = false;
             this.errorMessageEmpty ="";
@@ -88,7 +82,6 @@ export class LoginComponent implements OnInit {
 
   }
   username_field(user){
-    console.log(user);
     if(this.loginForm.value.password == '' && this.loginForm.value.username==''){
       this.errorMessageEmpty = 'Please Enter Username And Password';
       this.errorMessage="";
@@ -97,19 +90,29 @@ export class LoginComponent implements OnInit {
       this.errorMessageEmpty ="";
     }
   }
-termsdata:any=[];  
+termsdata:any="";
+heading:any="";
   termsCondition(){
    
     this.isStartLoader = true;
     return this.loginService.termsandcondition()
     .subscribe(
       (termdataResponse: any) => {
-         // console.log(termdataResponse);
+         this.heading="Terms & Conditions";
          this.isAlertPopup = true;
          this.termsdata=termdataResponse.introtext;
-         console.log(this.termsdata);
          this.isStartLoader = false;
-        // console.log(this.termsdata);
+      }) 
+  }
+    privacyPolicy(){
+    this.isStartLoader = true;
+    return this.loginService.privacyPolicy()
+    .subscribe(
+      (termdataResponse: any) => {
+        this.heading="Privacy Policy";
+         this.isAlertPopup = true;
+         this.termsdata=termdataResponse.introtext;
+         this.isStartLoader = false;
       }) 
   }
 

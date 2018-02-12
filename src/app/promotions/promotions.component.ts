@@ -1,4 +1,4 @@
-import { Component, OnInit,ViewChild} from '@angular/core';
+import { Component, OnInit,ViewChild,HostListener} from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { PromotionsService } from '../shared/services/promotions/promotions.service';
 import { AuthserviceService } from '../shared/services/login/authservice.service';
@@ -63,9 +63,6 @@ export class PromotionsComponent implements OnInit {
         this.promotionId=params.id;
         this.promotionImage=params.avatar;
         this.promotionTitle=params.title;
-        // console.log( this.promotionId);
-        // console.log( this.promotionImage);
-        // console.log( this.promotionTitle);
         this.isPromotionFullView = false;
         this.isPromotionDemo = true;
         this.isSMSPromotion = false;
@@ -83,9 +80,7 @@ export class PromotionsComponent implements OnInit {
   
     if(this.selectedTags == '' || this.phoneNumbers == '')
     {
-      console.log("empty");
       this.submitEnabled=false;
-     
     }
     else{
       this.submitEnabled=true;
@@ -96,7 +91,6 @@ export class PromotionsComponent implements OnInit {
   
   // event trigger function
   onEventChanged(ptype: any) {
-    console.log("ptype:" + ptype);
     this.isStartLoader=true;
     if(ptype === 'smspromotion') {
       this.isPromotionFullView = false;
@@ -114,7 +108,6 @@ export class PromotionsComponent implements OnInit {
   this.isStartLoader = true;
   this.promotionService.getPromotionsData().subscribe(
     (promotionResponse: any) => {
-      console.log(promotionResponse);
       this.promotionsData = promotionResponse;
     }, (err) => {
       this.isStartLoader = false;
@@ -130,9 +123,7 @@ export class PromotionsComponent implements OnInit {
   this.isStartLoader = true;
   this.promotionService.getIonizedBlogs().subscribe(
     (blogResponse: any) => {
-      console.log(blogResponse);
       this.ionizedBlogData = blogResponse.data;
-      console.log(this.ionizedBlogData);
     }, (err) => {
 
     }, () => {
@@ -146,7 +137,6 @@ promotionFull() {
 }
 // promotion demo func
 promotionDemo(eachpromotion) {
-  console.log(eachpromotion);
   this.router.navigate(['promotions/promotiondemo',eachpromotion.id,eachpromotion.avatar,eachpromotion.title]);
 }
 // add promotion
@@ -167,7 +157,6 @@ upload(){
       return false;
     }
     this.isStartLoader = true;
-   // console.log(fileBrowser.files[0]);
     const fd = new FormData();
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
     for(var key=0;key<fileBrowser.files.length;key++)
@@ -186,7 +175,6 @@ upload(){
     fd.append('auth_key', currentuser.auth);
     this.authService.uploadImageService(fd).subscribe(res => {
       // do stuff w/my uploaded file
-      console.log(res.description);
       if(res.description[0].url !== '') {
          res.description.forEach(image=>{
           this.imageSrc.push(image.url);
@@ -235,12 +223,9 @@ upload(){
         this.selectedGroups.push(indx);
         this.smsTags[indx].isSelectedclass = 'selected';
       }
-     console.log(this.selectedGroups);
   }
   deSelectPatientgroups(){
-    console.log("deselect");
     this.notselectTags=false;
-    console.log(this.selectedTags);
      if(this.selectedTags.length==0)
       {
           for(let tags of this.smsTags)
@@ -269,8 +254,6 @@ upload(){
   }
 notselectTags:boolean=false;
   seceltedGroups(){
-    console.log(this.selectedGroups);
-    console.log(this.sendSmsTags);
      if(this.selectedGroups.length == 0 && this.sendSmsTags==''){
         this.notselectTags=true;
         this.isPatientGroups=true;
@@ -287,14 +270,8 @@ notselectTags:boolean=false;
     //this.sendSmsTags=finaltags;
     tags.pop();
     this.selectedTags=tags;
-    console.log(this.selectedTags);
     this.isPatientGroups=false;
       }
-     
-  
-   
-   
-    
   }
   smsText="";
   isAlertPopup=false;
@@ -305,15 +282,12 @@ notselectTags:boolean=false;
           this.isStartLoader=true;
           this.selectedTags=[];
           this.smsText=this.smsText.replace(/&/g, "%26");
-          console.log(this.smsText)
           if(this.sendSmsTags!=''){
          
           this.promotionService.SEND_SMS_USING_TAGS(this.sendSmsTags,this.smsText).subscribe(res => {
            if(this.phoneNumbers!='')
             {
                  this.promotionService.SEND_SMS_USING_PHONE_NUMBERS(this.phoneNumbers,this.smsText).subscribe(res => {
-                      console.log(res);
-                     
                  },(err) => {
                    this.isStartLoader=false;
                     }, () => {
@@ -336,7 +310,6 @@ notselectTags:boolean=false;
       }
         else if(this.phoneNumbers!=''){
                  this.promotionService.SEND_SMS_USING_PHONE_NUMBERS(this.phoneNumbers,this.smsText).subscribe(res => {
-                      console.log(res);
                       this.phoneNumbers="";
                       this.smsText="";
                       this.getSmsTags();
@@ -361,7 +334,6 @@ notselectTags:boolean=false;
              this.showErrorForSms=true;
         }
         else{
-          console.log(this.sendSmsTags);
           this.getMessagesCount(this.sendSmsTags)
             
       //     this.isStartLoader=true;
@@ -372,7 +344,6 @@ notselectTags:boolean=false;
       //      if(this.phoneNumbers!='')
       //       {
       //            this.promotionService.SEND_SMS_USING_PHONE_NUMBERS(this.phoneNumbers,this.smsText).subscribe(res => {
-      //                 console.log(res);
       //            },(err) => {
       //              this.isStartLoader=false;
       //               }, () => {
@@ -393,7 +364,6 @@ notselectTags:boolean=false;
       // }
       //   else if(this.phoneNumbers!=''){
       //            this.promotionService.SEND_SMS_USING_PHONE_NUMBERS(this.phoneNumbers,this.smsText).subscribe(res => {
-      //                 console.log(res);
       //                 this.phoneNumbers="";
       //                 this.smsText="";
       //                 this.getSmsTags();
@@ -415,9 +385,6 @@ notselectTags:boolean=false;
     ionizeThePromotion(){
       var content="";
       const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      // console.log(this.images);
-      //console.log(this.promotionId);
-      //console.log(this.aboutImages);
         if(this.aboutImages=="")
         {
          // content=content+this.promotionTitle+"<br>";
@@ -451,20 +418,13 @@ notselectTags:boolean=false;
             const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
             var someDate = new Date();
             someDate.setDate(someDate.getDate() + 7);
-            //console.log(someDate);
             var dd = someDate.getDate();
             var m = someDate.getMonth();
             var y = someDate.getFullYear();
 
             this.ionizedDate = months[m] +" "+ dd +" "+ y;
             this.doctorName=currentuser.name;
-            console.log(this.promotionId);
-            console.log(content);
-            console.log(this.imageSrc.length)
-            console.log(this.images[0]);
-            console.log(this.promotionTitle);
             this.promotionService.addPromotionService(this.promotionId,content,this.imageSrc[0],this.promotionTitle).subscribe(res => {
-            console.log(res);
             this.isStartLoader=false;
             this.promotionStatus=4;
             this.creadisCount=res.credits;
@@ -482,11 +442,12 @@ notselectTags:boolean=false;
       this.router.navigate(['promotions']);
       this.showRequestIsTaken=!this.showRequestIsTaken;
     }
-    promotionfullviewimg(title){
+    promotionLink='';
+    promotionfullviewimg(promotion){
+     console.log(promotion);
       this.isOpenEditor=true;
-     this.ionizedPromotionTitle=title;
-     console.log(this.ionizedPromotionTitle);
-
+     this.ionizedPromotionTitle=promotion.title;
+     this.promotionLink=promotion.textplain;
     }
     downLoadImage(image){
 
@@ -509,12 +470,9 @@ notselectTags:boolean=false;
         }
       }
      publishThePromotion(promotionblog){
-        console.log(promotionblog);
         this.ionizedPromotionTitle=promotionblog.title;
         const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
-        console.log(currentuser);
-          this.promotionService.updateThePromotion(promotionblog.postid,promotionblog.image.url,promotionblog.title).subscribe(res => {
-            console.log(res);
+          this.promotionService.updateThePromotion(promotionblog.postid,promotionblog.image.url,promotionblog.title,promotionblog.category.categoryid).subscribe(res => {
             this.promotionStatus=1;
             this.alertMessage="Your Promotion Will publish soon..";
             this.isAlertPopup=true;
@@ -532,13 +490,11 @@ notselectTags:boolean=false;
             this.isStartLoader=true;
             const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
             this.authService.getCommonDetails(currentuser.teamid).subscribe(res => {
-              console.log(res);
               //localStorage.setItem('user.smsbalance',res.description[0].smsbalance);
               this.smsBalance=res.description[0].smsbalance;
               if(tags!=''&&tags!=null)
               {
                this.promotionService.getMessagesCount(tags).subscribe(res => {
-                    console.log(res);
                     this.messagesCount=res.count;
                     this.isSendSmspopup=true;
                     },(err) => {
@@ -558,5 +514,16 @@ notselectTags:boolean=false;
             
                
           }
-         
+
+          windowBottom:number;
+           @HostListener("window:scroll", [])
+            onWindowScroll()  {
+                this.windowBottom= window.pageYOffset;
+          }
+        omit_special_char(event) {
+                var k;  
+                k = event.charCode; 
+                console.log(k); //         k = event.keyCode;  (Both can be used)
+                return(k!=60 &&k!=62);
+        }
 }

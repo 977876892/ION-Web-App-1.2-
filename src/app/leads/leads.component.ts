@@ -122,6 +122,18 @@ export class LeadsComponent implements OnInit {
                     tag.isChecked=false;
                 })
                 this.tagsArray=[];
+                this.leadFilterForm.patchValue({
+                  gender:'',
+                  ageFrom: '',
+                  ageTo:'',
+                  includesPhone: '',
+                  includesEmail:'',
+                  sourceLead: '',
+                  sourceQuery: '',
+                  sourceVisit: '',
+                  source:'',
+                  tags: ''
+                });
             }
         }
     }
@@ -142,7 +154,6 @@ export class LeadsComponent implements OnInit {
   }
   leadtagsSuggestion(event: any) {
   if (this.editcontainer && !this.editcontainer.nativeElement.contains(event.target)) {
-    console.log(this.editcontainer);
     this.pageItems.forEach((eachData) => {
      eachData.isClickOnDottedLine = false;
    });
@@ -155,12 +166,9 @@ export class LeadsComponent implements OnInit {
         //this.tagsArray.push(tag.title);
       } else {
         tag.isChecked=false;
-       // console.log(this.deepIndexOf(this.tagsArray, tag));
        // const index = this.deepIndexOf(this.tagsArray, tag.title);
-        // console.log(index);
        // this.tagsArray.splice(index,1);
       }
-      //console.log(this.tagsArray);
      // this.leadFilterForm.controls.tags=tagsArray;
   }
   deepIndexOf(arr, obj) {
@@ -176,7 +184,6 @@ getLeads() {
   this.setPage(this.page);
   // this.leadsService.getLeadsListService().subscribe(
   //   (leadsResponse: any) => {
-  //     console.log(leadsResponse);
   //     this.leadsData = leadsResponse.description;
   //      this.setPage(1);
   //   }, (err) => {
@@ -190,10 +197,12 @@ getLeads() {
 }
 
 // add lead call
-
+addLeadStatus="";
 addLeads() {
- // console.log(this.leadForm.value);
- // console.log(this.leadId);
+  if(this.leadForm.value.firstname=='')
+    {
+      this.firstnameError=true;
+    }
  if(this.numLength!=10 && this.numLength!=0)
         {
            this.phoneMinlength=true;
@@ -203,7 +212,6 @@ addLeads() {
         }
  this.tags="";
  this.leadForm.value.id=this.leadId;
- console.log( this.leadForm.value);
  this.isStartLoader = true;
  if(this.leadForm.value.dob!="0000-00-00" && this.leadForm.value.dob!='')
   {
@@ -213,13 +221,11 @@ addLeads() {
       this.leadForm.value.dob=created_date;
   }
  
- console.log(this.leadForm.value.ctags);
       if(this.leadForm.value.ctags.length != 0)
       {
           for(let i=0; i<this.leadForm.value.ctags.length; i++)
             {
               // this.tags +=this.leadForm.value.ctags[i].value +",";
-              //  console.log(this.tags);
             if(typeof this.leadForm.value.ctags[i].value != "undefined")
               {
                   this.tags +=this.leadForm.value.ctags[i].value + ',';
@@ -232,7 +238,6 @@ addLeads() {
       }
   this.leadForm.value.ctags=this.tags;
    this.leadForm.value.image = this.imageSrc;
-  // console.log(this.leadForm.value);
  if(this.isAddLead)
   {
       if(this.leadForm.value.sex=='')    
@@ -245,7 +250,14 @@ addLeads() {
                         this.isAlertPopup = true;
                         this.alertMessage = 'Lead added successfully.';
                           this.isAddLead = false;
+                          this.addLeadStatus=leadResponse.status;
                           //this.getLeads();
+                      }
+                      else{
+                        this.isAlertPopup = true;
+                        this.alertMessage = leadResponse.info;
+                        this.isAddLead = false;
+                        this.addLeadStatus=leadResponse.status;
                       }
                     }, (err) => {
                       this.isAlertPopupError=true;
@@ -265,7 +277,6 @@ addLeads() {
           if (this.leadForm.valid &&  !this.phoneMinlength ) {
               this.leadsService.updateLeadService(this.leadForm.value).subscribe(
                   (leadResponse: any) => {
-                  // console.log(leadResponse);
                     if(leadResponse.status === 'ok') {
                       this.isAlertPopup = true;
                       this.alertMessage = 'Lead updated successfully.';
@@ -281,15 +292,13 @@ addLeads() {
                     this.isStartLoader = false;
                     this.clearForm();
                   });
-                  // console.log("update lead");
           } else {
             this.validateAllFormFields(this.leadForm); //{7}
           }
   }
 }
 onTypeNumValid(numValue) { 
-this.numLength=numValue.length; 
-    console.log(numValue);
+this.numLength=numValue.length;
     if(numValue.length > 10 ){
       this.phoneMinlength=true;
     }
@@ -338,7 +347,6 @@ upload() {
     
     this.authService.uploadImageService(fd).subscribe(res => {
       // do stuff w/my uploaded file
-      console.log(res);
       
       if(res.description==undefined){
         this.imageUploadAlert = false;
@@ -361,13 +369,13 @@ upload() {
 uploadImgeDelete(){
   this.imageSrc="";
    this.isShowImgDeleteButt=false;
-  console.log(this.imageSrc);
   this.imageerrorAlert=false;
   this.imageUploadAlert = false;
 }
 
 clearForm() {
   this.imageSrc='';
+  this.firstnameError=false;
   this.leadForm.reset();
   this.isShowImgDeleteButt=false;
   this.gender[0].checked=true;
@@ -402,7 +410,6 @@ clearForm() {
         this.limitstart=(page-1)*10;
         this.limit=10;
         this.pageItems=[];
-        console.log(this.leadFilterForm);
         if(this.leadFilterForm.value.ageFrom!='' && this.leadFilterForm.value.ageFrom!=null)
           {
             this.leadFilterForm.value.age=this.leadFilterForm.value.ageFrom+"-"+this.leadFilterForm.value.ageTo;
@@ -420,7 +427,6 @@ clearForm() {
                   }
                   else{
                       this.showNoleadsAvailable=false;
-                      console.log(this.leadcount);
                       this.pageItems=leadsResponse.description;
                       for(let i = 0; i < this.pageItems.length; i++) {
                         this.pageItems[i].tagArr=[];
@@ -464,19 +470,13 @@ clearForm() {
 // edit lead function
 
 editLeadFunction(editLead){
-  console.log(editLead);
   this.leadtags=[];
   this.leadId=editLead.id;
   this.leadForm.value.id=editLead.id;
   this.imageSrc=editLead.image;
-  console.log(this.imageSrc);
   this.isEditLead=true;
-  // console.log(editLead.leadsTags.split(","));
-  // this.leadForm.value.ctags=["venkat"];
   this.leadtags = editLead.leadsTags.split(',');
-  console.log(this.leadtags);
   this.leadtags.forEach((tag,key)=>{
-    console.log(tag);
     if(tag=='')
       {
         this.leadtags.splice(key,1);
@@ -545,7 +545,6 @@ dobSelected(dob){
                 if (ageMonth < 0 || (ageMonth == 0 && ageDay < 0)) {
                     age =age - 1;
                 }
-                console.log(age);
                 this.leadForm.patchValue({
                   age:age
                 })
@@ -565,11 +564,9 @@ autoComplete=[];
     this.leadsService.getLeadTags().subscribe(res => {
         this.leadtagsForFilter=res.description;
         //this.autoComplete=res.description.splice(0,1);
-        //console.log(this.autoComplete);
          res.description.forEach(element => {
             this.autoComplete.push(element.title);
           });
-       // console.log(this.leadtagsForFilter);
       },(err) => {
       }, () => {
         this.isStartLoader = false;
@@ -581,7 +578,6 @@ autoComplete=[];
   }
   // select patient group
   selectPatientGroup(indx) {
-   // console.log(indx);
     if(this.leadtagsForFilter[indx].isSelectedclass == 'selected') {
       this.leadtagsForFilter[indx].isSelectedclass = '';
     }else {
@@ -590,10 +586,8 @@ autoComplete=[];
   }
   isApplyFilter=false;
     applyFilter(){
-      console.log(this.isResetForm);
       // if(this.isResetForm)
       //   {
-      //     console.log("if");
       //     this.clearFilterForm();
       //     this.isApplyFilter=false;
       //     this.page=1;
@@ -606,7 +600,6 @@ autoComplete=[];
                 this.tagsArray.push(tag.title);
               }
           })
-          console.log("else");
              this.isApplyFilter=true;
       this.leadFilterForm.value.source='';
       //this.leadFilterForm.value.includesEmail='';
@@ -645,7 +638,6 @@ autoComplete=[];
    
       if(this.tagsArray.length!=0)
         {
-          console.log(this.tagsArray);
                 for(let i=0;i<this.tagsArray.length;i++)
                 {
                   if(i==0)
@@ -663,8 +655,7 @@ autoComplete=[];
             else{
                this.leadFilterForm.value.tags='';
             }
-            console.log(this.leadFilterForm.value);
-                this.leadFilterResetForm.patchValue({
+              this.leadFilterResetForm.patchValue({
               gender:this.leadFilterForm.value.gender,
               ageFrom: this.leadFilterForm.value.ageFrom,
               ageTo:this.leadFilterForm.value.ageTo,
@@ -674,13 +665,10 @@ autoComplete=[];
               sourceQuery: this.leadFilterForm.value.sourceQuery,
               sourceVisit: this.leadFilterForm.value.sourceVisit,
               source:this.leadFilterForm.value.source,
-            })  
-    //console.log(this.tagsArray);
-
+            })
             this.page=1;
             this.getLeads();
       // this.leadsService.filterLeads(this.leadFilterForm).subscribe(res => {
-      //  console.log(res);
       //   // this.leadtagsForFilter=res.description;
       // },(err) => {
       // }, () => {
@@ -712,7 +700,6 @@ autoComplete=[];
     }
     ids:String;
     deleteSelectedLeads(){
-     console.log("delete");
       this.isDeleteAlertPopup=true;
       this.selectedIds.forEach((item, index) => {
         if(index==0)
@@ -752,7 +739,6 @@ autoComplete=[];
     selectedLeadUsingId(lead) {
        for(let item of this.pageItems){
              if (item.id === lead.id) {
-              console.log(lead);
               if(item.isChecked)
                 {
                     item.isChecked=true;
@@ -771,11 +757,9 @@ autoComplete=[];
                 }
             }
           }
-          console.log(this.selectedIds);
     }
      // add to groups
      addToGroups() {
-      //console.log(this.selectedLeadArr);
       this.isPatientGroups = true;
     }  
     clearFilterForm(){
@@ -818,8 +802,6 @@ autoComplete=[];
    })
 }
     cancelTheFilter(){
-      console.log(this.isApplyFilter);
-      
       if(!this.isApplyFilter)
         {
             this.leadtagsForFilter.forEach(tag=>{
@@ -844,8 +826,6 @@ autoComplete=[];
                         sourceVisit: this.leadFilterResetForm.value.sourceVisit,
                         source:this.leadFilterResetForm.value.source,
                       })
-                  console.log(this.leadtagsForFilter);
-                  console.log(this.tagsArray);
                   this.leadtagsForFilter.forEach(tag=>{
                     this.tagsArray.forEach(selected=>{
                       if(tag.title===selected)
@@ -868,7 +848,6 @@ autoComplete=[];
                         sourceVisit: this.leadFilterResetForm.value.sourceVisit,
                         source:this.leadFilterResetForm.value.source,
                       })
-                    //  console.log("true");
                      this.leadtagsForFilter.forEach(tag=>{
                       this.tagsArray.forEach(selected=>{
                         if(tag.title!==selected)
@@ -898,7 +877,6 @@ autoComplete=[];
           }
           this.isPatientGroups=false;
           this.leadsService.addTagsToContacts(filaltags,finalids).subscribe(res => {
-                  console.log(res);
                    this.isStartLoader=false;
                   this.isCheckBoxChecked = false;
                   this.selectedIds=[];
@@ -913,8 +891,6 @@ autoComplete=[];
           }, () => {
             this.isStartLoader = false;
           })
-          // console.log(finalids);
-          // console.log(filaltags);
     }
     deSeletePatientGroups(){
          for(let tag of this.leadtagsForFilter){
@@ -945,11 +921,27 @@ autoComplete=[];
   this.isStartLoader=false;
 }
 clickedOnDottedLine(indx) {
-  console.log(indx);
   if(this.pageItems[indx].isClickOnDottedLine) {
     this.pageItems[indx].isClickOnDottedLine = false;
   }else {
    this.pageItems[indx].isClickOnDottedLine = true;
   }
 }
+firstnameError=false;
+firstnameChange(value){
+  console.log(value);
+  if(value==''|| value.length<3)
+    {
+      this.firstnameError=true;
+    }
+    else{
+      this.firstnameError=false;
+    }
+}
+ windowBottom:number;
+           @HostListener("window:scroll", [])
+            onWindowScroll()  {
+              if(!this.isDeleteAlertPopup)
+                this.windowBottom= window.pageYOffset;
+          }
 }

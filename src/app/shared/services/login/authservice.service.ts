@@ -56,9 +56,16 @@ export class AuthserviceService {
   termsandcondition(){
     return this.http.get(API.TERM_CONDITIONS())
     .map((responseData)=>{
-      // console.log(responseData);
       const key = '_body';
       return JSON.parse(responseData[key]);
     });
   }
+   privacyPolicy(){
+    return this.http.get(API.PRIVACY_POLICY())
+    .map((responseData)=>{
+      const key = '_body';
+      return JSON.parse(responseData[key]);
+    });
+  }
+
 }

@@ -24,7 +24,6 @@ addLeadService(leadObj) {
   const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
   leadObj.uid = currentuser.teamid;
   //leadObj.ctags = 'head';
-  console.log(leadObj);
   return this.http.get(API.ADD_LEAD(leadObj)).map(
     (responseData) => {
       const key = '_body';
@@ -35,7 +34,6 @@ addLeadService(leadObj) {
         const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
         leadObj.uid = currentuser.teamid;
        // leadObj.ctags = 'head';
-       console.log(leadObj);
         return this.http.put(API.UPDATE_LEAD(leadObj,currentuser.username,currentuser.pwd),'').map(
           (responseData) => {
             const key = '_body';
@@ -45,7 +43,6 @@ addLeadService(leadObj) {
   }
 // filter leads service
 filterLeads(filterObj) {
-  console.log(filterObj.vlaue);
   const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
   return this.http.get(API.GET_LEADS_BY_FILTER(currentuser.id, currentuser.username, currentuser.pwd,filterObj.value)).map(
     (responseData) => {
@@ -55,7 +52,6 @@ filterLeads(filterObj) {
 }
   //down load leads
   downloadLeads() {
-  //console.log(filterObj.vlaue);
   const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
   return this.http.get(API.GET_DOWNLOAD_LEADS(currentuser.id,currentuser.username, currentuser.pwd)).map(
     (responseData) => {
@@ -65,7 +61,6 @@ filterLeads(filterObj) {
 }
   //delete leads
   deleteLeads(ids){
-    //console.log(filterObj.vlaue);
   const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
   return this.http.get(API.DELETE_LEADS(currentuser.id,currentuser.username, currentuser.pwd,ids)).map(
     (responseData) => {
@@ -82,7 +77,6 @@ filterLeads(filterObj) {
           const key = '_body';
           return JSON.parse(responseData[key]);
         });
-    
   }
   getLeadsListServiceByLimit(start,limit,filterObj){
     if(filterObj.value.tags==null)

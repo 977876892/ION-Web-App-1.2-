@@ -169,7 +169,7 @@
               </div>
 
             <div class="btn_actions">
-                <button class="button btn-apply" type="submit" (click)="applyFilter();isAllFilters = false;">Apply Filter</button> 
+                <button class="button btn-apply btn" type="submit" (click)="applyFilter();isAllFilters = false;">Apply Filter</button> 
                 <button class="button btn-cancel" (click)="isAllFilters = false;cancelTheFilter();">Cancel</button>
                 <button class="button btn-cancel" (click)="resetTheform();">Reset</button>
             </div>
@@ -201,7 +201,7 @@
 	<!-- <label>
 	<input name="1" value="true" id="1" class="checkbox" type="checkbox">
 	<span>&nbsp;</span>
-    </label> -->
+    </label> --> 
 	</th>
 	<th class="t-avatar">avatar</th>
     <th>Name</th>
@@ -230,7 +230,7 @@
     </td>
     <td [class.seleted]="eachdata.isChecked" *ngIf="eachdata.image!=''&&eachdata.image!='undefined'"><img src="{{eachdata.image}}" style="width: 34px;height: 34px;border-radius: 50%;object-fit: cover;"></td>
     <td [class.seleted]="eachdata.isChecked"  *ngIf="eachdata.image==''||eachdata.image=='undefined'"><span class="avatar avatar-r" style="margin: inherit !important;">{{ eachdata.imgTag }}</span></td>
-    <td class="v-name " [class.seleted]="eachdata.isChecked">{{ eachdata.firstname }}</td>
+    <td class="v-name" [class.seleted]="eachdata.isChecked" title="{{ eachdata.firstname }}">{{ eachdata.firstname }}</td>
      <td class="v-sex " [class.seleted]="eachdata.isChecked">{{ eachdata.sex }}</td>
     <td class="v-age " [class.seleted]="eachdata.isChecked">{{ eachdata.age }}</td>
     <td class="v-mobile " [class.seleted]="eachdata.isChecked">{{ eachdata.mobile }}</td>
@@ -312,9 +312,9 @@
   <!-- Popup -->
   <div class="model model-add_leads bx-shadow" *ngIf="isAddLead || isEditLead"> 
       <div class="loader" *ngIf="isStartLoader"></div>
-    <a class="close" style="cursor: pointer;" (click)="isAddLead = false; isEditLead=false;clearForm();">Close</a>
+    <a class="close" style="cursor: pointer;" (click)="isAddLead = false; isEditLead=false;clearForm();firstnameError=false;">Close</a>
    
-     <div class="model-content">
+     <div class="model-content" style="padding:2px 20px 2px 20px;">
      <h2 *ngIf="isAddLead">Add patient Details</h2>
      <h2 *ngIf="isEditLead">Edit patient Details</h2>
     <div class="lt-div" style="margin: 0px 3% 0px 0px;">
@@ -356,10 +356,10 @@
       <li> 
       
       <label class="labels">First name</label>
-      <input type="text" autofocus class="input" minlength="3" maxlength="40" pattern="\S.*\S" [formControl]="leadForm.controls['firstname']" tabindex="1" required>
-      <span class="required_comments" *ngIf="leadForm.controls['firstname'].hasError('required') && leadForm.controls['firstname'].touched">{{f_name_req_comm}}</span>
-      <span class="required_comments" *ngIf="leadForm.controls['firstname'].hasError('pattern') && leadForm.controls['firstname'].touched">{{spaceComment}}</span>
-      <span class="required_comments" *ngIf="leadForm.controls['firstname'].hasError('minlength') && leadForm.controls['firstname'].touched">{{f_name_length_comm}}</span>
+      <input type="text" autofocus class="input" minlength="3" maxlength="40" pattern="\S.*\S" [formControl]="leadForm.controls['firstname']" tabindex="1" required (ngModelChange)="firstnameChange(firstname.value)" #firstname>
+      <span class="required_comments" *ngIf="firstnameError && leadForm.controls['firstname'].hasError('required') && leadForm.controls['firstname'].touched">{{f_name_req_comm}}</span>
+      <span class="required_comments" *ngIf="firstnameError && leadForm.controls['firstname'].hasError('pattern') && leadForm.controls['firstname'].touched">{{spaceComment}}</span>
+      <span class="required_comments" *ngIf="firstnameError && leadForm.controls['firstname'].hasError('minlength') && leadForm.controls['firstname'].touched">{{f_name_length_comm}}</span>
       </li>
       <li>
       <label class="labels">Email</label> 
@@ -450,7 +450,7 @@
         <br>
       
       <div class="actions">
-      <button class="button profile-action ripple" type="submit" tabindex="12">Submit</button>
+      <button class="button profile-action ripple btn" type="submit" tabindex="12">Submit</button>
       <button class="button cancel-action" (click)="isAddLead = false;isEditLead=false;clearForm();" tabindex="13" style="margin-top: 1px;margin-left: 10px;">cancel</button>
       </div>
     </form>
@@ -509,7 +509,8 @@
                 <div class="model-content">
                  <p>{{ alertMessage }}</p>           
                 <div class="btn_actions">
-                  <div class="button btn-ok" (click)="getLeads(); isAlertPopup = false;">ok</div>
+                  <div class="button btn-ok" *ngIf="addLeadStatus!='error'"(click)="getLeads(); isAlertPopup = false;addLeadStatus=''">ok</div>
+                  <div class="button btn-ok" *ngIf="addLeadStatus=='error'" (click)=" isAlertPopup = false;addLeadStatus=''">ok</div>
                  <!--   <div class="button btn-dismiss" (click)="isAlertPopup = false;">cancel</div> --> 
               
                   </div>
@@ -517,11 +518,11 @@
      </div>
 
       <!-- delete yes or no popup -->
-      <div class="model model-alerts" *ngIf="isDeleteAlertPopup" style="border-radius: 10px;box-shadow: 0 0 5px #777;"> 
+      <div class="model model-alerts" *ngIf="isDeleteAlertPopup" style="border-radius: 10px;box-shadow: 0 0 5px #777;" [style.margin-top.px]="windowBottom"> 
           <!-- <a class="close" href="#">Close</a> -->
           
           <div class="model-content">
-           <p>Are You Want To Delete The Leads?</p>           
+           <p>Are You Want To Delete The Lead(s)?</p>           
           <div class="btn_actions">
             <div class="button btn-ok" (click)="deleteAlertPopup()">Yes</div>
             <div class="button btn-ok" (click)="isDeleteAlertPopup=false;">No</div>

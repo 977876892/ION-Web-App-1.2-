@@ -25,14 +25,16 @@ export class PublishComponent implements OnInit {
   today=new Date();
   //stopDates=this.today.getFullYear()+"-"+(this.today.getMonth()+1)+"-"+this.today.getDate();
   stopDates=this.format(this.today, ['YYYY-MM-DD']);
+  stopDatesForIonize=this.format(this.today.setDate(this.today.getDate() + 7), ['YYYY-MM-DD']);
   isStartLoader;
   isPageStartLoader;
+  bigSizeImg:any=[];
   publishedData: any = [];
   pstatus: any = 1;
   publishType: any = 'publish';
   blogViewData: any;
   isBlogDraft: boolean = false;
-  isIonizedBlog: boolean = false;
+  isIonizingBlog: boolean = false;
   showRequestIsTaken: boolean = false;
   imageerrorAlert:boolean=false;
   isAlertPopuperror:boolean=false;
@@ -116,7 +118,9 @@ export class PublishComponent implements OnInit {
   });
   objectKeys = Object.keys;
   showNoBlogsAvailable=false;
-  
+  currentuser=localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+  loginUserGroupId=this.currentuser.userGroup;
+  loginUser=this.currentuser.id;//login user id for blog credentials.
   constructor(private router: Router,
     private publishService: PublishService,
     private authService: AuthserviceService,
@@ -160,12 +164,13 @@ export class PublishComponent implements OnInit {
       //this.getBlogTypes();
        this.publishService.getBlogTypes().subscribe(
     (blogTypes: any) => {
-      console.log(blogTypes);
       this.blogTypes=blogTypes;
     }, (err) => {
 
     }, () => {
-      this.blogTypes.forEach((btype, index) =>{
+      if(this.blogTypes.length>0)
+        {
+             this.blogTypes.forEach((btype, index) =>{
             if(index==0)
              {
                 btype.selected=true;
@@ -174,6 +179,28 @@ export class PublishComponent implements OnInit {
                btype.selected=false;
             }
             this.route.params.forEach((params: Params) => {
+              if (params.isnewpost !== '' && params.isnewpost !== undefined) {
+                if(params.isnewpost == 'selecttopic') {
+                  this.isCalendarView = false;
+                  this.pstatus = 5;
+                  this.publishType = 'publish';
+                  this.getPublishedBlogs(0,20); 
+                  this.startNewBlogWithTopic();
+                }else if(params.isnewpost == 'newpost') {
+        
+                  this.isCalendarView = false;
+                  this.pstatus = 5;
+                  this.publishType = 'publish';
+                  this.getPublishedBlogs(0,20);
+                  this.startNewBogWithOutTopic();
+                }
+              }
+            }); 
+      })
+        }
+
+    else{
+       this.route.params.forEach((params: Params) => {
               if (params.isnewpost !== '' && params.isnewpost !== undefined) {
                 if(params.isnewpost == 'selecttopic') {
                   this.isCalendarView = false;
@@ -189,8 +216,8 @@ export class PublishComponent implements OnInit {
                   this.startNewBogWithOutTopic();
                 }
               }
-            }); 
-      })
+            });
+    }
     });
       // setTimeout(() =>{
       //   this.route.params.forEach((params: Params) => {
@@ -214,7 +241,6 @@ export class PublishComponent implements OnInit {
       // },3000)
       
       this.currentLoginUser=localStorage? JSON.parse(localStorage.getItem('user')) : 0;
-      console.log(this.currentLoginUser);
       this.blogCount=localStorage? JSON.parse(localStorage.getItem('blogs')) : 0;
       if(this.router.url == '/publish/calendar') {
         this.blogCalendarCall();
@@ -264,6 +290,12 @@ this.editorImageoptions = {
                 charCounterCount: true,
                 key: 'YC-9A-8nrssD5vn==',
                 toolbarButtons: ['fullscreen', 'undo', 'redo', '|', 'bold', 'italic', 'underline', '|', 'formatOL', 'formatUL', 'align', 'outdent', 'indent', 'quote', '-', 'paragraphFormat', 'fontFamily', 'fontSize', 'color', 'insertLink', 'insertImage', 'insertVideo', 'insertTable', '|', 'spellChecker'],
+                 paragraphFormat: {
+                        N: 'Normal',
+                        H1: 'Heading 1',
+                        H2: 'Heading 2'
+                      },
+                //paragraphMultipleStyles: false,
                 // Set the image upload parameter.
                 //imageUploadParam: 'image_param',
         
@@ -342,7 +374,6 @@ this.editorImageoptions = {
                         if (error.code == 1) { 
                            console.log(1);
                          }
-                         
                         // No link in upload response.
                         else if (error.code == 2) { 
                            console.log(2);
@@ -377,7 +408,6 @@ this.editorImageoptions = {
                       },
                       'froalaEditor.video.inserted': function (e, editor, $video) {
                               var videoSource = $video.contents().get(0).src;
-                              console.log($video.contents());
                               //$video.html('<video src="'+videoSource+'" style="width: 600px;" controls="" class="fr-draggable">Your browser does not support HTML5 video.</video>');
                               $video.html('<iframe width="640" height="360" src="'+videoSource+'" frameborder="0" allowfullscreen=""></iframe>');
                           }
@@ -400,7 +430,6 @@ this.editorImageoptions = {
       let windowBottom = windowHeight + window.pageYOffset;
       if (Math.ceil(windowBottom) >= docHeight) {
         status = 'bottom reached!';
-        console.log(this.totalrecordLength +">"+ this.currentRecordCount);
         if (this.totalrecordLength > this.currentRecordCount) {
           this.startsFrom = this.startsFrom + 20;
           this.endTo = this.endTo + 20;
@@ -408,11 +437,8 @@ this.editorImageoptions = {
           this.getPublishedBlogs(this.startsFrom, this.endTo);
         }
       }
-      //  console.log(windowHeight);
-      //  console.log(window.pageYOffset);
       // this.windowBottom=(windowHeight + window.pageYOffset)-880;
-       //console.log(windowHeight + window.pageYOffset);
-       if(!this.isEditorForEditThePublish && !this.isEditorForEditTheDraft && !this.isEditorForEditTheOnline && !this.isBlogDraft && !this.isIonizedBlog && !this.isPublishedBlog && !this.isIonizeNow && !this.isPublishNow)
+       if(!this.isEditorForEditThePublish && !this.isEditorForEditTheDraft && !this.isEditorForEditTheOnline && !this.isBlogDraft && !this.isIonizingBlog && !this.isPublishedBlog && !this.isIonizeNow && !this.isPublishNow)
              {
                //this.windowBottom=(windowHeight + window.pageYOffset)-650;
                this.windowBottom= window.pageYOffset;
@@ -422,18 +448,14 @@ this.editorImageoptions = {
        }
     }
   };
-  uploadTextEditor() {
-    console.log(this.formEditor.value);
-  }
+  // uploadTextEditor() {
+  // }
   // upload image
 uploadCoverImage() {
-  console.log("upload");
    this.isPageStartLoader=false;
   const fileBrowser = this.fileInput.nativeElement;
-  console.log(fileBrowser.files.length);
 
   // fileBrowser.files.FileList.forEach(file=>{
-  //     console.log(file);
   // })
   if (fileBrowser.files && fileBrowser.files[0]) {
   if(fileBrowser.files[0].size/1024/1024 > 9) {
@@ -448,15 +470,19 @@ uploadCoverImage() {
   this.imageerrorAlert=false;
   this.imageUploadAlert = false;
   // if (fileBrowser.files && fileBrowser.files[0]) {
-   // console.log(fileBrowser.files[0]);
     const fd = new FormData();
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
     for(var key=0;key<fileBrowser.files.length;key++)
      {
-        if(key==0)
-          fd.append('file', fileBrowser.files[key]);
-       else{
-         fd.append('file'+key, fileBrowser.files[key]);
+       if(fileBrowser.files[key].size/1024/1024 > 9){
+        this.imageUploadAlert = false; 
+        this.bigSizeImg.push(fileBrowser.files[key].name + "  size can not exceed 8MB.");
+       }else{
+            if(key==0)
+            fd.append('file', fileBrowser.files[key]);
+            else{
+              fd.append('file'+key, fileBrowser.files[key]);
+            }
        }
 
      }
@@ -470,7 +496,6 @@ uploadCoverImage() {
 
     this.authService.uploadImageService(fd).subscribe(res => {
       // do stuff w/my uploaded file
-      console.log(res);
       if(res.description==undefined){
         this.imageUploadAlert = false;
         this.imageerrorAlert=true;
@@ -502,7 +527,6 @@ getPublishedBlogs(startfrom, limitto) {
   this.showNoBlogsAvailable=false;
   this.publishService.getAllPublishMessages(this.pstatus, startfrom, limitto).subscribe(
     (publishResponse: any) => {
-      console.log(publishResponse);
       this.publishedData = publishResponse.data;
       if(this.publishedData.length==0)
         {
@@ -551,9 +575,6 @@ getBlogDetailView(bid, viewType) {
       if(this.blogTypes.length>0)
       {
         this.blogTypes.forEach(category=>{
-          console.log(category.id);
-          console.log(blogResponse.category.categoryid);
-          console.log(category.id==blogResponse.category.categoryid);
           if(category.id==blogResponse.category.categoryid)
             {
                   category.selected=true;
@@ -564,7 +585,6 @@ getBlogDetailView(bid, viewType) {
         })
       }
        this.blogViewData = blogResponse;
-       console.log(this.blogViewData);
       if(this.blogViewData.publish_up=='0000-00-00 00:00:00')
         {
             this.createdDate=''
@@ -586,23 +606,23 @@ getBlogDetailView(bid, viewType) {
           }
        this.blogViewData.text=this.santizer.bypassSecurityTrustHtml(this.blogViewData.text);
        if(viewType == 'draft') {
-          this.isIonizedBlog = false;
+          this.isIonizingBlog = false;
           this.isBlogDraft = true;
           this.isPublishedBlog=false;
         } else
         if(viewType == 'publish') {
           this.isBlogDraft = false;
-          this.isIonizedBlog = true;
+          this.isIonizingBlog = true;
           this.isPublishedBlog=false;
         } else {
           this.isPublishedBlog=true;
            this.isBlogDraft = false;
-          this.isIonizedBlog = false;
+          this.isIonizingBlog = false;
         }
     }, (err) => {
       this.isPageStartLoader = false;
       this.isStartLoader=false;
-      this.isIonizedBlog=false;
+      this.isIonizingBlog=false;
       this.isAlertPopuperror=true;
       PublishComponent.showIonize=false;
       PublishComponent.showPublished=false;
@@ -625,7 +645,6 @@ getBlogComments(bid) {
   //this.isStartLoader = true;
   this.publishService.getBlogCommentsService(bid).subscribe(
     (commentsResponse: any) => {
-      console.log(commentsResponse);
       this.blogCommentsData = commentsResponse.description;
     }, (err) => {
 
@@ -639,7 +658,7 @@ showCommentError=false;
 showCommentErrorMsg="";
 addBlogComment(bid, comment) {
   var comment=comment.trim();
-
+  var images="";
   if(typeof comment=="undefined")
     {
       comment="";
@@ -647,17 +666,15 @@ addBlogComment(bid, comment) {
   if(this.imageSrc.length>0)
     {
       this.imageSrc.forEach((image,index)=>{
-              comment=comment+'<img src="'+image+'"/>';
+        images=images+image+",";
+              //comment=comment+'<img src="'+image+'"/>';
       })
     }
-  console.log(comment);
-  console.log(bid);
-  if(comment!="")
+  if(comment!=""||images!='')
     {
         this.isLoaderForUpdateBlog = true;
-        this.publishService.addBlogCommentsService(bid, comment).subscribe(
+        this.publishService.addBlogCommentsService(bid, comment,images).subscribe(
           (blogResponse: any) => {
-            console.log(blogResponse);
             this.blogCommentsData = blogResponse.data;
             this.getBlogComments(bid);
             this.imageSrc=[];
@@ -714,7 +731,6 @@ prevMonth(){
   var pssed_year=this.format(this.dateStore,['MM/YYYY']);
    var month_count=this.format(this.dateStore,['YYYY-MM']);
   //var month=this.dateStore.getMonth()+1;
-  //console.log(month);
   //var year=this.dateStore.getFullYear();
   this.getCalendarEventsByMonth(pssed_year,this.dateStore);
     this.getBlogCountInCalendar(month_count);
@@ -745,9 +761,6 @@ nextMonth(){
   
   // var str_month='';
   this.showDisplayMonthAndYear=this.format(this.dateStore,['MMMM YYYY']);
-  
-  //console.log(month < 10);
-
   this.getBlogCountInCalendar(month_count);
   this.getCalendarEventsByMonth(pssed_year,this.dateStore);
 
@@ -772,15 +785,13 @@ getCalendarEventsByMonth(month,defaultdate) {
   PublishComponent.showIonize=false;
   PublishComponent.showPublished=false;
   PublishComponent.showIonized=false;
-  console.log(defaultdate);
-  console.log(month);
   this.showCalendar=false;
   this.isStartLoader = true;
   let calendarResponse: any = [];
   this.calendarEventsData=[];
   this.publishService.getPublishCalendarByMonthService(month).subscribe(
     (calResponse: any) => {
-      console.log(calResponse[0]);
+      console.log(calResponse);
       if(calResponse[0]==null)
         {
             calendarResponse =[];
@@ -794,12 +805,11 @@ getCalendarEventsByMonth(month,defaultdate) {
     }, () => {
       
       calendarResponse.forEach((resdata) => {
-      
+      var time=this.format(resdata.publish_up,['hh:mm A']);
       var tempObj = {"4":"publish_cale_status publish_s_ionizing","3":"publish_cale_status publish_s_draft","2":"publish_cale_status publish_s_Online","1":"publish_cale_status publish_s_Online","0":"publish_cale_status publish_s_ionized"};
        
-          this.calendarEventsData.push({postid: resdata.postid, title: resdata.title, start: resdata.publish_up,className:tempObj[resdata.published],state:resdata.published,author:resdata.author,category:resdata.category});
+          this.calendarEventsData.push({postid: resdata.postid, title: resdata.title, start: resdata.publish_up,className:tempObj[resdata.published],state:resdata.published,author:resdata.author,category:resdata.category,time:time});
      });
-    console.log(this.calendarEventsData);
     //  this.calendarOptions = {
     //     editable: true,
     //     eventLimit: false,
@@ -811,8 +821,6 @@ getCalendarEventsByMonth(month,defaultdate) {
     //     },
     //     events: this.calendarEventsData
     //   };
-    //console.log(this.calendarEventsData);
-    //console.log(defaultdate+"-12");
      this.calendarOptions = {
        editable: true,
        eventLimit: true,
@@ -900,24 +908,16 @@ get staticShowDraft() {
     return PublishComponent.viewData;
   }
 
-
-
-
 clickButton(model: any) {
   var month=model.data._d.getMonth()+1;
   var year=model.data._d.getFullYear();
   this.getCalendarEventsByMonth(month+"/"+year,year+"-"+month);
- console.log(model.data._d);
-
-this.displayEvent = model;
+  this.displayEvent = model;
 }
 
-
 // currentDateObj(event) {
-//   console.log(event);
 // }
 eventClick(model: any) {
-// console.log(this.displayEvent);
 model = {
   event: {
     id: model.event.id,
@@ -932,7 +932,6 @@ model = {
 this.displayEvent = model;
 }
 updateEvent(model: any) {
-console.log(222);
 model = {
   event: {
     id: model.event.id,
@@ -948,7 +947,6 @@ model = {
 this.displayEvent = model;
 }
 eventMouseover(model: any) {
-console.log(1233456);
 }
 // add new topics call
 addNewTopicsCall() {
@@ -966,12 +964,10 @@ getAllTrendingTopicsCall() {
 
   this.publishService.getAllTrendingTopicsService().subscribe(
     (trendResponse: any) => {
-      console.log(trendResponse.description);
       this.trendingTopicsData = trendResponse.description;
     }, (err) => {
 
     }, () => {
-     // console.log(this.trendingTopicsData);
       this.isStartLoader = false;
       for (const key in this.trendingTopicsData) {
           var topics=this.trendingTopicsData[key];
@@ -995,7 +991,6 @@ getTrendingTopicsByMonth(date) {
   this.trendingTopicsData=[];
   this.publishService.getTrendingTopicsService(month).subscribe(
     (trendResponse: any) => {
-     // console.log(trendResponse);
       this.trendingTopicsData = trendResponse.description;
       if(this.trendingTopicsData.length==0)
         {
@@ -1034,10 +1029,8 @@ totalTopicselect=0;
 checkedTrendingTopic(ikey, jindx, ischecked) {
     this.showSelectedTrendingError=false;
     if (this.trendingTopicsData.hasOwnProperty(ikey)) {
-      console.log(ischecked);
       if(ischecked) {
        // this.trendingTopicsData[ikey][jindx].ischecked = true;
-        console.log(this.trendingTopicsData[ikey][jindx]);
         (this.trendingTopicsData[ikey][jindx]).isdateselected=false;
         const topicObj = {ikey : this.trendingTopicsData[ikey][jindx]};
         this.selectedTrendTopics.push(topicObj);
@@ -1047,7 +1040,6 @@ checkedTrendingTopic(ikey, jindx, ischecked) {
         const index = this.deepIndexOf(this.selectedTrendTopics, ikey);
         this.selectedTrendTopics.splice(index, 1);
     }
-    console.log(this.selectedTrendTopics);
     this.totalTopicselect=this.selectedTrendTopics.length;
   }
 }
@@ -1068,11 +1060,8 @@ deepIndexOf(arr, obj) {
          if(topickey===key)
           {
             (this.trendingTopicsData[key])[index].selectedDate=date;
-              console.log((this.trendingTopicsData[key])[index].title);
-              console.log((this.trendingTopicsData[key])[index].id);
           }
     }
-   // console.log(key,index,date);
   }
 
 // is checked main topic
@@ -1084,13 +1073,11 @@ trendTopicClick(key) {
     this.trendingTopicsData[key].isTrendTitleChecked = true;
    }
   }
- // console.log(this.trendingTopicsData[key].isTrendTitleChecked);
 }
 showSelectedTrendingError=false;
 showSelectedTopicDateError=false;
 selectTheDate="";
 addToCalendar(){
-  console.log(this.selectedTrendTopics);
   if(this.selectedTrendTopics.length==0)
     {
         this.showSelectedTrendingError=true;
@@ -1099,7 +1086,6 @@ addToCalendar(){
             var idAndDate="";
             //this.isStartLoader=true;
             this.selectedTrendTopics.forEach((topic,index)=>{
-                 console.log(topic.ikey.selectedDate);
                 if(topic.ikey.selectedDate!='0000-00-00')
                   {
                     var date=topic.ikey.selectedDate;
@@ -1133,10 +1119,8 @@ addToCalendar(){
             //   {
                
             //   }
-            //   console.log(idAndDate);
               if(!this.showSelectedTrendingError && !this.showSelectedTopicDateError){
                 this.isPageStartLoader=true;
-                  console.log(idAndDate);
                   this.publishService.addTopicToCalendar(idAndDate).subscribe(
                     data =>{
                         this.isStartLoader=false;
@@ -1165,7 +1149,6 @@ addToCalendar(){
 // add Trending topic new
 addNewTrendingTopic() {
   const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
-  console.log("venlat");
   if(this.newTrendTopicForm.valid)
     {
       const resData = 
@@ -1174,11 +1157,9 @@ addNewTrendingTopic() {
         'title' : this.newTrendTopicForm.value.title,
         'tag' : this.newTrendTopicForm.value.tag
       };
-      
-         console.log(resData);
     this.isPageStartLoader=true;
     this.publishService.createTrendingTopic(resData,this.topicsDate).subscribe(
-      data=>{console.log(data);
+      data=>{
         this.isAddNewTopicButton=true;
         //this.getAllTrendingTopicsCall();
         this.getTrendingTopicsByMonth(this.topicsDate);
@@ -1207,15 +1188,12 @@ addNewTrendingTopic() {
 }
 // ionizeTheBlog() {
   // var content='';
-  // console.log(this.images);
   // content =content + this.aboutImages +"<br>";
   // for(let image of this.images)
   //   {
   //       content=content+'<img src="'+image+'"'+">";
   //   }
-  //     console.log(content);
   //     this.publishService.ionizeBlogService(this.promotionId,content,this.promotionTitle).subscribe(res => {
-  //      console.log(res);
   //      alert("ionized successfully");
   //     },(err) => {
   //     }, () => {
@@ -1233,12 +1211,9 @@ showPublishedDate="";
 showPublishedTime="";
 creaditsCount:number;
 createTheBlog(blogStatus){
-    
-    //console.log(this.createAndUpdateTheBlogForm.value);
     //this.isStartLoader = true;
     var tags="";
     var content="";
-    //console.log(this.blogTags);
     this.blogTags.forEach(data=>{
          tags +=data.value+",";
     })
@@ -1248,11 +1223,16 @@ createTheBlog(blogStatus){
                     content=content+'<img src="'+image+'"/><br>';
             })
             this.createAndUpdateTheBlogForm.value.content=this.createAndUpdateTheBlogForm.value.content+content;
-            //console.log(this.createAndUpdateTheBlogForm.value.content);
             //this.createAndUpdateTheBlogForm.value.content=content;
           }
-  this.createAndUpdateTheBlogForm.value.status=blogStatus;
-   //console.log(this.createAndUpdateTheBlogForm.value);
+          if(this.blogTypes.length==0)
+            {
+                var currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+                this.createAndUpdateTheBlogForm.patchValue({
+                    type:currentuser.publishid
+                })
+            }
+          this.createAndUpdateTheBlogForm.value.status=blogStatus;
     // if(this.createAndUpdateTheBlogForm.value.status==3)
     //   {
     //     if(this.createAndUpdateTheBlogForm.value.content=='' && this.createAndUpdateTheBlogForm.value.title=='')
@@ -1264,7 +1244,6 @@ createTheBlog(blogStatus){
     //       this.publishService.createTheBlogService(this.createAndUpdateTheBlogForm.value,tags)
     //         .subscribe(
     //         (cteateBlogResponse: any) => {
-    //           console.log(cteateBlogResponse);
     //           this.createAndUpdateTheBlogForm.patchValue({
     //             status:blogStatus
     //           })
@@ -1278,9 +1257,6 @@ createTheBlog(blogStatus){
               
     //           // var start_date:any = new Date();
     //           // var end_date:any = new Date(this.createAndUpdateTheBlogForm.value.createdDate);
-    //           // console.log(end_date);
-    //           // console.log(start_date);
-    //           // console.log(end_date - start_date);
     //           // var diff_date = Math.round((end_date - start_date)/days);
     //           // this.noofdays=diff_date+1;
     //           this.getPublishedBlogs(0,20);
@@ -1302,7 +1278,6 @@ createTheBlog(blogStatus){
           this.publishService.createTheBlogService(this.createAndUpdateTheBlogForm.value,tags)
             .subscribe(
             (cteateBlogResponse: any) => {
-              console.log(cteateBlogResponse);
               this.createAndUpdateTheBlogForm.patchValue({
                 status:blogStatus
               })
@@ -1316,25 +1291,20 @@ createTheBlog(blogStatus){
               
               var start_date:any = new Date();
               var end_date:any = new Date(this.createAndUpdateTheBlogForm.value.createdDate);
-              console.log(end_date);
-              console.log(start_date);
-              //console.log(end_date - start_date);
               var diff_date = Math.round((end_date - start_date)/days);
-              console.log(diff_date);
               this.noofdays=diff_date+1;
               this.creaditsCount=cteateBlogResponse.credits;
               
-              if(blogStatus==2)
-              {
+              if(blogStatus==2){
                     this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['DD MMMM, YYYY']);
                     this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh.mm A']);
               }
               else if(blogStatus==1){
-                    this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['DD MMMM, YYYY']);
+                    //this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['DD MMMM, YYYY']);
+                    this.showPublishedDate="Today";
                     this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh.mm A']);
               }
-              else if(blogStatus==4 ||blogStatus==3)
-              {
+              else if(blogStatus==4 ||blogStatus==3){
                     this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['MMM DD YYYY']);
                     this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh.mm A']);
               }
@@ -1362,28 +1332,28 @@ showDateRequired=false;
 showTimeRequired=false;
 updateTheBlogDirectly(blogStatus) {
   // blog subcategory mandatory.
-  //  var keepGoing = true;
-  //   if(this.blogTypes.length>0)
-  //     {
-  //       //var blogtypeSelected=false;
-  //       //for()
-  //         this.blogTypes.forEach(btype=>{
+   var keepGoing = true;
+    if(this.blogTypes.length>0)
+      {
+        //var blogtypeSelected=false;
+        //for()
+          this.blogTypes.forEach(btype=>{
 
-  //           if(btype.selected)
-  //             {
-  //                 this.blogtypeSelected=true;
-  //                 keepGoing=false;
-  //             }
-  //           else{
-  //             if(keepGoing)
-  //                 this.blogtypeSelected=false;
-  //           }
-  //         });
-  //         if(!this.blogtypeSelected)
-  //           {
-  //               return;
-  //           }
-  //     }
+            if(btype.selected)
+              {
+                  this.blogtypeSelected=true;
+                  keepGoing=false;
+              }
+            else{
+              if(keepGoing)
+                  this.blogtypeSelected=false;
+            }
+          });
+          if(!this.blogtypeSelected)
+            {
+                return;
+            }
+      }
   // blog subcategory mandatory.
   if(this.createdDate===""){
     this.showDateRequired=true;
@@ -1404,8 +1374,6 @@ updateTheBlogDirectly(blogStatus) {
         })
       this.isLoaderForUpdateBlog=true;
       var tags='';
-      console.log(this.blogViewData);
-
       this.createAndUpdateTheBlogForm.patchValue({
           title:this.blogViewData.title,
           content:this.blogViewData.text,
@@ -1416,7 +1384,6 @@ updateTheBlogDirectly(blogStatus) {
           createdDate:this.createdDate,
           createdTime:this.createdTime
       })
-    console.log(this.blogViewData.tags);
     // if(this.blogViewData.tags.length!=0)
     //   {
     //     this.blogViewData.tags.forEach(tag=>{
@@ -1436,14 +1403,12 @@ updateTheBlogDirectly(blogStatus) {
         {
           blogStatus=this.blogViewData.published;
         }
-        console.log(blogStatus);
-    console.log(this.createAndUpdateTheBlogForm.value);
     this.isStartLoader = true;
     this.publishService.updateBlogService(this.createAndUpdateTheBlogForm.value, tags)
     .subscribe(
     (updateblogResponse: any) => {
-      console.log(updateblogResponse);
-      this.isIonizedBlog = false;
+      this.creaditsCount=updateblogResponse.credits;
+      this.isIonizingBlog = false;
       this.isBlogDraft = false;
       this.isPublishNow = false;
       this.isIonizeNow = false;
@@ -1452,11 +1417,8 @@ updateTheBlogDirectly(blogStatus) {
       var days = hours*24;
       var start_date:any = new Date();
       var end_date:any = new Date(this.createdDate);
-      console.log(end_date);
-      console.log(start_date);
-      console.log(end_date - start_date);
       var diff_date = Math.round((end_date - start_date)/days);
-      this.noofdays=diff_date+1;
+      this.noofdays=diff_date;
       var showPublishedDate=new Date(this.createdDate).toString().split(" ");
       //this.showPublishedDate=showPublishedDate[2]+" "+showPublishedDate[1]+" "+showPublishedDate[3];
       //var showPublishedTime=new Date(this.createdTime).toString().split(" ");
@@ -1470,7 +1432,8 @@ updateTheBlogDirectly(blogStatus) {
                       this.showPublishedTime=this.format(this.createdTime, ['hh.mm A']);
                 }
               else if(blogStatus==1){
-                      this.showPublishedDate=this.format(this.createdDate, ['DD MMMM, YYYY']);
+                      //this.showPublishedDate=this.format(this.createdDate, ['DD MMMM, YYYY']);
+                      this.showPublishedDate="Today";
                       this.showPublishedTime=this.format(this.createdTime, ['hh.mm A']);
               }
               else if(blogStatus==4)
@@ -1498,8 +1461,6 @@ updateTheBlogDirectly(blogStatus) {
       //     this.isAlertPopup = true;
       //     this.alertMessage = 'blog Inoized Successfully.';
       //   }
-
-        // console.log(trendResponse);
         // this.trendingTopicsData = trendResponse.description;
     }, (err) => {
          this.isAlertPopuperror=true;
@@ -1507,7 +1468,6 @@ updateTheBlogDirectly(blogStatus) {
          this.isLoaderForUpdateBlog=false;
          this.isStartLoader = false;
     }, () => {
-      // console.log(this.trendingTopicsData);
       this.isLoaderForUpdateBlog=false;
       this.isStartLoader = false;
     });
@@ -1516,38 +1476,32 @@ updateTheBlogDirectly(blogStatus) {
 
 
 }
-  //blogtypeSelected=true;
+  blogtypeSelected=true;
   updateTheBlogFromEdit(blogStatus) {
-    // console.log(this.blogViewData);
-    // blog subcategory mandatory.
-    // var keepGoing = true;
-    // if(this.blogTypes.length>0)
-    //   {
-    //     //var blogtypeSelected=false;
-    //     //for()
-    //       this.blogTypes.forEach(btype=>{
+   // blog subcategory mandatory.
+    var keepGoing = true;
+    if(this.blogTypes.length>0)
+      {
+        //var blogtypeSelected=false;
+        //for()
+          this.blogTypes.forEach(btype=>{
 
-    //         if(btype.selected)
-    //           {
-    //               this.blogtypeSelected=true;
-    //               keepGoing=false;
-    //           }
-    //         else{
-    //           if(keepGoing)
-    //               this.blogtypeSelected=false;
-    //         }
-    //       });
-    //       if(!this.blogtypeSelected)
-    //         {
-    //             return;
-    //         }
-    //   }
+            if(btype.selected)
+              {
+                  this.blogtypeSelected=true;
+                  keepGoing=false;
+              }
+            else{
+              if(keepGoing)
+                  this.blogtypeSelected=false;
+            }
+          });
+          if(!this.blogtypeSelected)
+            {
+                return;
+            }
+      }
     // blog subcategory mandatory.
-    
-   
-   console.log(this.createAndUpdateTheBlogForm.value);
-   //console.log(this.blogTags);
-   console.log(blogStatus);
    var tags="";
    this.blogTags.forEach(tag=>{
      if(typeof tag.value!="undefined")
@@ -1558,7 +1512,6 @@ updateTheBlogDirectly(blogStatus) {
           tags =tags+tag + ',';
       }
    })
-   console.log(tags);
    this.createAndUpdateTheBlogForm.value.status=blogStatus;
     // if(this.createAndUpdateTheBlogForm.value.status==3)
     //   {
@@ -1574,7 +1527,6 @@ updateTheBlogDirectly(blogStatus) {
     //            this.createAndUpdateTheBlogForm.patchValue({
     //               status:blogStatus
     //             })
-    //           console.log(updateblogResponse);
     //           this.isEditorForEditThePublish=false;
     //           this.isEditorForEditTheDraft=false;
     //           this.isEditorForEditTheOnline=false;
@@ -1585,9 +1537,6 @@ updateTheBlogDirectly(blogStatus) {
     //           var days = hours*24;
     //           var start_date:any = new Date();
     //           var end_date:any = new Date(this.createAndUpdateTheBlogForm.value.createdDate);
-    //           console.log(end_date);
-    //           console.log(start_date);
-    //           console.log(end_date - start_date);
     //           var diff_date = Math.round((end_date - start_date)/days);
     //           this.noofdays=diff_date+1;
     //           if(blogStatus==2)
@@ -1617,13 +1566,11 @@ updateTheBlogDirectly(blogStatus) {
     //         }, (err) => {
 
     //         }, () => {
-    //           // console.log(this.trendingTopicsData);
     //           //this.isStartLoader = false;
     //         });
     //       }
     //   }
     // else 
-    console.log(this.createAndUpdateTheBlogForm.value);
       if(this.createAndUpdateTheBlogForm.valid)
       {
            this.isLoaderForUpdateBlog=true;
@@ -1633,7 +1580,7 @@ updateTheBlogDirectly(blogStatus) {
                this.createAndUpdateTheBlogForm.patchValue({
                   status:blogStatus
                 })
-              console.log(updateblogResponse);
+              this.creaditsCount=updateblogResponse.credits;
               this.isEditorForEditThePublish=false;
               this.isEditorForEditTheDraft=false;
               this.isEditorForEditTheOnline=false;
@@ -1644,11 +1591,8 @@ updateTheBlogDirectly(blogStatus) {
               var days = hours*24;
               var start_date:any = new Date();
               var end_date:any = new Date(this.createAndUpdateTheBlogForm.value.createdDate);
-              console.log(end_date);
-              console.log(start_date);
-              console.log(end_date - start_date);
               var diff_date = Math.round((end_date - start_date)/days);
-              this.noofdays=diff_date+1;
+              this.noofdays=diff_date;
               this.getPublishedBlogs(0,20);
                if(blogStatus==2)
               {
@@ -1656,7 +1600,8 @@ updateTheBlogDirectly(blogStatus) {
                     this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh.mm A']);
               }
               else if(blogStatus==1){
-                    this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['DD MMMM, YYYY']);
+                    //this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['DD MMMM, YYYY']);
+                    this.showPublishedDate="Today";
                     this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh.mm A']);
               }
               else if(blogStatus==4 ||blogStatus==3)
@@ -1679,7 +1624,6 @@ updateTheBlogDirectly(blogStatus) {
                  this.isLoaderForUpdateBlog=false;
 
             }, () => {
-              // console.log(this.trendingTopicsData);
               //this.isStartLoader = false;
             });
       }
@@ -1690,19 +1634,15 @@ updateTheBlogDirectly(blogStatus) {
 
 
 //   ionizeTheBlog(){
-//     console.log(this.blogViewData);
 //     this.isStartLoader = true;
 //     let publish=4;
 //     this.publishService.updateBlogService(this.blogViewData,publish)
 //     .subscribe(
 //     (updateblogResponse: any) => {
-//       console.log(updateblogResponse);
-//         // console.log(trendResponse);
 //         // this.trendingTopicsData = trendResponse.description;
 //     }, (err) => {
 
 //     }, () => {
-//       // console.log(this.trendingTopicsData);
 //       this.isStartLoader = false;
 //     });
 
@@ -1716,10 +1656,8 @@ isEditorForEditTheOnline=false;
 editBlogCall(eachData,type) {
     this.isPageStartLoader=true;
    this.blogTags=[];
-   console.log(eachData);
    this.getBlogComments(eachData.postid);
    this.publishService.getBlogDetailViewService(eachData.postid).subscribe(data=>{
-       console.log(data);
         this.dateChange(data.publish_up);
         this.timeChange(data.publish_up);
        
@@ -1732,9 +1670,6 @@ editBlogCall(eachData,type) {
     if(this.blogTypes.length>0)
       {
         this.blogTypes.forEach(category=>{
-          console.log(category.id);
-          console.log(eachData.category.categoryid);
-          console.log(category.id==eachData.category.categoryid);
           if(category.id==eachData.category.categoryid)
             {
                   category.selected=true;
@@ -1789,6 +1724,30 @@ editBlogCall(eachData,type) {
 
   
 }
+//used for view the blogs of other users. 
+isIonizedBlog=false; 
+getBlogView(eachData,type) {
+    this.isPageStartLoader=true;
+    this.blogTags=[];
+    this.getBlogComments(eachData.postid);
+    this.publishService.getBlogDetailViewService(eachData.postid).subscribe(data=>{
+      this.blogViewData=data;
+    if(type=='publish')
+      {
+          this.isPageStartLoader=false;
+          this.isIonizedBlog=true;
+      }
+      else if(type=='draft')
+      {
+          this.isPageStartLoader=false;
+          this.isBlogDraft=true;
+      }
+      },err=>{
+          this.isPageStartLoader=false;
+      },
+      ()=>{
+      })
+}
 // Delete the Blog
 isDeleteAlertPopup=false;
 deleteBlogId="";
@@ -1801,23 +1760,21 @@ deleteBlogCall(blogId,index) {
   // this.publishService.deleteBlogService(blogId)
   // .subscribe(
   // (blogResponse: any) => {
-  //   console.log(blogResponse);
   //    this.isAlertPopup = true;
   //    this.alertMessage = '';
   // }, (err) => {
 
   // }, () => {
-  //   // console.log(this.trendingTopicsData);
   //   this.isStartLoader = false;
   // });
 }
 deleteTheBlog(){
-   this.isStartLoader = true;
+  this.isDeleteAlertPopup = false;
+   this.isPageStartLoader = true;
   this.publishService.deleteBlogService(this.deleteBlogId)
   .subscribe(
   (blogResponse: any) => {
-    console.log(blogResponse);
-     this.isDeleteAlertPopup = false;
+     
      this.alertMessage = '';
      this.publishedData.splice(this.deleteBlogIndex,1);
   }, (err) => {
@@ -1825,8 +1782,7 @@ deleteTheBlog(){
     this.isDeleteAlertPopup = false;
       this.alertMessage=this.connect_err;
   }, () => {
-    // console.log(this.trendingTopicsData);
-    this.isStartLoader = false;
+    this.isPageStartLoader = false;
   });
 }
 // create new post
@@ -1841,7 +1797,6 @@ startNewBlogWithTopic(){
 }
   startNewBogWithOutTopic(){
     this.draftCurrentClass='save';
-    console.log(this.blogTypes);
     if(this.blogTypes.length>0)
     {
         //this.blogTypes[0].selected=true;
@@ -1864,7 +1819,6 @@ startNewBlogWithTopic(){
     }
     this.isCreateBlog=false;
     this.isOpenEditor=true;
-    console.log(this.createAndUpdateTheBlogForm.value);
   }
   startTheBlogWithTopic(){
      if(this.blogTitle!="")
@@ -1900,13 +1854,10 @@ startNewBlogWithTopic(){
         }
         this.isTrendingTopicsList=false;
         this.isOpenEditor=true;
-        console.log(this.createAndUpdateTheBlogForm.value);
-     
   }
   // get tags
   getBlogTags(){
     this.publishService.getBlogTags().subscribe(data=>{
-      console.log(data);
         data.forEach(element => {
             this.autoComplete.push(element.title);
           });
@@ -1917,7 +1868,6 @@ startNewBlogWithTopic(){
 categories=[];
 getCategories(){
     this.publishService.getCategories().subscribe(data=>{
-          console.log(data);
           this.categories=data.description;
           //  data.forEach(element => {
           //   this.autoComplete.push(element.title);
@@ -1933,12 +1883,10 @@ getAllTopicsForNewBlog() {
   this.isStartLoader = true;
   this.publishService.getAllTrendingTopicsService().subscribe(
     (trendResponse: any) => {
-      console.log(trendResponse.description);
       this.trendingTopicsForNewBlog = trendResponse.description;
     }, (err) => {
 
     }, () => {
-     // console.log(this.trendingTopicsData);
       this.isStartLoader = false;
       for (const key in this.trendingTopicsForNewBlog) {
         if (this.trendingTopicsForNewBlog.hasOwnProperty(key)) {
@@ -1957,7 +1905,6 @@ blogTopicClick(key) {
     this.trendingTopicsForNewBlog[key].isTrendTitleChecked = true;
    }
   }
- // console.log(this.trendingTopicsData[key].isTrendTitleChecked);
 }
  
   selectedTopicForCrateNewBlog(key,index){
@@ -1975,27 +1922,26 @@ blogTopicClick(key) {
     }
   }
   blogTypes=[];
-  getBlogTypes(){
-     this.isStartLoader = true;
-  this.publishService.getBlogTypes().subscribe(
-    (blogTypes: any) => {
-      console.log(blogTypes);
-      this.blogTypes=blogTypes;
-    }, (err) => {
+  // getBlogTypes(){
+  //    this.isStartLoader = true;
+  // this.publishService.getBlogTypes().subscribe(
+  //   (blogTypes: any) => {
+  //     this.blogTypes=blogTypes;
+  //   }, (err) => {
 
-    }, () => {
-      this.blogTypes.forEach((btype, index) =>{
-            if(index==0)
-             {
-                btype.selected=true;
-             }
-            else{
-               btype.selected=false;
-            }
+  //   }, () => {
+  //     this.blogTypes.forEach((btype, index) =>{
+  //           if(index==0)
+  //            {
+  //               btype.selected=true;
+  //            }
+  //           else{
+  //              btype.selected=false;
+  //           }
               
-      })
-    });
-  }
+  //     })
+  //   });
+  // }
   // upload publish comment image
   uploadPublishImage() {
     
@@ -2011,7 +1957,6 @@ blogTopicClick(key) {
       this.imageUploadAlert = false;
       this.imageerrorAlert = false;
       this.isLoaderForUpdateBlog=true;
-     // console.log(fileBrowser.files[0]);
       const fd = new FormData();
       for(var key=0;key<fileBrowser.files.length;key++)
      {
@@ -2032,11 +1977,8 @@ blogTopicClick(key) {
       
       this.authService.uploadImageService(fd).subscribe(res => {
         // do stuff w/my uploaded file
-        console.log(res);
-      //  console.log(res.description[0].url);
         if(res.description==undefined)
         {
-             // console.log("error");
               this.imageUploadAlert = false;
               this.imageerrorAlert=true;
         }else{
@@ -2066,7 +2008,6 @@ blogTopicClick(key) {
   }
   // Publish the blog
   publishTheBlog(blog) {
-    console.log(blog);
     this.isPageStartLoader=true;
     this.publishService.getBlogDetailViewService(blog.postid).subscribe( 
     (blogResponse: any) => {
@@ -2076,7 +2017,6 @@ blogTopicClick(key) {
         this.timeChange(this.createdDate);
          this.blogViewData = blogResponse;
          this.isPageStartLoader=false;
-       console.log(this.blogViewData);
        if(blogResponse.tags.length!=0)
           {
             blog.tags.forEach(tag=>{
@@ -2099,15 +2039,12 @@ blogTopicClick(key) {
     PublishComponent.showIonize=false;
     PublishComponent.showPublished=false;
     PublishComponent.showIonized=false;
-    console.log(blog);
     
   }
   // ionize the draft
   //postionizeorpublish="";
   ionizeTheDraft(blog) {
     this.isPageStartLoader=true;
-    console.log(blog);
-     //console.log(blog);
      this.blogTags=[];
     this.publishService.getBlogDetailViewService(blog.postid).subscribe( 
     (blogResponse: any) => { 
@@ -2117,7 +2054,6 @@ blogTopicClick(key) {
       this.dateChange(this.createdDate);
       this.timeChange(this.createdDate);
        this.blogViewData = blogResponse;
-       console.log(this.blogViewData);
         if(blogResponse.tags.length!=0)
           {
             blogResponse.tags.forEach(tag=>{
@@ -2127,9 +2063,6 @@ blogTopicClick(key) {
           if(this.blogTypes.length>0)
       {
         this.blogTypes.forEach(category=>{
-          console.log(category.id);
-          console.log(blogResponse.category.categoryid);
-          console.log(category.id==blogResponse.category.categoryid);
           if(category.id==blogResponse.category.categoryid)
             {
                   category.selected=true;
@@ -2158,7 +2091,7 @@ blogTopicClick(key) {
   typeselected(type){
     this.blogTypes.forEach(btype=>{
         btype.selected=false;
-        //this.blogtypeSelected=true;
+        this.blogtypeSelected=true;
         if(btype.id==type.id)
           {
             type.selected=true;
@@ -2171,13 +2104,22 @@ blogTopicClick(key) {
         // this.createAndUpdateTheBlogForm.patchValue({
         //   type:btype.id
         // })
-        // console.log(this.createAndUpdateTheBlogForm.value.type);
   }
   deleteCoverImage(i){
-    console.log(i);
     this.coverImages.splice(i,1);
     this.imageerrorAlert=false;
     this.imageUploadAlert = false;
+     if(this.coverImages.length>0){
+             this.createAndUpdateTheBlogForm.patchValue({
+              image:this.coverImages[0]
+            })
+        }
+          else{
+             this.createAndUpdateTheBlogForm.patchValue({
+              image:''
+            })
+          }
+        
   }
   deleteCoverImageFromPublish(){
     this.createAndUpdateTheBlogForm.patchValue({
@@ -2189,6 +2131,7 @@ blogTopicClick(key) {
     this.clearTheForm();
   }
   clearTheForm(){
+    this.bigSizeImg=[];
     this.createAndUpdateTheBlogForm.reset();
     this.draftCurrentClass='';
     this.blogTitle="";
@@ -2205,6 +2148,8 @@ blogTopicClick(key) {
     this.showMonth="";
     this.showTime="";
     this.imageUploadAlert = false;
+    this.enablePublish=false;
+    this.enableSchedule=false;
     this.createAndUpdateTheBlogForm.patchValue({
       title:'',
       content:'',
@@ -2217,8 +2162,6 @@ blogTopicClick(key) {
       createdTime:''
     })
     this.showCommentErrorMsg="";
-    console.log(this.router.url == '/publish/selecttopic');
-    console.log(this.router.url =='/publish/newpost');
     if(this.router.url == '/publish/selecttopic' || this.router.url =='/publish/newpost')
       {
           this.router.navigate(['publish']);
@@ -2236,7 +2179,6 @@ blogTopicClick(key) {
    }
   // validateAllFormFields(formGroup: FormGroup) {         //{1}
   //       Object.keys(formGroup.controls).forEach(field => {  //{2}
-  //        // console.log(field);
   //         const control = formGroup.get(field);             //{3}
   //         if (control instanceof FormControl) { 
   //           if(this.draftCurrentClass!=='save')          //{4}
@@ -2286,11 +2228,9 @@ blogTopicClick(key) {
       }
 
       closeConfirmation(){
-        console.log(this.createAndUpdateTheBlogForm);
         if(this.createAndUpdateTheBlogForm.value.title == '' && this.createAndUpdateTheBlogForm.value.content==''){
           this.isOpenEditor=false;
           this.clearTheForm();
-         // console.log("false");
         }
         else{
           if (window.confirm("Do you really want to leave?")) { 
@@ -2308,17 +2248,45 @@ blogTopicClick(key) {
       showDay="";
       showMonth="";
       showTime="";
+      enablePublish=false;
+      enableSchedule=false;
+      stopTimes=""
       dateChange(createdDate){
-        console.log(createdDate);
-        //format(input10Moment, ['yyyy-mm-dd'])
+        var today=new Date();
+        var current_date=this.format(today, ['DD']);
+        var current_month=this.format(today, ['MM']);
+        var current_year=this.format(today, ['YYYY']);
+        var selected_month=this.format(createdDate, ['MM']);
+        var selected_year=this.format(createdDate, ['YYYY']);
         this.showDate=this.format(createdDate, ['DD']);
         this.showDay= this.format(createdDate, ['ddd']);
         this.showMonth=this.format(createdDate, ['MMMM']);
+        if(current_date===this.showDate && current_month==selected_month && current_year== selected_year)
+          {
+              this.stopTimes=this.format(today, ['YYYY-MM-DD HH:mm:ss']);
+              this.enablePublish=false;
+              this.enableSchedule=true;
+          }
+          else{
+              this.stopTimes='';
+              this.enablePublish=true;
+              this.enableSchedule=false;
+          }
       }
        timeChange(createdTime){
         //format(input10Moment, ['yyyy-mm-dd'])
         this.showTime=this.format(createdTime, ['hh:mm a']);
         //this.showDay= this.format(input10Moment, ['ddd']);
         //this.showMonth=this.format(input10Moment, ['MMMM']);
+      }
+      putDateAndTimeAsEmpty(){
+        this.createAndUpdateTheBlogForm.patchValue({
+          createdDate:'',
+          createdTime:''
+        })
+        this.showTime='';
+        this.showDate='';
+        this.showDay='';
+        this.showMonth='';
       }
 }

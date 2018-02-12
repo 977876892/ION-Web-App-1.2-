@@ -136,7 +136,10 @@
     width: 50px;
     height: 50px;
     position: fixed;
-    margin-top: -165px;
+    margin-top: -176px;
+}
+.after_upload{
+    margin-top: -155px !important;
 }
 .model-popup{
    width: 800px !important;
@@ -643,7 +646,7 @@ position: relative;
     width: 100% !important;
 }
 .nav-info__panel_calender_load_more{
-    top: 36%;
+    top: 30%;
 }
 .select_duration_comm{
     width:50%;
@@ -806,7 +809,7 @@ text-overflow: ellipsis; */
 #linkList-1{
     display: none;
 }
-#linkList-6{
+#linkList-5{
     display: none;
 }
 .publish_ .calender_topics .owl-dateTime-dialog{
@@ -814,10 +817,10 @@ text-overflow: ellipsis; */
 }
 .topic_call .owl-datetime-main-input{
     background: #33cccc !important;
-    margin-left: 16px !important;
+    /* margin-left: 16px !important; */
     color: white !important;
-    padding-left: 22px;
-    padding-top: 3px;
+    /* padding-left: 22px; */
+    /* padding-top: 3px; */
 }
 /* .owl-dateTime-inputWrapper .owl-datetime-main-input{
     background-color: inherit !important;
@@ -1132,7 +1135,7 @@ right: 0px;
 .contact_form_arrow{
     position: absolute;
     top: 90px;
-    left: 38.4%;
+    left:38.4%;
     width: 42px;
     height: 42px;
     background-color: white;
@@ -1283,7 +1286,9 @@ select.minimal {
      border-right: 10px solid #9399b5;
  }
 .publish_status_pop.ionizing:before {
-     border-right: 10px solid #F4B51B;
+     /* border-right: 10px solid #F4B51B; */
+     background-image: url(/assets/images/Vector_Smart.png) ; 
+     background-repeat: no-repeat ;
  }
   .no_visit_printscreen{
     margin-left: -357px !important;
@@ -1383,38 +1388,7 @@ width: 100%;
     border-radius: 50%;
     margin: 0px 10px 0px 0px;
 }
-[_nghost-c11]{
-    display: block;
-    position: unset !important;
-}
-[_nghost-c14]{
-    display: block;
-    position: unset !important;
-}
-[_nghost-c15]{
-    display: block;
-    position: unset !important;
-}
-[_nghost-c8]{
-    display: block;
-    position: unset !important;
-}
-[_nghost-c7] {
-    display: block;
-    position: unset !important;
-}
-[_nghost-c13]{
-    display: block;
-    position: unset !important;
-}
-[_nghost-c12]{
-    display: block;
-    position: unset !important;
-}
-[_nghost-c9]{
-    display: block;
-    position: unset !important;
-}
+
 .ngxcarouselNI71D0 .ngxcarouselPoint{
     list-style-type: none !important;
     text-align: center !important;
@@ -1449,9 +1423,7 @@ width: 100%;
     width: 62%;
     word-break: break-all;
 }
-.tag__text[_ngcontent-c6]{
-    width: 163px !important;
-}
+
 .need_help{
     width: 32%;
     height: 50px;
@@ -1525,4 +1497,280 @@ width: 100%;
     border: none;
     padding: 5px 20px;
     border-radius: 100px;
+}
+.setting_user_popup .multisele .cuppa-dropdown .selected-list .c-btn .c-list .c-token{
+    margin-right: inherit !important;
+    margin: 3px !important;
+}
+.form_fields_mortag .ng2-tag-input .ng2-tags-container{
+    width: 100% !important;
+    height: 100px !important;
+    overflow: auto !important;
+    word-break: break-all !important;
+}
+.content_notification table {
+    width: 100%;
+    box-shadow: 0 0 5px #bbbbbb;
+    border-radius: 5px !important;
+    margin-bottom: 18px;
+}
+.content_notification table tr td {
+    padding: 5px;
+    font-weight: initial;
+}
+.content_notification table tr td b {
+    font-weight: 800;
+}
+.vis--down-pop__heading12 {
+    padding: 3px 30px !important;
+}
+.block_cal .owl-datetime-main-input{
+    background-color: inherit !important;
+    color: #ef6d6d !important;
+}
+.block_cal .owl-datetime-input.owl-timer-input{
+    width: 70% !important;
+}
+.block_detail001::-webkit-input-placeholder {  /*Chrome/Opera/Safari */
+    padding:12px 12px;
+    font-size: 12px;
+    color: #bdbdbd;
+  }
+.block_detail001::-moz-placeholder { /* Firefox 19+ */
+    padding:12px 12px;
+    color: #bdbdbd;
+    font-size: 12px;
+}
+.block_detail001:-ms-input-placeholder {/*  IE 10+ */
+    padding:12px 12px;
+    color: #bdbdbd;
+    font-size: 12px;
+}
+.block_detail001:-moz-placeholder { /* Firefox 18- */
+    padding:12px 12px;
+    font-size: 12px;
+    color: #bdbdbd;
+}
+.feed_actions_home a.view_link_Congratulate{
+    cursor: pointer;
+    display: inline-block;
+    color: #6b6b6b !important;
+    font-size: 15px;
+    margin-left: 132px;
+}
+.feed_actions_home a.view_link_Congratulate img{
+    margin-left: 19px;
+    margin-bottom:-9px;
+}
+.appointment-block .visit_form{
+    font-weight: 502;
+    padding: 5px 15px 5px 15px !important;
+    font-size: 15px;
+    top: -37px !important;
+}
+.visits_main .table-data .visits-table-data tr th:nth-child(6){
+    width: 130px;
+}
+.leads_main .table-data tr .v-name{
+    max-width:150px;white-space: nowrap;overflow: hidden !important;text-overflow: ellipsis;
+} 
+
+/* visit nav calender */
+
+.nav-info__panel .owl-dateTime .owl-dateTime-dialog .owl-calendar-wrapper{
+    padding: 0.8em 0.5em .2em 0.5em !important;
+}
+.panel .panel-lt__extend .nav-info__panel .owl-dateTime-inline .owl-dateTime-dialog .owl-calendar-wrapper .owl-calendar-control{
+    background-color: inherit !important;
+    margin-left: 14px !important;
+    margin-bottom: 20px !important;
+}
+.panel .panel-lt__extend .nav-info__panel .owl-dateTime-inline .owl-dateTime-dialog .owl-calendar-wrapper .owl-calendar-control .owl-calendar-controlContent span{
+    color: white !important;
+    font-weight: 500 !important;
+    font-size: 15px !important;
+    font-style: inherit !important;
+}
+.panel .panel-lt__extend .nav-info__panel .owl-dateTime-inline .owl-dateTime-dialog .owl-calendar-wrapper .owl-calendar-control .owl-calendar-controlContent .year-control:before{
+   content: ',';
+   margin-right: 5px;
+}    
+.panel .panel-lt__extend .nav-info__panel .owl-dateTime-inline .owl-dateTime-dialog .owl-calendar-wrapper .owl-calendar-control .owl-calendar-controlNav .icon-owl-left-open:before{
+    content: '' !important;
+}       
+.panel .panel-lt__extend .nav-info__panel .owl-dateTime-inline .owl-dateTime-dialog .owl-calendar-wrapper .owl-calendar-control .owl-calendar-controlNav .icon-owl-right-open:before{
+   content: '' !important;
+} 
+.panel .panel-lt__extend .nav-info__panel .owl-dateTime-inline .owl-dateTime-dialog .owl-calendar-wrapper .owl-calendar-control div:nth-child(3){
+    background-image: url(/assets/images/visit_cal_arrow_right.png) !important; 
+    background-repeat: no-repeat !important;
+    margin-top: 10px !important;
+    background-size: 12px !important;
+    margin-right: 10px !important;
+ } 
+ .panel .panel-lt__extend .nav-info__panel .owl-dateTime-inline .owl-dateTime-dialog .owl-calendar-wrapper .owl-calendar-control div:nth-child(1){
+    background-image: url(/assets/images/visit_cal_arrow_left.png) !important; 
+    background-repeat: no-repeat !important;
+    margin-top: 10px !important;
+    background-size: 12px !important;
+    margin-right: -19px !important;
+ } 
+.visit_nav_cal_1{
+width: 240px;
+height: 70px;
+background-color: #33cccc;
+color:white;
+text-align:center;
+border-top-left-radius: 10px;
+border-top-right-radius: 10px;  
+}
+.visit_nav_cal_2{
+    width: 240px;
+    height: 40px;
+    background-color: #33cccc;
+    color:white;
+    text-align:center;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;  
+}
+.visit_nav_cal_2 p{
+width: 204px !important;
+height: 1px !important;
+background-color: #31c1c1;
+margin: 0px auto;
+margin-bottom: 5px;
+}
+.visit_nav_cal_1 div{
+width: 92%;
+height: 32px;
+color:white;
+text-align:center;
+line-height: 34px;
+background-color: #30bdbd;
+position: absolute;
+top:30px;
+left: 14px;
+font-weight: 550;
+border-radius: 5px;
+box-shadow: 5px 4px 10px 0px rgb(77, 177, 177);
+}
+.panel .panel-lt__extend .nav-info__panel .owl-dateTime-inline .owl-dateTime-dialog .owl-calendar-wrapper .owl-calendar table tbody tr .owl-calendar-selected{
+    background-color: #fff !important;
+    color: #33cccc !important;
+}    
+.panel .panel-lt__extend .nav-info__panel .owl-dateTime-inline .owl-dateTime-dialog .owl-calendar-wrapper .owl-calendar .owl-calendar-day .owl-weekdays .owl-weekday span{
+    font-weight: 510 !important;
+} 
+.home_notification_img{
+height: 65px;
+width: 65px;background-color:#f0f0f0;
+text-align: center;
+border-radius: 50%;
+margin-right:10px;
+}
+.home_notification_img span{
+margin-top: 23px;margin-left: -8px;position: absolute;
+}
+.tag__text{
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    max-width: 163px !important;
+}
+.openeditor12{
+    float: inherit;
+}
+.editor_addphoto{
+    position: inherit !important;
+}
+.editor_more_imgScroll{
+    width:69%;display: inline-block;overflow: auto;white-space: nowrap;margin-right: 9px;
+}
+.editor_more_imgScroll12{
+    display: inline-block;position: absolute;
+}
+.model-publish-styles .model-content .blog-right .live_chat_panel .bottom_panel .attach_info .profile-img-item{
+    float: inherit !important;
+}
+.model-publish-styles .model-content .blog-right .live_chat_panel .bottom_panel .attach_info{
+    padding: 0px !important;
+}
+.add_new_topic_wrap{
+    width: 80%;
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+    padding: 6px;
+}
+.publish_ .calender-heading ul li{
+    float: left
+}
+.users855 {
+    table-layout: fixed;
+    width: 100%;
+    white-space: nowrap;
+  }
+  /* Column widths are based on these cells */
+  .row-ID {
+    width: 10%;
+  }
+  .row-name {
+    width: 30%;
+  }
+  .row-job {
+    width: 25%;
+  }
+  .row-email {
+    width: 20%;
+  }
+  .users855 td {
+      height: 42px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .users855 th {
+    background: #E1E7E8;
+    color: #7F898E;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .users855 thead .v_user354 th {
+    background: inherit !important;
+  }
+  .users855 td,
+  .users855 th {
+    text-align: left;
+    padding: 5px 10px;
+    position: relative;
+    
+  }
+  .users855 .header_users855 th{
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .users855 tr:nth-child(even) {
+    background: lightblue;
+  }
+  .users855 .bookinG{
+    text-align: left;
+    font-size: 15px;
+    color: #565C5F;
+    padding: 8px 10px;
+    background: #F4F8F9;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .table-data .users855 tr.header_users855 th::after {
+    content: '';
+    position: absolute ;
+    right: 0 ;
+    top: 50% ;
+    background: #D0D1D2 ;
+    width: 2px;
+    height: 15px;
+    -webkit-transform: translateY(-50%);
+}
+.table-data .users855 tr.header_users855 th:nth-child(1)::after,:nth-child(7)::after,:nth-child(8)::after,:nth-child(9)::after{
+    background: none !important;
 }

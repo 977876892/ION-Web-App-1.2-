@@ -183,7 +183,6 @@ export class AnalyticsService {
     }
 
          daywiseLineChart(date){
-             console.log(date);
             var fetchdate=new Date(date);
             var day = fetchdate.getDate();
             var month = fetchdate.getMonth()+1;
@@ -227,7 +226,6 @@ export class AnalyticsService {
         }
         yearWiseLineChart(selectedYear){
              const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
-            //console.log(selectedYear);
             return this.http.get(API.GET_YEAR_LINE(selectedYear,currentuser.username,currentuser.pwd)).map(
              (responseData) =>{
                     const key = '_body';
@@ -235,7 +233,6 @@ export class AnalyticsService {
             })
         }
         yearWiseBarChart(selectedYear){
-            console.log(selectedYear);
              const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
             return this.http.get(API.GET_YEAR_BAR(selectedYear,currentuser.username,currentuser.pwd)).map(
                 (responseData) =>{
@@ -284,7 +281,6 @@ export class AnalyticsService {
     //blog Analytics
         publishedBlogs(){
             const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
-            console.log(currentuser.publishid);
              return this.http.get(API.GET_BLOGS_LIST_CATEGORY(currentuser.publishid)).map(
                 (responseData) =>{
                     const key = '_body';

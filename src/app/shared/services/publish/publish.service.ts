@@ -30,7 +30,6 @@ createTheBlogService(createBlogForm,tags) {
       var format = require('date-fns/format');
       var published_date='',published_time='',finalpublished='';
       let body = new FormData();
-      console.log(createBlogForm);
       const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
       var newDate=new Date();
       var created_date=format(newDate, ['YYYY-MM-DD HH:mm:ss']);
@@ -44,9 +43,6 @@ createTheBlogService(createBlogForm,tags) {
       published_time=format(createBlogForm.createdTime, ['HH:mm:ss']);
       finalpublished=published_date+" "+published_time;
     // }
-      console.log(published_date);
-      console.log(published_time);
-      console.log(published_date+" "+published_time);
       body.append('image', createBlogForm.image);
       body.append('groupTags', '');
       body.append('write_content_hidden', createBlogForm.content);
@@ -84,8 +80,6 @@ updateBlogService(blogData,tags) {
   var format = require('date-fns/format');
   var published_date='',published_time='',finalpublished='';
   const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
-  console.log(blogData);
-  //console.log(publish);
   
     let options;
     //var newDate=new Date();
@@ -103,9 +97,6 @@ updateBlogService(blogData,tags) {
              published_time=format(blogData.createdTime, ['HH:mm:ss']);
              finalpublished=published_date+" "+published_time;
    // }
-     console.log(created_date);
-     console.log(published_time);
-     console.log(published_date);
     //var created_date=newDate.getFullYear()+"-"+(newDate.getMonth()+1)+"-"+newDate.getDate()+" "+ newDate.toString().split(" ")[4];
     //var published_date=blogData.createdDate.getFullYear()+"-"+(blogData.createdDate.getMonth()+1)+"-"+blogData.createdDate.getDate()+" "+ blogData.createdTime.toString().split(" ")[4];
     
@@ -159,8 +150,6 @@ updateBlogService(blogData,tags) {
       //     key:currentuser.auth,
       //     id:blogData.postid
       //  }
-      
-      console.log(resData);
         options = new RequestOptions({ headers });
         return this.http.put(API.CREATE_NEW_BLOG(), resData, options).map(
           (responseData) => {
@@ -188,11 +177,11 @@ updateBlogService(blogData,tags) {
       });
    }
     // add blog comments service
-  addBlogCommentsService(bID, comments) {
+  addBlogCommentsService(bID, comments,images) {
     let body = new FormData();
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
     body.append('comment', comments);
-    return this.http.post(API.ADD_BLOG_COMMENTS(bID, currentuser.username, currentuser.pwd),body).map(
+    return this.http.post(API.ADD_BLOG_COMMENTS(bID, currentuser.username, currentuser.pwd,images),body).map(
       (responseData) => {
         const key = '_body';
         return JSON.parse(responseData[key]);
@@ -277,7 +266,6 @@ createBlogService(promotionid, content, promotionTitle) {
       '&excerpt=' +
       '&permalink=' +
       '&key='+currentuser.auth;
-      console.log(resData);
 
    options = new RequestOptions({ headers });
    return this.http.post(API.CREATE_NEW_BLOG(), resData, options).map(

@@ -33,6 +33,7 @@ import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { DateTimePickerModule } from 'ng-pick-datetime';
 import { AutofocusModule } from 'angular-autofocus-fix';
 //import {  } from 'ng-pick-datetime';
+import { UiSwitchModule } from 'ngx-toggle-switch/src'
 
 
 @NgModule({
@@ -70,7 +71,7 @@ import { AutofocusModule } from 'angular-autofocus-fix';
     FroalaEditorModule.forRoot(), FroalaViewModule.forRoot(),
     DateTimePickerModule,
     NgxCarouselModule,
-    AutofocusModule
+    AutofocusModule,UiSwitchModule
   ],
   providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}],
   bootstrap: [AppComponent]

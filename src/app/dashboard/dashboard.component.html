@@ -98,7 +98,7 @@
               <ul>
                 <li  style="cursor: pointer;" class="info info__active" [class.info__active]="promotionTaType == 'designposters' && !router.url.includes('smspromotion')"  routerLink="/promotions" (click)="promotionTypeClick('designposters');">
                   <div class="info__count">
-                    <p>Design &amp; Posters</p>
+                    <p>Designs &amp; Posters</p>
                   </div>
                 </li>
                 <!-- <li class="info">
@@ -137,7 +137,7 @@
         <ul>
           <li  style="cursor: pointer;" class="info__answered" [class.info__active]="querieType == 'answered'" (click)="querieTypeClick('answered');">
             <div class="info__count"> <span class="count">{{queries.answered}}</span>
-              <p>Answered</p>
+              <p style="margin-left:-6px;">Answered</p>
             </div>
           </li>
           <li  style="cursor: pointer;" class="info__unanswred info__active" [class.info__active]="querieType == 'unanswered'" (click)="querieTypeClick('unanswered');">
@@ -266,10 +266,17 @@
   <!-- Left Navigation Visits-->
   <div class="nav-info__panel calender_widget" [ngClass]="{'nav-info__panel_calender_load_more':isLoadMore}" *ngIf="router.url.includes('/visits')" style="height: 280px; width: 1000px;background: none;">   
         <!-- <input type="date" data-date-inline-picker="true" [(ngModel)]="selectedDateValue" (change)="selectedVisitDate();"/>   -->
-       <owl-date-time [(ngModel)]="input2Moment" [inline]="true"
+        <div class="visit_nav_cal_1">
+          <div>{{calDay}} {{calMonth}} {{calDate}}</div>
+        </div>
+        <owl-date-time [(ngModel)]="input2Moment" [inline]="true"
                                    [dateFormat]="'YYYY-MM-DD'"
                                    [type]="'calendar'" [placeHolder]="'yyyy/mm/dd'"
-                                   [inputId]="'input2'" (onSelect)="selectedVisitDate(input2Moment)"></owl-date-time>
+                                   [inputId]="'input2'" [locale]="en" (onSelect)="selectedVisitDate(input2Moment)"></owl-date-time>
+        <div class="visit_nav_cal_2">
+          <p></p>
+          {{calDate}}th {{calMonth}} : &#160;{{visitsCount}} Appointments 
+        </div>
   </div>
 </div>
 <!-- Panel Left ends -->
