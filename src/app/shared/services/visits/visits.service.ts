@@ -111,6 +111,13 @@ getTimeSlotsService(resId, tsDate) {
           return JSON.parse(responseData['_body']);
         })
   }
+  sendAppointLink(values){
+    const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+        return this.http.get(API.SEND_APPOINTMENT_LINK(values,currentuser)).map((responseData)=>{
+          const key = '_body';
+          return JSON.parse(responseData['_body']);
+        })
+  }
    getVisitDetails(id){
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
         return this.http.get(API.GET_VISITS_DETAIL_VIEW(currentuser.username,currentuser.pwd,id)).map((responseData)=>{
@@ -120,8 +127,6 @@ getTimeSlotsService(resId, tsDate) {
   }
 
    blockCalender(visitForm){
-     console.log(visitForm)
-     //console.log(timezone)
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
         return this.http.get(API.BLOCK_CALENDER(currentuser,visitForm)).map((responseData)=>{
           const key = '_body';

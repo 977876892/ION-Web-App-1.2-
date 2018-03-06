@@ -20,7 +20,7 @@
         height: 24px;
     }
      
-    input[type=password],
+    input[type=password], 
     input[type=text],
     input[type=email],
     input[type=number], 
@@ -56,13 +56,13 @@
        
         padding-bottom: 15px !important;
     }
-    
+   
    
 </style>
 
 <div class="container">
     <div class="panel">
-        <app-dashboard (eventType)="onEventChanged($event)"></app-dashboard>
+        <app-dashboard></app-dashboard>
 
         <!-- Profile start-->
         <!-- panel-rt panel-rt__extend panel_bg__sty_3 -->
@@ -147,9 +147,10 @@
 
                             <tr>
                                 <td>Mobile No:</td>
-                                <td>
-                                    <input type="number" (input)="onTypeNumValid($event.target.value)" placeholder="Mobile No"  [formControl]="profileForm.controls['phone']" tabindex="4" onkeyup="if(!this.checkValidity()){this.value='e';alert('Please enter a number');};" required>
-                                    <span class="required_comments" *ngIf="phoneMinlength"> Phone Number Should Be 10 Numbers.</span>
+                                <td> 
+                                    <input type="number" (input)="onTypeNumValid($event.target.value)" placeholder="Mobile No"  [formControl]="profileForm.controls['phone']" tabindex="4" onkeyup="if(!this.checkValidity()){};" onkeydown="javascript: return event.keyCode == 69 ? false : true" required>
+                                    <span class="required_comments" *ngIf="phoneMinlength"> {{num_length}}</span>
+                                    <!-- <span class="required_comments" *ngIf="profileForm.controls['phone'].hasError('required') && profileForm.controls['phone'].touched">{{num_required}}</span> -->
                                 </td>
                                 <hr>
                             </tr>
@@ -168,7 +169,7 @@
                                 <hr>
                             </tr>
                             <tr class="sub">
-                                <td></td>
+                                <td></td> 
                                 <td>
                                     <input type="submit"  (click)="profile_sub()" value="Submit" style="padding:10px;" class="btn">
                                     <!--<button style="margin-top:8px;padding:10px;background-color:#33cccc;cursor: pointer;" (click)="profile_sub(item)">Submit</button>-->
@@ -253,9 +254,9 @@
                   <span style="color:red" *ngIf="queryBoxAlert"> Please Enter Your Query. </span>                                        
                   <div class="clearfix">
                       <div class="wrap-48 setting_contact_sele">
-                         <select class="drp-down brd-radius-5 h-40 minimal" style="height: 45px !important;font-weight: 510;    background-color: #edf1f1 !important;">
+                         <!-- <select class="drp-down brd-radius-5 h-40 minimal" style="height: 45px !important;font-weight: 510;    background-color: #edf1f1 !important;">
                              <option>Query Type</option>
-                         </select>
+                         </select> -->
 
                       </div>
                       <div class="wrap-40 setting_contact_40">
@@ -278,20 +279,18 @@
                                   <img class="contact-btn-img" src="assets/images/icon-call.png" /></span>
                               <span class="pull-left">
                                   <div>Need help? Call Us Now</div>
-                                  <b>+919876543210</b>
+                                  <div>+919908271980</div>
                               </span>
                           </a>
                       </div>
                       <div class="wrap-40 pull-right" style="margin-right:53px !important;-webkit-animation: pop-in .5s;
                       animation: pop-in .5s; ">
-                            <a class="btn btn-main button-large btn-block clearfix contact-btn">
+                            <a class="btn btn-main button-large btn-block clearfix contact-btn" href="mailto:support@medicodesk.com">
                               <span class="pull-left">
                                   <img class="contact-btn-img" src="assets/images/icon-chat.png" style="margin-left: 54px;margin-right: -12px;"/></span>
                                 
                               <span class="pull-left btn-large-lh" style="margin-top: 4px;margin-left: 38px;">
-                                  <div>Chat with us! &nbsp;&nbsp;&nbsp; ></div>
-                                  <div>+919876543210</div>
-
+                                  <div style="margin-top: 10px;">Chat with us! &nbsp;&nbsp;&nbsp; ></div>
                               </span>
                           </a>
                         
@@ -409,13 +408,11 @@
                                     Lorem ipsum, lorem</span></div>
                             </li> -->
                         </ul></div>
-                       <!-- <div class="align-center m-b-20">
-                           <a class="btn btn-black btn-regular brd-radius-10  align-center ">
-                               RENEW SUBSCRIPTION
-                                </a>
-      
-      
-                            </div> -->
+                        <div class="align-center m-b-20" *ngIf="subscriptionDetails.ionstatus!='live' && subscriptionDetails.ionstatus!=undefined">
+                            <a class="btn btn-black btn-regular brd-radius-10  align-center" style="cursor:pointer;" href="http://dashboard.getion.in/index.php/ion-subscription" target="_blank">
+                                RENEW SUBSCRIPTION
+                            </a>
+                        </div> 
                     </div>
       
                     </div>
@@ -455,10 +452,11 @@
                                  <img src="{{user.avatar}}" id="all-user-list-img" *ngIf="user.avatar != 'http://staging.getion.in/'" class="img-responsive" alt="">
                              </li>
                              <li class="setting_user_40">
+                                 <div style="width:80%;word-break: break-all !important;">
                                  <h2 style="color:#33cccc;text-transform: capitalize;"><b>{{user.firstname}}</b></h2>
                                  <!-- <p style="font-size:14px;">By Doctor</p> -->
                                  <!-- <p style="font-size:12px;">children</p> -->
-
+                                </div>
                              </li>
                              <li (click)="openUserDialog(user.id)" class="setting_user_10">
                                  <img src="assets/css/images/add_user_arrow.png" alt=""> 
@@ -479,29 +477,53 @@
                     </div>
 
                     <div class="setting_user_detail">
-                            
-                       <ul class="setting_user_detail_ul">
-                           <li class="setting_user_detail_ul_li">
-                               <p>Name</p>
-                               <br>
-                               <p>User Type</p>
-                               <br>
-                               <p>Email</p>
-                           </li>
-                           <li class="setting_user_data">
-                               <p style="text-transform: capitalize;">{{user.firstname}}</p>
-                               <br>
-                               <p *ngIf="user.group_id == 10">Doctor</p>
-                               <p *ngIf="user.group_id == 17">Business Head</p>
-                               <p *ngIf="user.group_id == 15">Frontdesk</p>
-                               <p *ngIf="user.group_id == 16">Junior Doctor</p>
-                               <br>
-                                <p>{{user.email}}</p>
-                               <!-- <p>{{user.email[0]}}</p>
-                               <p>@{{user.email[1]}}</p> -->
-                           </li>
-                       </ul>
-                      
+                            <!-- <ul class="setting_user_detail_ul">
+                                    <li class="setting_user_detail_ul_li">
+                                        <p>Name</p>
+                                        <br>
+                                        <p>User Type</p>
+                                        <br>
+                                        <p>Email</p>
+                                        <br>
+                                        <p *ngIf="user.speciality!='' && user.speciality!=null">Speciality</p>
+                                    </li>
+                                    <li class="setting_user_data">
+                                        <p style="text-transform: capitalize;">{{user.firstname}}</p>
+                                        <br>
+                                        <p *ngIf="user.group_id == 10">Doctor</p>
+                                        <p *ngIf="user.group_id == 17">Business Head</p>
+                                        <p *ngIf="user.group_id == 15">Frontdesk</p>
+                                        <p *ngIf="user.group_id == 16">Junior Doctor</p>
+                                        <br>
+                                         <p>{{user.email}}</p>
+                                         <br>
+                                         <p *ngIf="user.speciality!='' && user.speciality!=null">{{user.speciality}}</p>
+                                       
+                                    </li>
+                                </ul> -->
+                            <table>  
+                               <tr>
+                                   <td width="40%"><p>Name</p></td>
+                                   <td width="60%">{{user.firstname}}</td>
+                                </tr>
+                              <tr>
+                                  <td width="40%"><p>User Type</p></td>
+                                  <td width="60%">
+                                        <p *ngIf="user.group_id == 10">Doctor</p>
+                                        <p *ngIf="user.group_id == 17">Business Head</p>
+                                        <p *ngIf="user.group_id == 15">Frontdesk</p>
+                                        <p *ngIf="user.group_id == 16">Junior Doctor</p>
+                                  </td>
+                              </tr>
+                               <tr>
+                                  <td width="40%"><p>Email</p></td>
+                                  <td width="60%"><p>{{user.email}}</p></td>
+                               </tr>
+                              <tr>
+                                  <td width="40%"><p [hidden]="!(user.speciality!='' && user.speciality!=null)">Speciality</p></td>
+                                  <td width="60%"><p *ngIf="user.speciality!='' && user.speciality!=null">{{user.speciality}}</p></td>
+                              </tr>
+                            </table>
                     </div>
 
                 </div>
@@ -526,6 +548,7 @@
 <!-- Popup User -->
 <div class="model model-profile-view  bx-shadow no-padding" *ngIf="isShowUserPopup" [style.margin-top.px]="windowBottom" style="width:1000px;margin-left: -425px;">
         <div class="loader" *ngIf="isStartLoaderForUserPopup"></div>
+       
         <div class="setting_user_popup_11">
               <div class="setting_user_popup_12">
                   <div class="lt-div">
@@ -559,20 +582,22 @@
               </div>
               <div class="setting_user_popup">
                  <a class="close" style="cursor: pointer;" (click)="isShowUserPopup = false;closeUserPopUp();">Close</a>
-                    <table style="width:100%;" class="popup_input">
+                      <table style="width:100%;" class="popup_input">
                         <tr>
                             <td>
                                  FIRST NAME
                                  <br>
-                                <input type="text" placeholder="First Name"  style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['firstname']" required>  <br>
+                                <input type="text" placeholder="First Name"  style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['firstname']" pattern="\S.*\S" required>  <br>
                                 <span style="color:red" *ngIf="userDetailsForm.controls['firstname'].hasError('required') && userDetailsForm.controls['firstname'].touched"> Please Enter The First Name. </span>
                                 <!-- <span style="color:red" *ngIf="userDetailsForm.controls['firstname'].hasError('minlength') && userDetailsForm.controls['firstname'].touched"> Please Enter The Firstname. </span> -->
+                                <span style="color:red" *ngIf="userDetailsForm.controls['firstname'].hasError('pattern') && userDetailsForm.controls['firstname'].touched">{{spaceComment}}</span>
                             </td>
                             <td>
                                 LAST NAME
                                 <br>
-                                <input type="text" placeholder="Last Name" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['surname']" required>  <br>
+                                <input type="text" placeholder="Last Name" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['surname']" pattern="\S.*\S" required>  <br>
                                 <span style="color:red" *ngIf="userDetailsForm.controls['surname'].hasError('required') && userDetailsForm.controls['surname'].touched"> Please Enter The Last Name. </span>
+                                <span style="color:red" *ngIf="userDetailsForm.controls['surname'].hasError('pattern') && userDetailsForm.controls['surname'].touched">{{spaceComment}}</span>
                               
                             </td>
                         </tr>
@@ -581,9 +606,10 @@
                                 <td>
                                      USER NAME
                                      <br>
-                                    <input type="text" placeholder="User Name" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['username']" required *ngIf="isAddUser"> 
+                                    <input type="text" placeholder="User Name" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['username']" required *ngIf="isAddUser" pattern="\S.*\S"> 
                                     <input type="text" placeholder="User Name" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['username']" required *ngIf="!isAddUser" [attr.disabled]="true">   <br>                                   
                                     <span style="color:red" *ngIf="userDetailsForm.controls['username'].hasError('required') && userDetailsForm.controls['username'].touched"> Please Enter The User Name. </span>
+                                    <span style="color:red" *ngIf="userDetailsForm.controls['username'].hasError('pattern') && userDetailsForm.controls['username'].touched">{{spaceComment}}</span>
                                     <!-- <span style="color:red" *ngIf="userDetailsForm.controls['username'].hasError('required') && userDetailsForm.controls['username'].touched"> Please Enter The User Name. </span> -->
                               
                                 </td>
@@ -616,14 +642,14 @@
                                     <td>
                                         PASSWORD
                                          <br>
-                                        <input type="password" placeholder="Password" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['password']" (input)="passwordchanges()">  <br>
+                                        <input type="password" placeholder="Password" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['updatePassword']" (input)="passwordchanges()">  <br>
                                         <!-- <span style="color:red" *ngIf="userDetailsForm.controls['password'].hasError('required') && userDetailsForm.controls['password'].touched"> Please Enter The Password. </span> -->
                                         
                                     </td>
                                     <td>
                                             RETYPE PASSWORD
                                         <br>
-                                        <input type="password" placeholder="Retype Password" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['reTypePassword']" (input)="passwordchanges()">  <br>
+                                        <input type="password" placeholder="Retype Password" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['updateReTypePassword']" (input)="passwordchanges()">  <br>
                                         <!-- <span style="color:red" *ngIf="userDetailsForm.controls['reTypePassword'].hasError('required') && userDetailsForm.controls['reTypePassword'].touched"> Please Enter The Re Type Password. </span> -->
                                         
                                     </td>
@@ -706,8 +732,8 @@
                             </tr>  -->
                             <tr>
                                 <td>
-                                    <button style="width:90%;height:37px;background-color:#33cccc;cursor: pointer;border-radius:50px;color:white;" (click)="addNewUser()" *ngIf="isAddUser" class="btn"><b>ADD USER</b></button>
-                                    <button style="width:90%;height:37px;background-color:#33cccc;cursor: pointer;border-radius:50px;color:white;" (click)="updateUser()" *ngIf="!isAddUser" class="btn"><b>UPDATE</b></button>
+                                    <button style="width:90%;height:37px;background-color:#33cccc;cursor: pointer;border-radius:50px;color:white;" (click)="addNewUser()" *ngIf="isAddUser" class="btn" [disabled]="buttonsDisabled"><b>ADD USER</b></button>
+                                    <button style="width:90%;height:37px;background-color:#33cccc;cursor: pointer;border-radius:50px;color:white;" (click)="updateUser()" *ngIf="!isAddUser" class="btn" [disabled]="buttonsDisabled"><b>UPDATE</b></button>
                                 </td>
                                 <td>
                                     <button style="width:90%;height:37px;background-color:#555;cursor: pointer;border-radius:50px;color:white;" (click)="closeUserPopUp()" class="btn"><b>CANCEL</b></button>
@@ -721,7 +747,7 @@
 </div>
 
    <!-- alert -->
-    <div class="model model-alerts" *ngIf="isAlertPopup" [style.margin-top.px]="windowBottom" style="box-shadow: 0 0 5px #777;"> 
+    <div class="model model-alerts" *ngIf="isAlertPopup" style="box-shadow: 0 0 5px #777;" [style.margin-top.px]="windowBottom"> 
                 <!-- <a class="close">Close</a> -->
                 
                 <div class="model-content">
@@ -733,7 +759,7 @@
                   </div>
                  </div>
      </div>
-                <div class="model model-alerts" *ngIf="isAlertPopupForError" [style.margin-top.px]="windowBottom" style="box-shadow: 0 0 5px #777;"> 
+                <div class="model model-alerts" *ngIf="isAlertPopupForError" style="box-shadow: 0 0 5px #777;" [style.margin-top.px]="windowBottom"> 
                 <!-- <a class="close">Close</a> -->
                 
                 <div class="model-content">

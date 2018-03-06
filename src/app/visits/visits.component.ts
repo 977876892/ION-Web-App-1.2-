@@ -14,12 +14,11 @@ import * as alasql from 'alasql';
 // import * as autoTable from 'jspdf'
 let jsPDF = require('jspdf');
 require('jspdf-autotable');
-
+import { ErrorService } from '../shared/services/error/error.service';
 @Component({
   selector: 'app-visits',
   templateUrl: './visits.component.html',
-  providers: [VisitsService, AuthserviceService,LeadsService,CsvService],
-  styleUrls: ['./visits.component.css']
+  providers: [VisitsService, AuthserviceService,LeadsService,CsvService,ErrorService]
 })
 export class VisitsComponent implements OnInit {
   format = require('date-fns/format');
@@ -46,14 +45,13 @@ export class VisitsComponent implements OnInit {
   doctorsListForFilter=[];
   timeSlotsData: any = [];
   spaceComment=IonServer.Space_Not_required;  
-  connect_err=IonServer.nointernet_connection_err;
   imgerror="Choose Only Image.";
   imgsize="The file size can not exceed 8MB.";
   //select_column=[{name:'Age'},{name:'Phone'},{name:'Email'},{name:'Time'},{name:'Status'},{name:'Paid Amnt'}];
   select_column=[{title:'Name',value:6,Checked: true,dataKey: "name"},{title:'Doctor',value:6,Checked: true,dataKey: "resname"},{title:'Age',value:1, Checked: true,dataKey: "age"},{title:'Phone',value:2, Checked: true,dataKey: "mobile"},{title:'Email',value:3,Checked: true,dataKey: "email"},{title:'Time',value:4,Checked: true,dataKey: "starttime"},{title:'Status',value:5,Checked: true,dataKey: "request_status"},{title:'Paid_Amnt',value:6,Checked: true,dataKey: "booking_deposit"}];
   // status_fields = [{id: 'new', value: 'New'}, {id: 'accepted', value: 'Accepted'}, {id: 'canceled', value: 'Cancelled'},{id: 'Review', value: 'Review'}];
   @ViewChild('fileInput') fileInput;
-  visitsCount:number=10;
+  visitsCount:number;
   //@ViewChild('visitsListing') listing;
   isEditVisit: boolean = false;
   orderVal: string = 'starttime';
@@ -66,6 +64,7 @@ export class VisitsComponent implements OnInit {
   isPrinting: boolean = false;
   isAlertPopupError:boolean=false;
   selectedDateValue:Date=new Date();
+  buttonsDisabled=false;
  
   visitForm: FormGroup = this.builder.group({
     firstname: new FormControl(''),
@@ -117,7 +116,7 @@ export class VisitsComponent implements OnInit {
   gender=[{checked:true},{checked:false}];
   excelOrPdf="excel";
   constructor(private router: Router, private visitsService: VisitsService, private route: ActivatedRoute,
-     private builder: FormBuilder,  private authService: AuthserviceService,private leadsService:LeadsService,private csvService: CsvService) {
+     private builder: FormBuilder,  private authService: AuthserviceService,private leadsService:LeadsService,private csvService: CsvService,private errorservice:ErrorService) {
       document.addEventListener('click', this.offClickHandler.bind(this));
       }
       offClickHandler(event:any) {
@@ -133,6 +132,7 @@ export class VisitsComponent implements OnInit {
     } else {
      //this.getVisits();
      this.getLeadTags();
+     this.getCategeories();
        this.route.params.forEach((params: Params) => {
         if (params.isAddVisitParam != '' && params.isAddVisitParam != undefined) {
           if(params.isAddVisitParam=='addvisit')
@@ -180,31 +180,19 @@ export class VisitsComponent implements OnInit {
               let month = new Date((this.grouped._wrapped[i])[0]).getMonth();
               this.grouped._wrapped[i][0] = months[month] + ' ' + date;
             }
-          this.visitsCount=12;
           this.visitsTempData = this.grouped._wrapped;
-      //  console.log(this.visitsTempData[0][0])
-      //  console.log(this.visitsTempData[0][1].length)
-    // if(this.selectCalDate == this.visitsTempData[0][0]){
-    //     this.selectedDateApp=this.visitsTempData[0][1].length;
-    //     console.log(this.selectedDateApp);
-    //     console.log(this.selectCalDate)
-    //     localStorage.setItem('visitsAppointment', JSON.stringify({
-    //         totalAppointment:this.selectedDateApp
-    //     }));
-    // }else{
-    //   this.selectedDateApp=0;
-    //   localStorage.setItem('visitsAppointment', JSON.stringify({
-    //     totalAppointment:this.selectedDateApp
-    //    }));
-    //   console.log(this.selectedDateApp);
-    //    console.log(this.selectCalDate);
-    // }
+          if(this.visitsTempData[0]!==undefined && this.selectCalDate == this.visitsTempData[0][0]){
+              this.visitsCount=this.visitsTempData[0][1].length;
+          }else{
+            this.visitsCount=0;
+          }
      
     }, (err) => {
       console.log(err);
+      var errorMessage= this.errorservice.logError(err);
       this.isStartLoader = false;
       this.isAlertPopupError=true;
-      this.alertMessage=this.connect_err;
+      this.alertMessage=errorMessage;
     }, () => {
       this.isStartLoader = false;
       this.getFilterByDoctorsData('');
@@ -233,7 +221,6 @@ getFilterByDoctorsData(resId) {
   this.showNovisitsAvailable=false;
  if(resId == undefined || resId == '' || resId == null) {
   this.visitsData = this.visitsTempData;
-  // console.log(this.visitsData);
  }else {
   this.visitsData = [];
   this.visitsTempData.forEach((resdata) => {
@@ -293,7 +280,7 @@ not_select_date_error_msg(){
 categoryRequiredError:boolean=false;
 addVisit() {
   //this.isStartLoader = true;
-  if(this.visitForm.value.category==''||this.visitForm.value.category==null)
+  if((this.visitForm.value.category==''||this.visitForm.value.category==null)  && this.categorieslength!=0)
     {
       this.categoryRequiredError=true;
     }
@@ -358,9 +345,9 @@ addVisit() {
             }
        if (this.visitForm.valid &&  !this.phoneMinlength && !this.phoneZeroComm) {
          this.isAddVisitLoader=true;
+         this.buttonsDisabled=true;
           this.visitsService.addVisitService(this.visitForm.value, strUDFs).subscribe(
           (addVisitResponse: any) => {
-            console.log(addVisitResponse);
             if(addVisitResponse.status === 'ok') {
                 this.isAlertPopup = true;
                 this.alertMessage = 'Visit added successfully.';
@@ -374,9 +361,12 @@ addVisit() {
                 //this.isAddVisit = true;
                 //this.closeAddAndEditVisit();
             }
+            this.buttonsDisabled=false;
           }, (err) => {
+            this.buttonsDisabled=false
+            var errorMessage= this.errorservice.logError(err);
                  this.isAlertPopupError=true;
-                 this.alertMessage=this.connect_err;
+                 this.alertMessage=errorMessage;
                  this.isAddVisitLoader=false;
           }, () => {
             this.isAddVisitLoader=false;
@@ -411,26 +401,94 @@ patientDetails(pid) {
       }}}
   //this.patientEditDetails(pid);
 }
-
+reviewlinkFormValid:boolean;
+isAddLinkLoader:boolean;
 reviewlink(value){
-  if(value == 'appointment'){
-      
+  console.log(this.reviewForm.value)
+  if(this.reviewForm.value.patientMailId == '' && this.reviewForm.value.patientMobileNumber == ''){
+    this.reviewlinkFormValid=true;
+  }else if(this.reviewForm.value.patientMailId == null && this.reviewForm.value.patientMobileNumber == null){
+    this.reviewlinkFormValid=true;
+  }else if(this.reviewForm.value.patientMailId == '' && this.reviewForm.value.patientMobileNumber == null){
+    this.reviewlinkFormValid=true;
+  }else if(this.reviewForm.value.patientMailId == null && this.reviewForm.value.patientMobileNumber == ''){
+    this.reviewlinkFormValid=true;
   }
-  else{
-    this.visitsService.sendReviewLink(this.reviewForm.value).subscribe((appoinmentRes:any)=>{
-  })
+  if(!this.reviewlinkFormValid){
+        if(value == 'appointment'){
+              if(this.reviewForm.value.patientMailId == null){
+                this.reviewForm.patchValue({
+                  patientMailId:''
+                })
+              }else if(this.reviewForm.value.patientMobileNumber == null){
+                this.reviewForm.patchValue({
+                  patientMobileNumber:''
+                })
+              }
+          this.isAddLinkLoader=true;
+            this.visitsService.sendAppointLink(this.reviewForm.value).subscribe((appoinmentRes:any)=>{
+              this.isReviewLinkPopup=false;
+              this.closeAddAndEditVisit();
+               this.isAlertPopupError=true;
+               this.alertMessage="Appointment link has been sent successfully ";
+            },(err)=>{
+              this.isAddLinkLoader=false;
+              var errorMessage= this.errorservice.logError(err);
+              this.isAlertPopupError=true;
+              this.alertMessage=errorMessage;
+            }, () => {
+              this.isAddLinkLoader=false;
+            });
+        }
+        else{
+          this.isAddLinkLoader=true;
+                  if(this.reviewForm.value.patientMailId == null){
+                    this.reviewForm.patchValue({
+                      patientMailId:''
+                    })
+                  }else if(this.reviewForm.value.patientMobileNumber == null){
+                    this.reviewForm.patchValue({
+                      patientMobileNumber:''
+                    })
+                  }
+          this.visitsService.sendReviewLink(this.reviewForm.value).subscribe((appoinmentRes:any)=>{
+            this.isReviewLinkPopup=false;
+            this.closeAddAndEditVisit();
+            this.isAlertPopupError=true;
+            this.alertMessage="Reviewlink has been sent successfully ";
+          },(err)=>{
+            this.isAddLinkLoader=false;
+            var errorMessage= this.errorservice.logError(err);
+            this.isAlertPopupError=true;
+            this.alertMessage=errorMessage;
+          }, () => {
+            this.isAddLinkLoader=false;
+          });
+        }
   }
 }
 addVisitPopup() {
   this.clearForm();
-  this.getCategeories();
+  //this.getCategeories();
 }
 // get Categeories function
+categorieslength=0;
 getCategeories() {
   this.isAddVisitLoader = true;
   this.visitsService.getCategeoriesService().subscribe(
     (categeoryResponse: any) => {
+      console.log(categeoryResponse.data.length);
+      this.categorieslength=categeoryResponse.data.length;
       this.visitCategeoryData = categeoryResponse.data;
+      this.getDoctors('');
+          // if(categeoryResponse.data.length==0)
+          //   {
+          //     this.categorieslength=categeoryResponse.data.length;
+          //   }
+          //   else{
+          //      this.visitCategeoryData = categeoryResponse.data;
+          //  }
+          
       //this.getDoctors(this.visitCategeoryData[0].id_categeories);
     }, (err) => {
 
@@ -472,9 +530,10 @@ getDoctorsForFilter(catId) {
     });
 }
 getDoctors(catId) {
-  if(catId!='')
-    {
-      this.isAddVisitLoader=true;
+ 
+    if(this.categorieslength==0)
+      {
+        this.isAddVisitLoader=true;
       this.visitsService.getDoctorsService(catId).subscribe(
       (doctorsResponse: any) => {
         
@@ -490,13 +549,35 @@ getDoctors(catId) {
         this.isAddVisitLoader=false;
         // this.getDoctorTimeSlots(this.visitDoctorsData[0].id_resources, '2017/10/31');
       });
-    }
+      }
     else{
-      this.categoryRequiredError=true;
-      // this.visitForm.patchValue({
-      //   res_id:''
-      // })
+       if(catId!='')
+        {
+            this.isAddVisitLoader=true;
+                  this.visitsService.getDoctorsService(catId).subscribe(
+                  (doctorsResponse: any) => {
+                    
+                        this.categoryRequiredError=false;
+                        this.visitForm.patchValue({
+                              res_id:''
+                            })
+                        this.visitDoctorsData = doctorsResponse.data;
+                  }, (err) => {
+
+                  }, () => {
+                    this.isAddVisitLoader=false;
+                    // this.getDoctorTimeSlots(this.visitDoctorsData[0].id_resources, '2017/10/31');
+                  });
+            }
+        else{
+          this.categoryRequiredError=true;
+          // this.visitForm.patchValue({
+          //   res_id:''
+          // })
+        }
     }
+      
+  
   
 }
   getDoctorsForUpdate(catId) {
@@ -633,7 +714,7 @@ upload() {
         fd.append('password', currentuser.pwd);
         fd.append('encode', 'true');
         fd.append('auth_key', currentuser.auth);
-        
+        this.buttonsDisabled=true;
         this.authService.uploadImageService(fd).subscribe(res => {
           // do stuff w/my uploaded file
           if(res.description==undefined)
@@ -647,10 +728,11 @@ upload() {
               this.isStartLoader = false;
               this.isShowImgDeleteButt=true;
           }
-        
+          this.buttonsDisabled=false;
         },(err) => {
              
         }, () => {
+          this.buttonsDisabled=false;
           this.fileInput.nativeElement.value = '';
           this.isAddVisitLoader = false;
         });
@@ -686,7 +768,7 @@ deleteVisit(vId) {
 visitEdit(pId) {
   this.isEditVisit = true;
   this.isAddVisit = false;
-  this.getCategeories();
+  //this.getCategeories();
   for (const eachentry of this.visitsTempData) {
      for (const eachdata of eachentry[1]) {
       if(eachdata.id === pId) {
@@ -819,14 +901,16 @@ patientEditDetails(pid) {
             comments: eachdata.remarks,
             dob: eachdata.birthday,
             ce_id:eachdata.ce_id,
-            image:eachdata.image
+            image:eachdata.image,
+            age:eachdata.age
           });
           this.visitUpdateDetail= this.visitForm.value;
         }
       
         }, (err) => {
+          var errorMessage= this.errorservice.logError(err);
              this.isAlertPopupError=true;
-             this.alertMessage=this.connect_err;
+             this.alertMessage=errorMessage;
              this.isStartLoader = false;
              this.isEditVisit = false;
         }, () => {
@@ -849,10 +933,12 @@ visitUpdate() {
   
   this.visitForm.value.comments=this.visitForm.value.comments.replace(/&/g, "%26");
   //this.isStartLoader = true;
-  if(this.visitForm.value.category==''||this.visitForm.value.category==null)
+  this.categoryRequiredError=false;
+  if((this.visitForm.value.category==''||this.visitForm.value.category==null) && this.categorieslength!=0)
     {
       this.categoryRequiredError=true;
     }
+
    if(this.numLength!=10 && this.numLength!=0)
         {
            this.phoneMinlength=true;
@@ -875,9 +961,7 @@ visitUpdate() {
          }
     }
    
-    
-    if(this.visitForm.value.request_status!="" && this.visitForm.value.starttime.toString().includes(":") && this.visitForm.value.res_id!='' && this.visitForm.value.category!=''  && !this.phoneMinlength && !this.phoneZeroComm &&this.visitForm.valid && !this.isModifyData) {
-      
+    if(this.visitForm.value.request_status!="" && this.visitForm.value.starttime.toString().includes(":") && this.visitForm.value.res_id!='' && !this.categoryRequiredError  && !this.phoneMinlength && !this.phoneZeroComm &&this.visitForm.valid && !this.isModifyData) {
         var strUDFs="";
         strUDFs += 2 + ';' + this.visitForm.value.sex + '~';
         if(this.visitForm.value.dob !== '') {
@@ -887,9 +971,11 @@ visitUpdate() {
       this.visitForm.value.name = this.visitForm.value.firstname + ' ' + this.visitForm.value.lastname;
       this.isAddVisitLoader=true; 
       this.isStartLoader=false;
+      this.buttonsDisabled=true;
       this.visitsService.updateVisitService(this.visitForm.value,strUDFs).subscribe(
                 (vistUpdateResponse: any) => {
                   if(vistUpdateResponse.data[0].status === 'ok') {
+                    this.buttonsDisabled=false;
                     this.isStartLoader=false;
                     this.isAddVisitLoader=false;
                     this.isAlertPopup = true;
@@ -900,12 +986,15 @@ visitUpdate() {
                       
                   }
                 }, (err) => {
+                  this.buttonsDisabled=false;
                   console.log(err);
                 //  this.isStartLoader=false;
+                var errorMessage= this.errorservice.logError(err);
             this.isAddVisitLoader=false;
             this.isAlertPopupError=true;
-            this.alertMessage=this.connect_err;
+            this.alertMessage=errorMessage;
                 }, () => {
+                  this.buttonsDisabled=false;
                   this.isAddVisitLoader=false;
                   this.isStartLoader=false;
                   //this.isStartLoader = false;
@@ -923,6 +1012,7 @@ timechange(){
 // to clear from fields
 clearForm() {
   this.visitForm.reset();
+  this.categoryRequiredError=false;
   this.phoneMinlength=false;
   this.visitForm.patchValue({
     firstname: '',
@@ -1074,8 +1164,9 @@ downloadVisits(){
             window.URL.revokeObjectURL(url);
 
       },(err) => {
+        var errorMessage= this.errorservice.logError(err);
         this.isAlertPopupError=true;
-        this.alertMessage=this.connect_err;
+        this.alertMessage=errorMessage;
         this.isStartLoader = false;
       }, () => {
         this.isStartLoader = false;
@@ -1136,6 +1227,7 @@ dobSelected(dob){
                })
         }
   closeAddAndEditVisit(){
+    this.categoryRequiredError=false;
     if(this.router.url == '/visits/addvisit')
     {
       this.router.navigate(['/visits']);
@@ -1145,6 +1237,20 @@ dobSelected(dob){
     this.visitForm.reset();
     this.blockAllDay='No';
     this.blockCalenderForm.reset();
+    this.reviewForm.reset();
+    this.reviewlinkFormValid=false;
+    this.isAddLinkLoader=false;
+    this.phoneMinlength=false;
+    this.blockCalenderForm.patchValue({
+        res_id: '',
+        category:'',
+        block_from:'',
+        block_till:'',
+        block_from_time:'',
+        block_to_time:'',
+        blockAllDay:'',
+        block_detail:''
+  });
     this.isShowImgDeleteButt=false;
     this.phoneZeroComm=false;
     this.isModifyData=false;
@@ -1153,7 +1259,6 @@ dobSelected(dob){
   filteredVisits:any=[];
   getAppintmentsBetweenDates(data){
      //var date=new Date();
-     console.log("loader");
      this.isStartLoaderForPrint=true;
      var doctor:any="";
       var fromDate:any="";
@@ -1190,8 +1295,9 @@ dobSelected(dob){
         this.isPrintClicked = false;
       },(err) => {
         console.log(err);
+        var errorMessage= this.errorservice.logError(err);
         this.isAlertPopupError=true;
-        this.alertMessage=this.connect_err;
+        this.alertMessage=errorMessage;
         this.isStartLoaderForPrint = false;
       }, () => {
           this.isStartLoaderForPrint = false;
@@ -1222,8 +1328,9 @@ dobSelected(dob){
          this.isAlertPopup=true;
          this.alertMessage="Appointment Deleted Successfully.";
       },(err) => {
+        var errorMessage= this.errorservice.logError(err);
          this.isAlertPopupError=true;
-         this.alertMessage=this.connect_err;
+         this.alertMessage=errorMessage;
          this.isStartLoader = false;
       }, () => {
         this.isStartLoader = false;
@@ -1262,30 +1369,38 @@ block_calender(){
   //       block_till_time:this.format(this.blockCalenderForm.value.block_till, ['hh.mm']),
   //       blockAllDay:this.blockAllDay
   // }
+  
+if(this.blockCalenderForm.valid){
   this.blockCalenderForm.patchValue({
         block_from:this.format(this.blockCalenderForm.value.block_from, ['YYYY-MM-DD']),
         block_till:this.format(this.blockCalenderForm.value.block_till, ['YYYY-MM-DD']),
-        block_from_time:this.format(this.blockCalenderForm.value.block_from, ['hh:mm']),
-        block_to_time:this.format(this.blockCalenderForm.value.block_till, ['hh:mm']),
+        block_from_time:this.format(this.blockCalenderForm.value.block_from, ['HH:mm']),
+        block_to_time:this.format(this.blockCalenderForm.value.block_till, ['HH:mm']),
         blockAllDay:this.blockAllDay
   })
-if(this.blockCalenderForm.valid){
-  
   if(this.blockCalenderForm.value.block_detail == null ||this.blockCalenderForm.value.block_detail == ''){
     this.blockCalenderForm.value.block_detail='';
   }
     this.isAddVisitLoader=true;
     this.visitsService.blockCalender(this.blockCalenderForm.value).subscribe(res => {
-            console.log(res)
             this.isBlockCalPopup=false;
             this.isAddVisitLoader=false;
-            this.alertMessage="Block calender added successfully.";
+            if(res.data[0].Error!==undefined)
+              {
+                  this.alertMessage=res.data[0].Error;
+              }
+              else{
+                  this.alertMessage="Block calender added successfully.";
+              }
+              
+            
             this.isAlertPopupError=true;
             this.closeAddAndEditVisit();
           },(err) => {
             console.log(err);
+            var errorMessage= this.errorservice.logError(err);
             this.isAlertPopupError=true;
-            this.alertMessage=this.connect_err;
+            this.alertMessage=errorMessage;
             this.isStartLoaderForPrint = false;
           }, () => {
             this.isAddVisitLoader=false;
@@ -1296,6 +1411,15 @@ if(this.blockCalenderForm.valid){
     }
   ;
 }
-
+omit_special_char(event) {
+  var k;  
+  k = event.charCode;
+  return(k!=35);
+}
+allow_only_numbers(event) {
+  var k;  
+  k = event.charCode; // k = event.keyCode;  (Both can be used)   
+  return(k>=48&&k<=57)||k===44 ||k===32;
+}
 
 }

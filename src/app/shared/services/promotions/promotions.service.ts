@@ -35,11 +35,11 @@ getIonizedBlogs() {
   );
 }
 // bLOG FULL VIEW DISPLAY
-getBlogFullView() {
+getPromotionFullView(id) {
   // const userId = this.storage.session.user ? this.storage.session.user.id : 0;
   const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
   const userId = currentuser.id;
-  return this.http.get(API.GET_BLOG_FULL_VIEW(userId)).map(
+  return this.http.get(API.GET_BLOG_FULL_VIEW(id)).map(
     (responseData) => {
       const key = '_body';
       return JSON.parse(responseData[key]);
@@ -85,6 +85,7 @@ addPromotionService(promotionid,content,image,promotionTitle) {
     body.append('excerpt','');
     body.append('permalink','');
     body.append('key',currentuser.auth);
+    body.append('created_by',currentuser.teamid);
     //  let resData = 'image=' +image+
     //  '&groupTags=' +
     //   '&write_content_hidden=' +content +
@@ -127,7 +128,8 @@ addPromotionService(promotionid,content,image,promotionTitle) {
     } 
     if(mm<10){
       mm='0'+mm;
-    } 
+    }
+    promotionTitle=promotionTitle.replace(/&/g, "%26") 
     let body = new FormData();
     var created=newDate.getFullYear()+"-"+mm+"-"+dd+" "+newDate.toString().split(" ")[4];
     //var newDate=new Date();
@@ -156,6 +158,7 @@ addPromotionService(promotionid,content,image,promotionTitle) {
       '&key=' +currentuser.auth+
       '&published=1' +
       '&id=' + promotionid +
+      '&created_by='+currentuser.teamid +
       "&encode=1";
 
       //  resData = {

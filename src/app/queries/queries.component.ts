@@ -6,11 +6,11 @@ import { PublishService } from '../shared/services/publish/publish.service';
 import 'rxjs/Rx' ;
 import { AuthserviceService } from '../shared/services/login/authservice.service';
 import { IonServer } from '../shared/globals/global';
+import { ErrorService } from '../shared/services/error/error.service';
 @Component({
   selector: 'app-queries',
   templateUrl: './queries.component.html',
-  providers: [QueriesService, AuthserviceService,PublishService],
-  styleUrls: ['./queries.component.css']
+  providers: [QueriesService, AuthserviceService,PublishService,ErrorService]
 })
 export class QueriesComponent implements OnInit {
   queriesData: any = [];
@@ -39,7 +39,9 @@ export class QueriesComponent implements OnInit {
   isEditClick: boolean = false
   editContent="";
   editId="";
-  connect_err=IonServer.nointernet_connection_err;
+  currentuser=localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+  loginUserGroupId=this.currentuser.userGroup;
+  loginUser=this.currentuser.id;//login user id for blog credentials.
   spaceComment=IonServer.Space_Not_required;
   @ViewChild('fileQuerieInput') fileQuerieInput;
   patientQuerieForm: FormGroup = this.builder.group({
@@ -48,7 +50,7 @@ export class QueriesComponent implements OnInit {
   });
   singleQuerieData: any = {};
   // publish to web site
-  publishOrNot:boolean=false;
+  publishOrNot:boolean=true;
   publishOrNotValue:number=1;
   isAlertPopup: boolean = false;
   isDeleteAlertPopup: boolean = false;
@@ -76,7 +78,7 @@ export class QueriesComponent implements OnInit {
 
   constructor(private router: Router, private quriesService: QueriesService,
     private builder: FormBuilder,private route: ActivatedRoute, private authService: AuthserviceService,
-    private publishService: PublishService) {
+    private publishService: PublishService,private errorservice:ErrorService) {
     document.addEventListener('click', this.offClickHandler.bind(this));
     document.addEventListener('click', this.transferClickHandler.bind(this));
     document.addEventListener('click', this.querieEditOrDelete.bind(this));
@@ -163,9 +165,10 @@ querieEditOrDelete(event: any) {
       this.startFrom=this.startFrom+this.limit;
      
     }, (err) => {
+      var errorMessage= this.errorservice.logError(err);
       this.isStartLoader = false;
       this.isAlertPopup=true;
-      this.alertMessage=this.connect_err;
+      this.alertMessage=errorMessage;
     }, () => {
       this.isStartLoader = false;
       this.queriesData.forEach((eachData) => {
@@ -195,9 +198,10 @@ querieEditOrDelete(event: any) {
             this.showQueries(this.queriesData[0]);
       this.startFrom=this.startFrom+this.limit;
     }, (err) => {
+      var errorMessage= this.errorservice.logError(err);
       this.isStartLoader = false;
       this.isAlertPopup=true;
-      this.alertMessage=this.connect_err;
+      this.alertMessage=errorMessage;
     }, () => {
       this.queriesData.forEach((eachData) => {
         eachData.isClickOnDottedLine = false;
@@ -227,9 +231,10 @@ querieEditOrDelete(event: any) {
             this.showQueries(this.queriesData[0]);
             this.startFrom=this.startFrom+this.limit;
     }, (err) => {
+      var errorMessage= this.errorservice.logError(err);
       this.isStartLoader = false;
       this.isAlertPopup=true;
-      this.alertMessage=this.connect_err;
+      this.alertMessage=errorMessage;
     }, () => {
       this.isStartLoader = false;
       this.queriesData.forEach((eachData) => {
@@ -244,8 +249,9 @@ getDetailsEachQuerie(id) {
     (queriesResponse: any) => {
       this.eachQuerieData = queriesResponse.posts;
     }, (err) => {
+      var errorMessage= this.errorservice.logError(err);
           this.isAlertPopup=true;
-          this.alertMessage=this.connect_err;
+          this.alertMessage=errorMessage;
           this.isStartLoader=false;
     }, () => {
       this.isStartLoader = false;
@@ -264,9 +270,11 @@ isReplyEmpty=false;
 answerAQuerie(replyData, qId) {
   if(this.publishOrNot==true)
       {
+        //publish to website.
         this.publishOrNotValue=0;
       }
       else{
+        //don't publish to website.
         this.publishOrNotValue=1;
       }
   //return;
@@ -286,6 +294,7 @@ answerAQuerie(replyData, qId) {
         }
         
         this.isStartLoader = true;
+        try{
         this.quriesService.addAnswerToQuerie(btoa(replyData), qId,this.publishOrNotValue,attachments).subscribe(
         (qResponse: any) => {
           this.imageSrc=[];
@@ -294,9 +303,10 @@ answerAQuerie(replyData, qId) {
           // this.queriesData = qResponse;
         }, (err) => {
                console.log(err);
+               var errorMessage= this.errorservice.logError(err);
                this.isStartLoader=false;
                this.isAlertPopup=true;
-               this.alertMessage=this.connect_err;
+               this.alertMessage=errorMessage;
         }, () => {
           this.isStartLoader = false;
           if (this.isAddtoQuickReply) {
@@ -305,6 +315,15 @@ answerAQuerie(replyData, qId) {
           this.isQuickReply = false;
           this.getDetailsEachQuerie(qId);
         });
+        }catch(Error)
+        {
+           //this.answerData.value=replyData;
+           //replyData=replyData;
+           this.isStartLoader=false;
+           this.isAlertPopup=true;
+           this.alertMessage="Special Symbols are Not allowed.";
+        }
+      
     }
   
 }
@@ -382,8 +401,9 @@ showTemplates(index) {
     (qResponse: any) => {
       this.downloadFile(qResponse); 
     }, (err) => {
+      var errorMessage= this.errorservice.logError(err);
          this.isAlertPopup=true;
-         this.alertMessage=this.connect_err;
+         this.alertMessage=errorMessage;
          this.isStartLoader = false;
     }, () => {
       this.isStartLoader = false;
@@ -428,9 +448,10 @@ transferQuery(catid){
             this.isShowTransferQuery = false;
             this.getQueriesBasedOnUrlStatus();
           }, (err) => {
+            var errorMessage= this.errorservice.logError(err);
             this.isStartLoader = false;
             this.isAlertPopup=true;
-            this.alertMessage=this.connect_err;
+            this.alertMessage=errorMessage;
           }, () => {
             this.isStartLoader = false;
           });
@@ -516,8 +537,9 @@ querieEditClick(querieData) {
           });
         }
      }, (err) => {
+      var errorMessage= this.errorservice.logError(err);
          this.isAlertPopup=true;
-         this.alertMessage=this.connect_err;
+         this.alertMessage=errorMessage;
          this.isStartLoader = false;
      }, () => {
        this.isStartLoader = false;
@@ -551,8 +573,9 @@ showNoTemplatesAvailable=false;
         this.showNoTemplatesAvailable=true;
       }
    }, (err) => {
+    var errorMessage= this.errorservice.logError(err);
     this.isAlertPopup=true;
-    this.alertMessage=this.connect_err;
+    this.alertMessage=errorMessage;
     this.isStartLoader = false;
    }, () => {
       this.querieTemplatesData.forEach(template=>{
@@ -623,8 +646,9 @@ quickReplySave(content,editId){
       //      });
       this.isStartLoader = false;
   }, (err) => {
+    var errorMessage= this.errorservice.logError(err);
     this.isAlertPopup=true;
-    this.alertMessage=this.connect_err;
+    this.alertMessage=errorMessage;
     this.isStartLoader = false;
    }, () => {
    });
@@ -632,32 +656,46 @@ quickReplySave(content,editId){
 }
 
 
-
+bigSizeImg=[];
 // upload publish comment image
 uploadImage() {
-  
+  this.bigSizeImg=[];
+  var bigimgcontinue=false;
   const fileBrowser = this.fileQuerieInput.nativeElement;
-  // if (fileBrowser.files && fileBrowser.files[0]) {
-    if(fileBrowser.files[0].size/1024/1024 > 9) {
-      this.imageUploadAlert = true;
-      this.imageerrorAlert = false;
-      // this.imageSrc = "";
-      this.fileQuerieInput.nativeElement.value = '';
-      return false;
-    }
+   if (fileBrowser.files && fileBrowser.files[0]) {
+    
     this.isStartLoader = true;
     this.imageerrorAlert = false;
     this.imageUploadAlert = false;
     const fd = new FormData();
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
-    for(var key=0;key<fileBrowser.files.length;key++)
-     {
-        if(key==0)
-          fd.append('file', fileBrowser.files[key]);
-       else{
-         fd.append('file'+key, fileBrowser.files[key]);
-       }
+    // for(var key=0;key<fileBrowser.files.length;key++)
+    //  {
+    //     if(key==0)
+    //       fd.append('file', fileBrowser.files[key]);
+    //    else{
+    //      fd.append('file'+key, fileBrowser.files[key]);
+    //    }
         
+    //  }
+      for(var key=0;key<fileBrowser.files.length;key++)
+    {
+       if(fileBrowser.files[key].size/1024/1024 > 9){
+        //this.imageUploadAlert = false;
+        this.bigSizeImg.push(fileBrowser.files[key].name + "  size can not exceed 8MB.");
+        if(fileBrowser.files.length==1)
+          {
+            this.isStartLoader=false;
+            return false;
+          }
+       }else{
+         bigimgcontinue=true;
+            if(key==0)
+            fd.append('file', fileBrowser.files[key]);
+            else{
+              fd.append('file'+key, fileBrowser.files[key]);
+            }
+       }
      }
     //fd.append('file', fileBrowser.files[0]);
     fd.append('userid', currentuser.id);
@@ -665,14 +703,14 @@ uploadImage() {
     fd.append('password', currentuser.pwd);
     fd.append('encode', 'true');
     fd.append('auth_key', currentuser.auth);
-    
+   if(bigimgcontinue) {
     this.authService.uploadImageService(fd).subscribe(res => {
       // do stuff w/my uploaded file
-      if(res.description==undefined)
+        if(res.description==undefined)
       {
+            this.isStartLoader = false;
             this.imageUploadAlert = false;
-            this.imageerrorAlert=true;
-      }else{
+     }else{
         res.description.forEach(image=>{
           this.imageSrc.push(image.url);
         })
@@ -680,13 +718,16 @@ uploadImage() {
         this.isStartLoader = false;          
       }
     },(err) => {
+      var errorMessage= this.errorservice.logError(err);
       this.isStartLoader = false;
       this.isAlertPopup=true;
-      this.alertMessage=this.connect_err;
+      this.alertMessage=errorMessage;
      }, () => {
       this.fileQuerieInput.nativeElement.value = '';
       this.isStartLoader = false;
     });
+  }else{this.isStartLoader = false;}
+  }
 }
    removeImage(index){
       this.imageSrc.splice(index,1);
@@ -722,8 +763,9 @@ deleteAndIonizeAlertPopup(){
            this.isStartLoader = false;
            this.getQuerieTemplates(this.selectedQuery);
          }, (err) => {
+          var errorMessage= this.errorservice.logError(err);
           this.isAlertPopup=true;
-          this.alertMessage=this.connect_err;
+          this.alertMessage=errorMessage;
           this.isStartLoader=false;
           this.isIonizeQuery=false;
           this.isDeleteAlertPopup=false;
@@ -801,8 +843,9 @@ deleteAndIonizeAlertPopup(){
                     });
                   
                 }, (err) => {
+                  var errorMessage= this.errorservice.logError(err);
                      this.isAlertPopup=true;
-                     this.alertMessage=this.connect_err;
+                     this.alertMessage=errorMessage;
                      this.isStartLoader=false;
                      this.isIonizeQuery=false;
                 }, () => {
@@ -832,10 +875,11 @@ deleteAndIonizeAlertPopup(){
               this.isAlertPopup=true;
               this.alertMessage = "Question Deleted Successfully.";
               },(err) => {
+                var errorMessage= this.errorservice.logError(err);
                 this.isStartLoader = false;
                 this.isDeleteAlertPopup=false;
                 this.isAlertPopup=true;
-                this.alertMessage=this.connect_err;
+                this.alertMessage=errorMessage;
               }, () => {
                 this.isStartLoader = false;
                 this.isDeleteAlertPopup=false;
@@ -848,9 +892,10 @@ deleteAndIonizeAlertPopup(){
         this.quriesService.makeTheQuestionASPoular(eachQuerie.id).subscribe(res => {
                  this.userDispalyData.featured=1;
                   },(err) => {
+                    var errorMessage= this.errorservice.logError(err);
                     this.isStartLoader = false;
                     this.isAlertPopup=true;
-                    this.alertMessage=this.connect_err;
+                    this.alertMessage=errorMessage;
                   }, () => {
                     this.isStartLoader = false;
         })
@@ -860,9 +905,10 @@ deleteAndIonizeAlertPopup(){
         this.quriesService.makeTheQuestionASPoularUnPopular(eachQuerie.id).subscribe(res => {
                  this.userDispalyData.featured=0;
                   },(err) => {
+                    var errorMessage= this.errorservice.logError(err);
                     this.isStartLoader = false;
                     this.isAlertPopup=true;
-                    this.alertMessage=this.connect_err;
+                    this.alertMessage=errorMessage;
                   }, () => {
                     this.isStartLoader = false;
         })
@@ -872,6 +918,7 @@ deleteAndIonizeAlertPopup(){
                 k = event.charCode; // k = event.keyCode;  (Both can be used)       
                 return(k!=60 &&k!=62);
         }
+
       ionizeTheQuery(eachquerie){
         this.isDeleteAlertPopup=true;
         this.alertText="Are You Want To Ionize The Query?";

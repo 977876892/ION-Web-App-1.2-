@@ -76,8 +76,8 @@
             <img *ngIf="eachfeed.avatar != ''" src="{{ eachfeed.avatar }}" width="65" height="65">
           </div>
           <div class="feed_image_home feed_image_home22"> 
-            <span class="lg-text home--hosp-fld__txt"><p [innerHTML]="eachfeed.content.split(':')[0]"></p></span>
-            <p [innerHTML]="eachfeed.content.split(':')[1]"></p>
+            <p [innerHTML]="eachfeed.content.split(':')[0]" style="word-break: keep-all;"  class="lg-text home--hosp-fld__txt"></p>
+            <p [innerHTML]="eachfeed.content.split(':')[1]" style="word-break: keep-all;font-size: 13px;"></p>
             <div class="feed_info_stamp" style="margin: 4px 0px;">{{eachfeed.since}} ago</div>
           </div>
           <div  class="home_feed_icons11">
@@ -133,14 +133,14 @@
 <span class="model-title" style="display:none;">Popup Title</span>
 </div>
 <div class="model-content model-bg gradient-1">
- <h2>Hello Dr. {{ user.name }},
+ <h2>Hello {{ user.name }},
  <span style="font-size: 44px;">What would you to the start on?</span></h2>
 
   <div class="actions home552" style="width:95% !important;">
   <a style="cursor: pointer;" [routerLink]="['/visits/addvisit']" class="visit brd-radius-15 xs-bg-white new_add"><img src="assets/images/add-visits-icon.png"><br>Add Visit</a>
   <a (click) = "isSelectPromo = true; isPromoPopupOpen = false" class="promo brd-radius-15 xs-bg-white new_add" style="cursor: pointer;float: left !important;"><img src="assets/images/add-promo-icon.png"><br>Add Promo</a>
   <a (click)="isSelectAddLeads=true;this.isPromoPopupOpen=false;" class="promo brd-radius-15 xs-bg-white new_add" style="float:right !important;cursor: pointer;"><img src="assets/images/lead_icon.png" height="40" width="40"><br>Add Lead</a>
-  <a style="cursor: pointer;" (click) = "isSelectBlog=true; isSelectPromo = false; isPromoPopupOpen = false" class="blog brd-radius-15 xs-bg-white home_new022"><img src="assets/images/add-blog-icon.png" align="absmiddle">Start a new Blog</a>
+  <a style="cursor: pointer;" (click) = "isSelectBlog=true; isSelectPromo = false; isPromoPopupOpen = false" class="blog brd-radius-15 xs-bg-white home_new022" [ngClass]="{'disabled': (loginUserGroupId==15||loginUserGroupId==16)}"><img src="assets/images/add-blog-icon.png" align="absmiddle">Start a new Blog</a>
   
   
   </div> 
@@ -181,9 +181,55 @@
   <div class="popular-promotions">
     
     <h2>{{ promotionsData[0]?.title }}</h2>
+    <div>
+        <!-- <img src="{{eachpromotion.avatar}}"> -->
+        <ul class="docTypeList">
+           <span *ngFor="let eachpromotion of promotionsData[0]?.child; let i = index" (click)="selectPromo(eachpromotion)">
+               <li class="docTypeItem docTypeItemBasic" *ngIf="eachpromotion.id == 90"  title="{{eachpromotion.title}}">
+                 <a class="docTypeItemLink">
+                     <figure class="docTypeItemFigure">
+                         <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail" width="160" height="61">
+                         <figcaption class="docTypeItemCaption">
+                             <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                         </figcaption>
+                   </figure>
+                 </a>
+               </li>
+               <li class="docTypeItem docTypeItemBasic" *ngIf="eachpromotion.id == 91" title="{{eachpromotion.title}}">
+                   <a class="docTypeItemLink">
+                       <figure class="docTypeItemFigure">
+                           <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail" width="160" height="59">
+                           <figcaption class="docTypeItemCaption">
+                               <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                           </figcaption>
+                     </figure>
+                   </a>
+                 </li>
+                 <li class="docTypeItem docTypeItemBasic" *ngIf="eachpromotion.id == 101" title="{{eachpromotion.title}}">
+                     <a class="docTypeItemLink">
+                         <figure class="docTypeItemFigure">
+                             <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail" width="160" height="90">
+                             <figcaption class="docTypeItemCaption">
+                                 <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                             </figcaption>
+                       </figure>
+                     </a>
+                   </li>
+                   <li class="docTypeItem docTypeItemBasic" *ngIf="eachpromotion.id == 102" title="{{eachpromotion.title}}">
+                       <a class="docTypeItemLink">
+                           <figure class="docTypeItemFigure">
+                               <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail" width="160" height="90">
+                               <figcaption class="docTypeItemCaption">
+                                   <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                               </figcaption>
+                         </figure>
+                       </a>
+                     </li>
+               </span>
+         </ul>
+   </div>
     
-    
-    <div class="panel_promotions__list">
+    <!-- <div class="panel_promotions__list">
       <ul>
         <li *ngFor="let eachpromotion of promotionsData[0]?.child; let i = index" (click)="selectPromo(eachpromotion)">
           <div class="promo-block"><img src="{{eachpromotion.avatar}}"></div>
@@ -191,7 +237,7 @@
         </li>     
             </ul>             
            
-          </div>
+          </div> -->
     </div>
 
    <a style="cursor: pointer;" class="viewmore" routerLink="/promotions/fullview">View More...</a>
@@ -235,7 +281,7 @@
     <div class="loader" *ngIf="isStartLoader"></div>
   <a class="close" style="cursor: pointer;" (click)="isSelectAddLeads = false;clearForm()">Close</a>
  
-   <div class="model-content">
+   <div class="model-content" style="padding:0px;">
    <h2>Add patient Details</h2>
   <div class="lt-div" style="margin: 0px 3% 0px 0px;">
     <div class="profile_card">
@@ -300,7 +346,7 @@
         </li>
     <li>
     <label class="labels">City</label>
-    <input type="text" class="input" [formControl]="leadForm.controls['city']">
+    <input type="text" class="input" [formControl]="leadForm.controls['city']" (keypress)="omit_special_char($event)">
     <!-- <span style="color:red" *ngIf="leadForm.controls['city'].hasError('required') && leadForm.controls['city'].touched">Invalid city</span>
     <span style="color:red" *ngIf="leadForm.controls['city'].hasError('minlength') && leadForm.controls['city'].touched"> City be at least three characters in length.</span> -->
     </li>
@@ -316,7 +362,7 @@
     </li>
     <li>
     <label class="labels">Phone</label>
-    <input type="number" (input)="onTypeNumValid($event.target.value)" class="input" maxlength="12" [formControl]="leadForm.controls['phone']" required>
+    <input type="number" (input)="onTypeNumValid($event.target.value)" class="input" maxlength="12" [formControl]="leadForm.controls['phone']" onkeydown="javascript: return event.keyCode == 69 ? false : true" required>
     <span class="required_comments" *ngIf="leadForm.controls['phone'].hasError('required') && leadForm.controls['phone'].touched">{{num_required_comm}}</span>
     <!-- <span style="color:red" *ngIf="leadForm.controls['phone'].hasError('minlength')"> Phone Number Minimum 10 characters Required.</span>
     <span style="color:red" *ngIf="leadForm.controls['phone'].hasError('maxlength')">Phone Number Maximum 12 characters Only.</span> -->
@@ -339,7 +385,7 @@
     </li>
     <li>
     <label class="labels">Area Locality</label>
-    <input type="text" class="input" [formControl]="leadForm.controls['area']">
+    <input type="text" class="input" [formControl]="leadForm.controls['area']" (keypress)="omit_special_char($event)">
     <!-- <span style="color:red" *ngIf="leadForm.controls['doctor'].hasError('required') && leadForm.controls['doctor'].touched">Invalid doctor</span>
     <span style="color:red" *ngIf="leadForm.controls['doctor'].hasError('minlength') && leadForm.controls['doctor'].touched"> doctor be at least three characters in length.</span> -->
     </li>
@@ -351,10 +397,10 @@
     <ul>
     <li>
     <label class="labels">Add Remarks</label>
-    <input type="text" class="input" maxlength="120" [formControl]="leadForm.controls['remarks']">
+    <input type="text" class="input" maxlength="120" [formControl]="leadForm.controls['remarks']" (keypress)="omit_special_char($event)">
     </li>
     <li>
-        <tag-input [formControl]="leadForm.controls['ctags']" [(ngModel)]="leadtags">
+        <tag-input [formControl]="leadForm.controls['ctags']" [(ngModel)]="leadtags" (keypress)="omit_special_char($event)">
           <tag-input-dropdown [autocompleteItems]="autoComplete"></tag-input-dropdown>
         </tag-input>
     </li>
@@ -364,7 +410,7 @@
       <br>
     
     <div class="actions">
-    <button class="button profile-action ripple btn" type="submit">Submit</button>
+    <button class="button profile-action ripple btn" type="submit" [disabled]="buttonsDisbled">Submit</button>
     <button class="button cancel-action" (click)="isSelectAddLeads = false;clearForm()" style="margin-top: 1px;margin-left: 10px;">cancel</button>
     </div>
   </form>
@@ -390,8 +436,19 @@
 
         <div class="live_chat_panel">
           <div class="live_chat__body live_chat">
-
-            <ul>
+             <ul>
+              <div *ngFor="let comment of blogCommentsData">
+                <!-- <li class="comm_user" *ngIf="loginUserId==comment.userid"><b>{{comment.name}}</b></li>
+                            <li class="comm_user_not" *ngIf="loginUserId!=comment.userid"><b>{{comment.name}}</b></li> -->
+                <li class="others" *ngIf="loginUserId==comment.userid"><b>{{comment.name}}</b><p style="float: right;">{{comment.date}}</p><br>
+                  <p [innerHTML]="comment.comment"></p>
+                </li>
+                <li class="user" *ngIf="loginUserId!=comment.userid"><b>{{comment.name}}</b><p style="float: right;">{{comment.date}}</p><br>
+                  <p [innerHTML]="comment.comment"></p>
+                </li>
+              </div>
+            </ul>
+            <!-- <ul>
               <div *ngFor="let comment of blogCommentsData">
                 <li class="others" *ngIf="loginUserId==comment.userid">
                   <p [innerHTML]="comment.comment"></p>
@@ -400,14 +457,14 @@
                   <p [innerHTML]="comment.comment"></p>
                 </li>
               </div>
-            </ul>
+            </ul> -->
 
           </div>
    
         </div>
       </div>
       <div class="blog-left">
-        <div class="blog-img"><img src="{{sliderFullView.image.url}}"></div>
+        <!-- <div class="blog-img"><img src="{{sliderFullView.image.url}}"></div> -->
         <div style="height: 300px;width: 100%;overflow-x: hidden; overflow-y: scroll;">
           <p [innerHTML]="sliderFullView.text"></p>
         </div>
@@ -422,7 +479,7 @@
   <a class="close" style="cursor: pointer;" (click)="isSelectReplayPop=false;clearForm()">Close</a>
   <div class="loader" *ngIf="isStartLoader"></div>
   <div class="model-titlebar">
-    <span class="model-title">{{quriesResponse[0].poster_name}}</span>
+    <span class="model-title">{{quriesResponse[0].title}}</span>
   </div>
   <div class="model-content">
     <div class="live_chat__body">
@@ -430,7 +487,7 @@
           <div *ngFor="let eachdata of quriesResponse"> 
                   <li class="others" *ngIf="eachdata.user_id == '0'" style="margin-left: 28px !important;">
                       <span class="chat_name">{{ eachdata.poster_name }}</span>
-                      <span class="chat_time" >{{ eachdata.display_time }}</span>
+                      <span class="chat_time" > {{ eachdata.display_date }} &nbsp; {{eachdata.display_time}}</span>
                       <span class="chat_content" >{{ eachdata.content }}
                           <div class="chat_post_gallery" *ngIf="eachdata.attachments?.length > 0 && eachdata.attachments != ''">
                               <div class="chat_post_img" *ngFor="let eachImage of eachdata.attachments">
@@ -444,7 +501,7 @@
                   </li>
                   <li class="user" *ngIf="eachdata.user_id != 0 ">
                       <span class="chat_name">{{ eachdata.poster_name }}</span>
-                      <span class="chat_time" >{{ eachdata.display_time }}</span>
+                      <span class="chat_time" >{{ eachdata.display_date }}  &nbsp; {{ eachdata.display_time }}</span>
                       <span class="chat_content">{{ eachdata.content }}
                           <div class="chat_post_gallery" *ngIf="eachdata.attachments?.length > 0 && eachdata.attachments != ''">
                               <div class="chat_post_img" *ngFor="let eachImage of eachdata.attachments">
@@ -481,7 +538,7 @@
        <div class="live_chat__selections">
        <div class="options" style="float: left;width: 50%;padding:0px;">
        <span *ngIf="quriesResponse.length==1">
-       <input name="publish" value="true" id="publish" class="checkbox" type="checkbox" (change)="publishOrNot=!publishOrNot">
+       <input name="publish" value="true" id="publish" class="checkbox" type="checkbox" checked="checked" (change)="publishOrNot=!publishOrNot">
        <span class="" style="font-size: 15px;font-weight:bold;">Publish on website</span>
        </span>
        </div>

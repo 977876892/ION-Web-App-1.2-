@@ -11,13 +11,18 @@ import { IonServer } from '../shared/globals/global';
 import { PublishService } from '../shared/services/publish/publish.service';
 import { QueriesService } from '../shared/services/queries/queries.service';
 declare var require: any;
+import { ErrorService } from '../shared/services/error/error.service';
+import {DomSanitizer} from '@angular/platform-browser';
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  providers: [DashboardService, PromotionsService,AuthserviceService,LeadsService,PublishService,QueriesService],
-  styleUrls: ['./home.component.css']
+  providers: [DashboardService, PromotionsService,AuthserviceService,LeadsService,PublishService,QueriesService,ErrorService]
 })
 export class HomeComponent implements OnInit {
+    format = require('date-fns/format');
+  today=new Date();
+  stopDates=this.format(this.today, ['YYYY-MM-DD']);
 dashboardData: any = [];
 dashboardFeedData: any = [];
 blogCommentsData: any = [];
@@ -26,14 +31,16 @@ questionId: any = '';
 loginUserId: number;
 homeimageSrc: any = [];
 sliderFullView:any=[]; 
-today=new Date();
-stopDates=this.today.getFullYear()+"-"+(this.today.getMonth()+1)+"-"+this.today.getDate();
+currentuser=localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+loginUserGroupId=this.currentuser.userGroup;
+//today=new Date();
+//stopDates=this.today.getFullYear()+"-"+(this.today.getMonth()+1)+"-"+this.today.getDate();
 isStartLoader;
 imageSrc: any = '';
 notificationsData: any = [];
 isPromoPopupOpen: boolean = false;
 isSelectSlider:boolean=false;
-publishOrNot:boolean=false;
+publishOrNot:boolean=true;
 publishOrNotValue:number=1;
 isAddtoQuickReply:boolean=false;
 isEditLead: boolean = false;
@@ -42,7 +49,6 @@ imageUploadAlert: boolean = false;
 isSelectPromo: boolean = false;
 numLength:number=0;
 isPromoSelected: boolean = false;
-connect_err=IonServer.nointernet_connection_err;
 isSelectAddLeads:boolean=false;
 alertMessage: string = '';
 isShowImgDeleteButt:boolean=false;
@@ -66,6 +72,7 @@ f_name_length_comm=IonServer.f_name_length;
 email_required_comm=IonServer.email_required;
 invalid_email_comm=IonServer.invalid_email;
 num_required_comm=IonServer.num_required;
+promotion_Social_imgpath=IonServer.promotion__imgpath;
 imgerror="Choose Only Image.";
 imgsize="The file size can not exceed 8MB.";
 leadForm: FormGroup = this.builder.group({
@@ -90,7 +97,7 @@ autoComplete=[];
 
 public carouselBannerItems: Array<any> = [];
 public carouselBanner: NgxCarousel;
-constructor(private router: Router,private leadsService: LeadsService,private authService: AuthserviceService,private builder: FormBuilder, private dashboardService: DashboardService, private promotionService: PromotionsService,private Publishservice:PublishService,private quriesService: QueriesService) {
+constructor(private router: Router,private leadsService: LeadsService,private authService: AuthserviceService,private builder: FormBuilder, private dashboardService: DashboardService, private promotionService: PromotionsService,private Publishservice:PublishService,private quriesService: QueriesService,private errorservice:ErrorService,private santizer:DomSanitizer) {
 
  }
 
@@ -100,37 +107,66 @@ constructor(private router: Router,private leadsService: LeadsService,private au
     } else {
          this.leadsService.getLeadTags().subscribe(res => {
          res.description.forEach(element => {
-            this.autoComplete.push(element.title);
+                this.autoComplete.push(element.title);
+              });
+          },(err) => {
+          }, () => {
+            
+          })
+      const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+      this.getDashboardStatistics();
+        const OneSignal = window['OneSignal'] || [];
+      OneSignal.push(['init', {
+        appId: 'ef7de815-6fae-466b-8f5b-ea582555a873',
+        notificationClickHandlerMatch: 'focus',
+        autoRegister: true,
+        allowLocalhostAsSecureOrigin: true,
+        notifyButton: {
+          enable: false
+        }
+      }]);
+      // OneSignal.push(function () {
+      //   console.log('Register For Push');
+
+      //   OneSignal.push(["registerForPushNotifications"])
+      // });
+      OneSignal.push(function () {
+        // Occurs when the user's subscription changes to a new value.
+        OneSignal.on('subscriptionChange', function (isSubscribed) {
+          // console.log("The user's subscription state is now:", isSubscribed);
+          OneSignal.getUserId().then(function (userId) {
+            // console.log("User ID is", userId);
           });
-      },(err) => {
-      }, () => {
-        
-      })
-    const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
-    this.getDashboardStatistics();
-     const OneSignal = window['OneSignal'] || [];
-    OneSignal.push(['init', {
-      appId: 'ef7de815-6fae-466b-8f5b-ea582555a873',
-      notificationClickHandlerMatch: 'focus',
-      autoRegister: true,
-      allowLocalhostAsSecureOrigin: true,
-      notifyButton: {
-        enable: false
-      }
-    }]);
-    // OneSignal.push(function () {
-    //   OneSignal.push(["registerForPushNotifications"])
-    // });
-    OneSignal.push(function () {
-      // Occurs when the user's subscription changes to a new value.
-      OneSignal.on('subscriptionChange', function (isSubscribed) {
-        OneSignal.getUserId().then(function (userId) {
         });
       });
-    });
-      //OneSignal.push(['sendTag', 'userid', currentuser.id]); 
       OneSignal.push(['sendTags', {'userid': currentuser.id,'categoryid':currentuser.publishid,'teamid':currentuser.teamid}]); 
     }
+     //OneSignal.push(['sendTag', 'userid', currentuser.id]); 
+    // const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+    // this.getDashboardStatistics();
+    // if(currentuser.onesignal==='')
+    //   {
+    //         currentuser.onesignal='done';
+    //         localStorage.setItem("user",JSON.stringify(currentuser));
+    //         const OneSignal = window['OneSignal'] || [];
+    //         OneSignal.push(['init', {
+    //                 appId: 'ef7de815-6fae-466b-8f5b-ea582555a873',
+    //                   //notificationClickHandlerMatch: 'focus',
+    //                   //autoRegister: true,
+    //                   //allowLocalhostAsSecureOrigin: true,
+    //                   // notifyButton: {
+    //                   //   enable: false
+    //                   // }
+    //         }]);
+
+    //         OneSignal.push(function () {
+    //           OneSignal.push(["registerForPushNotifications"])
+    //         });
+    //           //OneSignal.push(['sendTag', 'userid', currentuser.id]); 
+    //           OneSignal.push(['sendTags', {'userid': currentuser.id,'categoryid':currentuser.publishid,'teamid':currentuser.teamid}]); 
+    //         }
+     
+    //   }
    
     
     this.carouselBanner = {
@@ -193,9 +229,10 @@ get user(): any {
           }));
         this.dashboardData = dashboardResponse.description;
       }, (err) => {
+        var errorMessage= this.errorservice.logError(err);
         this.isStartLoader = false;
         this.isAlertPopup=true;
-        this.alertMessage=this.connect_err;
+        this.alertMessage=errorMessage;
       }, () => {        
         this.getDashboardFeeds();       
       });
@@ -211,9 +248,10 @@ selectPromo(eachpromotion){
       (dashboardResponse: any) => {
         this.dashboardFeedData = dashboardResponse.description;
       }, (err) => {
+        var errorMessage= this.errorservice.logError(err);
         this.isStartLoader = false;
         this.isAlertPopup=true;
-        this.alertMessage=this.connect_err;
+        this.alertMessage=errorMessage;
       }, () => {
         this.getDashboardNotifications();
       });
@@ -226,10 +264,11 @@ selectPromo(eachpromotion){
       (feedsResponse: any) => {
         this.notificationsData = feedsResponse.data;
       }, (err) => {
+        var errorMessage= this.errorservice.logError(err);
         this.isStartLoader = false;
         this.isStartLoader = false;
         this.isAlertPopup=true;
-        this.alertMessage=this.connect_err;
+        this.alertMessage=errorMessage;
       }, () => {
         this.isStartLoader = false;
         this.config = {
@@ -263,9 +302,10 @@ selectPromo(eachpromotion){
       (blogResponse: any) => {
         this.blogCommentsData = blogResponse.description;
       }, (err) => {
+        var errorMessage= this.errorservice.logError(err);
         this.isStartLoader = false;
         this.isAlertPopup=true;
-        this.alertMessage=this.connect_err;
+        this.alertMessage=errorMessage;
       }, () => {
         this.isStartLoader = false;
       });
@@ -274,13 +314,15 @@ selectPromo(eachpromotion){
       this.isStartLoader = true;
       this.Publishservice.getBlogDetailViewService(id).subscribe(
         (blogResponse: any)=>{
-        this.sliderFullView=blogResponse;
+         blogResponse.text= this.santizer.bypassSecurityTrustHtml(blogResponse.text);
+         this.sliderFullView=blogResponse;
         this.isSelectSlider=true;
       },(err)=> {
         this.isStartLoader = false;
         this.isSelectSlider=false;
         this.isAlertPopup=true;
-        this.alertMessage=this.connect_err;
+        var errorMessage= this.errorservice.logError(err);
+        this.alertMessage=errorMessage;
       },()=>{
         this.isStartLoader = false;
       });
@@ -301,9 +343,10 @@ selectPromo(eachpromotion){
       (promotionResponse: any) => {
         this.promotionsData = promotionResponse;
       }, (err) => {
+        var errorMessage= this.errorservice.logError(err);
         this.isStartLoader = false;
         this.isAlertPopup=true;
-        this.alertMessage=this.connect_err;
+        this.alertMessage=errorMessage;
       }, () => {
         this.isStartLoader = false;
       });
@@ -320,8 +363,9 @@ selectPromo(eachpromotion){
         this.getDashboardFeeds();
       }, (err) => {
        // this.isStartLoader = false;
+       var errorMessage= this.errorservice.logError(err);
         this.isAlertPopup=true;
-        this.alertMessage=this.connect_err;
+        this.alertMessage=errorMessage;
       }, () => {
         //this.isStartLoader = false;
       });
@@ -333,9 +377,10 @@ selectPromo(eachpromotion){
         // this.notificationsData = feedsResponse.data[0];
         this.getDashboardFeeds();
       }, (err) => {
+        var errorMessage= this.errorservice.logError(err);
         this.isStartLoader = false;
         this.isAlertPopup=true;
-        this.alertMessage=this.connect_err;
+        this.alertMessage=errorMessage;
       }, () => {
         this.isStartLoader = false;
       });
@@ -343,7 +388,7 @@ selectPromo(eachpromotion){
   }
 
  //addleads
-
+ buttonsDisbled=false;
  // upload image
 upload() {
   
@@ -367,7 +412,7 @@ upload() {
     fd.append('password', currentuser.pwd);
     fd.append('encode', 'true');
     fd.append('auth_key', currentuser.auth);
-    
+    this.buttonsDisbled=true;
     this.authService.uploadImageService(fd).subscribe(res => {
       // do stuff w/my uploaded file
       if(res.description==undefined){
@@ -377,11 +422,14 @@ upload() {
         this.imageSrc = res.description[0].url;
          this.isShowImgDeleteButt=true;
       }
+      this.buttonsDisbled=false;
     
     },(err) => {
+      this.buttonsDisbled=false;
+      var errorMessage= this.errorservice.logError(err);
       this.isStartLoader = false;
       this.isAlertPopup=true;
-      this.alertMessage=this.connect_err;
+      this.alertMessage=errorMessage;
      }, () => {
       this.fileInput.nativeElement.value = '';
        setTimeout (() => {
@@ -515,9 +563,10 @@ addLeads() {
                            this.isSelectAddLeads=false;
                        }
                      }, (err) => {
+                      var errorMessage= this.errorservice.logError(err);
                       this.isAlertPopup=true;
                       this.isSelectAddLeads=false;
-                      this.alertMessage=this.connect_err;
+                      this.alertMessage=errorMessage;
                       this.isStartLoader = false;
                      }, () => {
                        this.isStartLoader = false;
@@ -548,9 +597,10 @@ replayQueries(id){
       this.isStartLoader = false;
       this.isSelectReplayPop=true;
     },(err)=>{
+      var errorMessage= this.errorservice.logError(err);
       this.isAlertPopup=true;
       this.isSelectReplayPop=false;
-      this.alertMessage=this.connect_err;
+      this.alertMessage=errorMessage;
       this.isStartLoader = false;
     },()=>{});
 }
@@ -601,9 +651,10 @@ uploadImage() {
         this.isStartLoader = false;          
       }
     },(err) => {
+      var errorMessage= this.errorservice.logError(err);
       this.isStartLoader = false;
       this.isAlertPopup=true;
-      this.alertMessage=this.connect_err;
+      this.alertMessage=errorMessage;
      }, () => {
       this.fileQuerieInput.nativeElement.value = '';
       this.isStartLoader = false;
@@ -614,8 +665,13 @@ uploadImage() {
     this.imageerrorAlert=false;
     this.imageUploadAlert = false;
   }
-
+  omit_special_char(event) {
+    var k;  
+    k = event.charCode; 
+    return(k!=35);
+  }
   answerAQuerie(replyData, qId){
+
     if(this.publishOrNot==true)
     {
       this.publishOrNotValue=0;
@@ -647,9 +703,10 @@ uploadImage() {
           this.alertMessage="Reply Added Successfully."
         }, (err) => {
                console.log(err);
+               var errorMessage= this.errorservice.logError(err);
                this.isStartLoader=false;
                this.isAlertPopup=true;
-               this.alertMessage=this.connect_err;
+               this.alertMessage=errorMessage;
         }, () => {
           this.isStartLoader = false;
                 if (this.isAddtoQuickReply) {
@@ -657,15 +714,17 @@ uploadImage() {
                           (qResponse: any) => {
                             this.isAddtoQuickReply=false;
                           }, (err) => {
+                            var errorMessage= this.errorservice.logError(err);
                             this.isStartLoader = false;
                             this.isAlertPopup=true;
-                            this.alertMessage=this.connect_err;
+                            this.alertMessage=errorMessage;
                           }, () => {
                             this.isStartLoader = false;
                           });
                 }
         });
     }
+    
   }
 
 

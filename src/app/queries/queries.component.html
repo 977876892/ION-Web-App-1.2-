@@ -4,7 +4,7 @@
     <!-- Panel Left ends -->
     <div class="panel-rt  panel_bg__sty_3 panel-rt__extend">
       <app-header></app-header>
-      <div class="loader" *ngIf="isStartLoader"></div>
+      <div class="loader" *ngIf="isStartLoader" [style.margin-top.px]="windowBottom"></div>
       <div class="panel" *ngIf="showNoQueriesAvailable">
               
           <div class="chat__wrap">  
@@ -32,7 +32,7 @@
                                       </div>
                          <div class="hover_actions" *ngIf="eachquerie.isClickOnDottedLine" #editcontainer>
                               <ul>
-                                <li style="cursor: pointer;" (click)="ionizeTheQuery(eachquerie);" *ngIf="queriesTab=='answered'"><a href="javascript:void(0);" >Ionize</a></li>
+                                <li style="cursor: pointer;" (click)="ionizeTheQuery(eachquerie);" *ngIf="queriesTab=='answered' && (loginUserGroupId==17 ||loginUserGroupId==10)"><a href="javascript:void(0);" >Ionize</a></li>
                                 <li style="cursor: pointer;" (click)="querieEditClick(eachquerie); isQuerieEdit = true;" *ngIf="queriesTab=='unanswered'"><a href="javascript:void(0);" >Edit</a></li>
                                 <li style="cursor: pointer;"  (click)="deleteQuery(eachquerie);"><a href="javascript:void(0);">Delete</a></li> 
                               </ul>                                        
@@ -162,8 +162,8 @@
                 <ul>
                 <div *ngFor="let eachdata of eachQuerieData; let i = index">
                         <li class="others" *ngIf="eachdata.user_id == '0'">
-                            <span class="chat_name">{{ eachdata.poster_name }}</span>
-                            <span class="chat_time" >{{eachdata.display_date}}&nbsp;&nbsp; {{ eachdata.display_time }}</span>
+                            <div class="chat_name" style="width: 270px;">{{ eachdata.poster_name }}</div>
+                            <div class="chat_time" >{{eachdata.display_date}}&nbsp;&nbsp; {{ eachdata.display_time }}</div>
                             <span class="chat_content" >{{ eachdata.content }}
                                 <div class="chat_post_gallery" *ngIf="eachdata.attachments?.length > 0 && eachdata.attachments != ''">
                                     <div class="chat_post_img" *ngFor="let eachImage of eachdata.attachments">
@@ -177,7 +177,7 @@
                         </li>
                         <li class="user" *ngIf="eachdata.user_id != 0 ">
                             <span class="chat_name">{{ eachdata.poster_name }}</span>
-                            <span class="chat_time" >{{ eachdata.display_time }}</span>
+                            <span class="chat_time" >{{eachdata.display_date}}&nbsp;&nbsp;{{ eachdata.display_time }}</span>
                             <span class="chat_content">{{ eachdata.content }}
                                 <div class="chat_post_gallery" *ngIf="eachdata.attachments?.length > 0 && eachdata.attachments != ''">
                                     <div class="chat_post_img" *ngFor="let eachImage of eachdata.attachments">
@@ -224,12 +224,13 @@
                        <span style="color:red" *ngIf="isReplyEmpty">Reply Couldn't Empty.</span>
                    </div>
                    <p style="color:red;" *ngIf="imageUploadAlert">{{imgsize}}</p>
+                   <p style="color:red;font-size:12px;" *ngFor="let bigImg of bigSizeImg">{{bigImg}} </p>
                    <p style="color:red;" *ngIf="imageerrorAlert">{{imgerror}}</p>
                  
                   <div class="live_chat__selections">
                   <div class="options" style="float: left;width: 50%;padding:0px;">
                   <span *ngIf="eachQuerieData.length==1">
-                  <input name="publish" value="true" id="publish" class="checkbox" type="checkbox" (change)="publishOrNot=!publishOrNot">
+                  <input name="publish" value="true" id="publish" class="checkbox" type="checkbox" (change)="publishOrNot=!publishOrNot" [checked]=true>
                   <span class="" style="font-size: 15px;font-weight:bold;">Publish on website</span>
                   </span>
                   </div>
@@ -241,7 +242,7 @@
                   
                   </div>
                   </div>
-                  <button class="button submit brd-radius-10 ripple btn" (click)="answerAQuerie(answerData.value, questionId);  answerData.value = ''" type="submit">Reply Query</button>
+                  <button class="button submit brd-radius-10 ripple btn" (click)="answerAQuerie(answerData.value, questionId);  answerData.value = '';bigSizeImg=[];" type="submit">Reply Query</button>
                 </div>
               </div>
               <!-- quick reply popup -->
@@ -364,7 +365,7 @@
       
         <!-- Popup querie edit-->
            <!-- alert -->
-      <div class="model model-alerts" *ngIf="isAlertPopup" style="margin-top: 150px;box-shadow: 0 0 5px #777;"> 
+      <div class="model model-alerts" *ngIf="isAlertPopup" style="margin-top: 150px;box-shadow: 0 0 5px #777;" [style.margin-top.px]="windowBottom"> 
         <!-- <a class="close" href="javascript:void(0);">Close</a> -->
         
         <div class="model-content">

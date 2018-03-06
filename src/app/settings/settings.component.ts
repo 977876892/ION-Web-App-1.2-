@@ -6,16 +6,16 @@ import { Users } from './userlist';
 import { SettingsService } from '../shared/services/settings/settings.service';
 import { AuthserviceService } from '../shared/services/login/authservice.service';
 import { IonServer } from '../shared/globals/global';
+import { ErrorService } from '../shared/services/error/error.service';
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.css'],
-  providers: [SettingsService,AuthserviceService]
+  providers: [SettingsService,AuthserviceService,ErrorService]
 })
 export class SettingsComponent implements OnInit {
 
 @ViewChild('deleteUser') deleteUser;
-  constructor(private router: Router, private route: ActivatedRoute, private settingsService:SettingsService,private builder: FormBuilder,private authService: AuthserviceService,) { 
+  constructor(private router: Router, private route: ActivatedRoute, private settingsService:SettingsService,private builder: FormBuilder,private authService: AuthserviceService,private errorservice:ErrorService) { 
       document.addEventListener('click', this.offClickHandler.bind(this));
   }
   offClickHandler(event: any) {
@@ -43,13 +43,14 @@ export class SettingsComponent implements OnInit {
   imageerrorAlert:boolean=false;
   queryBoxAlert:boolean=false;
   isHelpButtonPopup:boolean=true;
-  connect_err=IonServer.nointernet_connection_err;
   f_name_req_comm=IonServer.f_name_required;
   f_name_length_comm=IonServer.f_name_length;
   spaceComment=IonServer.Space_Not_required; 
   l_name_required_comm=IonServer.l_name_required;
   email_required_comm=IonServer.email_required;
   invalid_email_comm=IonServer.invalid_email;
+  num_required=IonServer.num_required;
+  num_length:string;
   imgsize="The file size can not exceed 8MB.";
   fname:string;
   lname:string;
@@ -79,6 +80,7 @@ export class SettingsComponent implements OnInit {
   imageSrc='';
   pic="";
   userDetails:any=[];
+  buttonsDisabled=false;
   profileForm: FormGroup = this.builder.group({
     firstname: new FormControl(''),
     surname: new FormControl(''),
@@ -96,12 +98,13 @@ export class SettingsComponent implements OnInit {
     email: new FormControl(''),
     password: new FormControl(''),
     reTypePassword:new FormControl(''),
+    updatePassword: new FormControl(''),
+    updateReTypePassword:new FormControl(''),
     groups:new FormControl(''),
     categories:new FormControl(''),
     image:new FormControl('')
-   
-    //receivingSystemEmail:new FormControl('')
   });
+
   currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
   userGroups=[{name:"Doctor",value:10,checked:false},{name:"Frontdesk Team",value:15,checked:false},{name:"Junior Doctors",value:16,checked:false},{name:"Business Head",value:17,checked:false}]
     ngOnInit() {
@@ -119,6 +122,12 @@ export class SettingsComponent implements OnInit {
         aboutme:currentuser.aboutme,
         profile_pic:currentuser.profilepic
       })
+      if(this.profileForm.value.role == 'null' || this.profileForm.value.aboutme == 'null'){
+        this.profileForm.patchValue({
+          role: '',
+          aboutme:''
+        })
+      }
       this.userDetails = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
       this.dropdownSettings = {
               singleSelection: false,
@@ -139,19 +148,11 @@ export class SettingsComponent implements OnInit {
 
                 this.allcategoryname.push(
                     {
-                      "id":i,
                       "itemName": this.getcategoryname,
-                      "itemid":this.getcategoryid
+                      "id":this.getcategoryid
                     }
 
                 );
-                //    this.selectedItems.push(
-                //     {
-                //       "id":i,
-                //       "itemName": this.getcategoryname,
-                //       "itemid":this.getcategoryid
-                //     }
-                // );
           }
         });
     }
@@ -244,29 +245,43 @@ export class SettingsComponent implements OnInit {
       this.isStartLoader=false;
       this.getUserData();
     },(err)=>{
+      var errorMessage= this.errorservice.logError(err);
       this.isStartLoader=false;
       this.isAlertPopupForError=true;
       this.isDeleteAlertPopup=false;
-      this.alertMessage=this.connect_err;
+      this.alertMessage=errorMessage;
     })
   }
   onTypeNumValid(numValue) { 
-    //this.numLength=numValue.length;
+
         if(numValue.length > 10){
           this.phoneMinlength=true;
+          this.num_length="Phone Number Should Be 10 Numbers.";
         }
         else{
            this.phoneMinlength=false;
+           this.num_length="";
         }
     }
   profile_sub() {
-    if((this.profileForm.value.phone).toString().length!=10)
-    {
-       this.phoneMinlength=true;
+    console.log(this.profileForm.value.phone)
+   if(this.profileForm.value.phone == null){
+      this.phoneMinlength=true;
+      this.num_length="Phone number is required";
     }
     else{
       this.phoneMinlength=false;
+      this.num_length="";
+   }
+    if(this.profileForm.value.phone.toString().length != 10 && this.profileForm.value.phone.toString().length !=0){
+      this.phoneMinlength=true;
+      this.num_length="Phone Number Should Be 10 Numbers.";
     }
+    else{
+       this.phoneMinlength=false;
+       this.num_length="";
+    }
+   
   if(this.profileForm.valid && !this.phoneMinlength){
     this.isStartLoader = true;
     this.settingsService.editProfileListService(this.profileForm.value).subscribe(data => {
@@ -292,14 +307,16 @@ export class SettingsComponent implements OnInit {
         userGroup:this.userDetails.userGroup,
         smsbalance:this.userDetails.smsbalance
       }));
+      this.alertMessage="Profile Updated Successfully.";
       this.isStartLoader = false; 
       this.isAlertPopup=true;
-      this.alertMessage="Profile Updated Successfully.";
+      
      this.isShowImgDeleteButt=false;
               },(err)=>{
+                var errorMessage= this.errorservice.logError(err);
                 this.isStartLoader = false; 
                 this.isAlertPopupForError=true;
-                this.alertMessage=this.connect_err;
+                this.alertMessage=errorMessage;
               },()=>{});
      }else{
       this.isStartLoader = false;
@@ -327,8 +344,10 @@ export class SettingsComponent implements OnInit {
       this.isStartLoader=false;
       this.query_des='';
      },(err)=>{
+       console.log(err);
+      var errorMessage= this.errorservice.logError(err);
        this.isAlertPopupForError=true;
-       this.alertMessage=this.connect_err;
+       this.alertMessage=errorMessage;
        this.isStartLoader=false;
      },()=>{});
     }
@@ -387,9 +406,10 @@ uploadprofilepic() {
           }
         
         },(err) => {
+          var errorMessage= this.errorservice.logError(err);
           this.isStartLoader = false; 
           this.isAlertPopupForError=true;
-          this.alertMessage=this.connect_err;
+          this.alertMessage=errorMessage;
         }, () => {
           this.fileInput.nativeElement.value = '';
           this.isStartLoader = false;
@@ -422,8 +442,9 @@ uploadprofilepicDelete(){
                       this.isAlertPopup=true;
                       this.alertMessage="Password Changed Successfully.";
               },(err)=>{
+                var errorMessage= this.errorservice.logError(err);
                 this.isAlertPopupForError=true;
-                this.alertMessage=this.connect_err;
+                this.alertMessage=errorMessage;
                 this.isStartLoader=false;
               });
             }else{
@@ -437,20 +458,20 @@ uploadprofilepicDelete(){
    const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
    this.settingsService.getUsersListService().subscribe(
      (userdataResponse: any) => {
-        //console.log(this.usersList);
         userdataResponse.description.forEach((user,index)=>{
           if(user.id==currentuser.id)
             {
-              console.log(index);
               userdataResponse.description.splice(index,1);
+              return false;
             }
         })
-         this.usersList=userdataResponse.description;
+         this.usersList=userdataResponse.description;        
         this.isStartLoader=false;
      },(err)=>{
+      var errorMessage= this.errorservice.logError(err);
       this.isStartLoader = false; 
       this.isAlertPopup=true;
-      this.alertMessage=this.connect_err;
+      this.alertMessage=errorMessage;
      },()=>{
        this.usersList.forEach(user=>{
          user.isClickOnDottedLine=false;
@@ -483,6 +504,7 @@ uploadprofilepicDelete(){
       this.userid=userId;
       this.settingsService.getUserDetails(userId).subscribe(
         (userdataResponse: any) => {
+          console.log(userdataResponse);
              this.userGroups.forEach(group=>{
                if(parseInt(userdataResponse.groups)===group.value)
                 {
@@ -517,15 +539,19 @@ uploadprofilepicDelete(){
                     surname:  userdataResponse.lastname,
                     username:  userdataResponse.username,
                     email:  userdataResponse.email,
-                    password: '',
-                    reTypePassword:'',
-                    image:userdataResponse.avatar
+                    password: 'dummy',
+                    reTypePassword:'dummy',
+                    updatePassword:'',
+                    updateReTypePassword:'',
+                    image:userdataResponse.avatar,
+                    groups:userdataResponse.groups
             })
         },err=>{
+          var errorMessage= this.errorservice.logError(err);
           this.isStartLoaderForUserPopup=false;
           this.isAlertPopupForError=true;
           this.isShowUserPopup = false;
-          this.alertMessage=this.connect_err;
+          this.alertMessage=errorMessage;
         },()=>{ this.isStartLoaderForUserPopup=false;})
          
     }
@@ -540,7 +566,7 @@ selectedGroup(i){
 }
  selectCategory=[];
  onItemSelect(item:any){
-     this.selectCategory.push(item.itemid);
+     this.selectCategory.push(item.id);
  }
 
 ids:any;
@@ -569,6 +595,7 @@ addNewUser(){
           this.pwdNotMatch=false;
                 if(this.userDetailsForm.valid && !this.isGroupsRequied)
                   {
+                      this.buttonsDisabled=true;
                       this.isStartLoaderForUserPopup=true;
                       this.settingsService.addNewUserService(this.userDetailsForm.value)
                  .subscribe(
@@ -576,6 +603,7 @@ addNewUser(){
                           //this.isStartLoader=true;
                           if(data.message=="The username is already taken, try another.")
                             {
+                              
                                this.alertMessage=data.message;
                                this.isStartLoaderForUserPopup=false;
                                this.isAlertPopup=true;
@@ -593,11 +621,13 @@ addNewUser(){
                                     this.closeUserPopUp();
                                     //this.getUserData();
                               }
+                          this.buttonsDisabled=false;
                          },
                         err => {
+                          var errorMessage= this.errorservice.logError(err);
                           this.isStartLoaderForUserPopup=false;
                           this.isAlertPopupForError=true;
-                          this.alertMessage=this.connect_err;
+                          this.alertMessage=errorMessage;
                         }
                   );
                   }
@@ -613,9 +643,8 @@ addNewUser(){
          
  }
   updateUser(){
-    if(this.userDetailsForm.value.password != this.userDetailsForm.value.reTypePassword){
+    if(this.userDetailsForm.value.updatePassword != this.userDetailsForm.value.updateReTypePassword){
        this.pwdNotMatch=true;
-
      }
      else{
         this.pwdNotMatch=false;
@@ -636,10 +665,12 @@ addNewUser(){
            
               //this.isStartLoader=true;
               this.isStartLoaderForUserPopup=true;
+              this.buttonsDisabled=true;
                this.settingsService.updateUserService(this.userDetailsForm.value,this.userid)
                .subscribe(
                       data => {
                         // this.isStartLoader=false;
+                        this.buttonsDisabled=false;
                         this.isStartLoaderForUserPopup=false;
                         this.closeUserPopUp();
                         this.isAlertPopup=true;
@@ -655,9 +686,11 @@ addNewUser(){
                          //this.getUserData();
                       },
                       err =>{
-                       this.isStartLoader=false;
-                       this.isAlertPopupForError=true;
-                       this.alertMessage=this.connect_err;
+                        this.buttonsDisabled=false;
+                        var errorMessage= this.errorservice.logError(err);
+                        this.isStartLoader=false;
+                        this.isAlertPopupForError=true;
+                        this.alertMessage=errorMessage;
                       }
                 );
         }
@@ -681,12 +714,10 @@ selectedIds=[];
  }
  
  OnItemDeSelect(item:any){
-   console.log(item);
  }
  onSelectAll(items: any){
    this.selectedItems=[];
    this.selectedItems=items;
-   console.log(items);
  }
  onDeSelectAll(items: any){
    this.selectedItems=[];
@@ -699,6 +730,20 @@ selectedIds=[];
       this.userDetailsForm.reset();
       this.isGroupsRequied=false;
       this.selectedItems=[];
+      
+      this.userDetailsForm.patchValue({
+          firstname:'',
+          surname: '',
+          username: '',
+          email: '',
+          password: '',
+          reTypePassword:'',
+          updateReTypePassword:'',
+          updatePassword:'',
+          groups:'',
+          categories:'',
+          image:''
+      });
       for(let user of this.userGroups)
               user.checked=false;     
     }
@@ -728,8 +773,9 @@ selectedIds=[];
           this.subscriptionEnd=data.description[0].expiration.split(" ");
       },
       err=>{
+        var errorMessage= this.errorservice.logError(err);
         this.isAlertPopupForError=true;
-        this.alertMessage=this.connect_err;
+        this.alertMessage=errorMessage;
         this.isStartLoader=false;
       },()=>{})
     }
@@ -748,7 +794,7 @@ selectedIds=[];
     fd.append('password', currentuser.pwd);
     fd.append('encode', 'true');
     fd.append('auth_key', currentuser.auth);
-    
+    this.buttonsDisabled=true;
     this.authService.uploadImageService(fd).subscribe(res => {
       // do stuff w/my uploaded file
         if(res.description==undefined)
@@ -770,12 +816,14 @@ selectedIds=[];
        // this.isStartLoader = false;
      // }
     },(err) => {
+      var errorMessage= this.errorservice.logError(err);
         this.fileInput.nativeElement.value = '';
         this.isStartLoader = false;
         this.isStartLoader=false;
         this.isAlertPopupForError=true;
-        this.alertMessage=this.connect_err;
+        this.alertMessage=errorMessage;
      }, () => {
+       this.buttonsDisabled=false;
        this.isStartLoaderForUserPopup=false;
       //this.isStartLoader = false;
     });
@@ -797,12 +845,10 @@ isScrolled: boolean = false;
   windowBottom:any="";
   @HostListener("window:scroll", [])
    onWindowScroll() {
-     if(this.showUsers){
+     if(this.showUsers ||this.showProfile){
       if (!this.isScrolled && !this.isNoRecords) {
-      let windowHeight = "innerHeight" in window ? window.innerHeight
-        : document.documentElement.offsetHeight;
-      
-      if(!this.isShowUserPopup)
+      let windowHeight = "innerHeight" in window ? window.innerHeight : document.documentElement.offsetHeight;
+      if(!this.isShowUserPopup && !this.isAlertPopup)
         {
             this.windowBottom=window.pageYOffset;
         }

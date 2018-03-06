@@ -4,11 +4,11 @@ import { PromotionsService } from '../shared/services/promotions/promotions.serv
 import { AuthserviceService } from '../shared/services/login/authservice.service';
 import { LeadsService ,DataService} from '../shared/services/leads/leads.service';
 import { IonServer } from '../shared/globals/global';
+import { ErrorService } from '../shared/services/error/error.service';
 @Component({
   selector: 'app-promotions',
   templateUrl: './promotions.component.html',
-  providers: [PromotionsService,AuthserviceService,LeadsService],
-  styleUrls: ['./promotions.component.css']
+  providers: [PromotionsService,AuthserviceService,LeadsService,ErrorService]
 })
 export class PromotionsComponent implements OnInit {
   promotionsData: any = [];
@@ -24,7 +24,7 @@ export class PromotionsComponent implements OnInit {
   submitEnabled: boolean = false;
   ionizedPromotionTitle="";
   showErrorForSms:boolean=false;
-  connect_err=IonServer.nointernet_connection_err;
+  promotion_Social_imgpath=IonServer.promotion__imgpath;
   currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
   smsBalance=this.currentuser.smsbalance;
    @ViewChild('fileInput') fileInput;
@@ -43,7 +43,7 @@ export class PromotionsComponent implements OnInit {
    showtextareaError:boolean=false;
 
   constructor(private router: Router, private promotionService: PromotionsService, 
-    private route: ActivatedRoute,private authService:AuthserviceService, private leadsService: LeadsService) { }
+    private route: ActivatedRoute,private authService:AuthserviceService, private leadsService: LeadsService,private errorservice:ErrorService) { }
 
   ngOnInit() {
     if (localStorage.getItem('user') == '' || localStorage.getItem('user')==null) {
@@ -91,7 +91,7 @@ export class PromotionsComponent implements OnInit {
   
   // event trigger function
   onEventChanged(ptype: any) {
-    this.isStartLoader=true;
+    
     if(ptype === 'smspromotion') {
       this.isPromotionFullView = false;
       this.isPromotionDemo = false;
@@ -110,9 +110,10 @@ export class PromotionsComponent implements OnInit {
     (promotionResponse: any) => {
       this.promotionsData = promotionResponse;
     }, (err) => {
+      var errorMessage= this.errorservice.logError(err);
       this.isStartLoader = false;
       this.isAlertPopup=true;
-      this.alertMessage=this.connect_err;
+      this.alertMessage=errorMessage;
     }, () => {
       this.isStartLoader = false;
       this.getIonizedBlogsData();
@@ -137,6 +138,7 @@ promotionFull() {
 }
 // promotion demo func
 promotionDemo(eachpromotion) {
+  window.scrollTo(0, 0);
   this.router.navigate(['promotions/promotiondemo',eachpromotion.id,eachpromotion.avatar,eachpromotion.title]);
 }
 // add promotion
@@ -146,36 +148,65 @@ addPromotion() {
 getPatientGroups() {
   this.isPatientGroups = true;
 }
+bigSizeImg=[];
 upload(){
+  var bigimgcontinue=false;
+  this.bigSizeImg=[];
    this.showError=false;
   const fileBrowser = this.fileInput.nativeElement;
-  // if (fileBrowser.files && fileBrowser.files[0]) {
-    if(fileBrowser.files[0].size/1024/1024 > 9) {
-      this.imageUploadAlert = true;
-      // this.imageSrc = "";
-      this.fileInput.nativeElement.value = '';
-      return false;
-    }
+  if (fileBrowser.files && fileBrowser.files[0]) {
+    // if(fileBrowser.files[0].size/1024/1024 > 9) {
+    //   this.imageUploadAlert = true;
+    //   // this.imageSrc = "";
+    //   this.fileInput.nativeElement.value = '';
+    //   return false;
+    // }
     this.isStartLoader = true;
     const fd = new FormData();
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+    // for(var key=0;key<fileBrowser.files.length;key++)
+    //  {
+    //     if(key==0)
+    //       fd.append('file', fileBrowser.files[key]);
+    //    else{
+    //      fd.append('file'+key, fileBrowser.files[key]);
+    //    }
+    //  }
     for(var key=0;key<fileBrowser.files.length;key++)
-     {
-        if(key==0)
-          fd.append('file', fileBrowser.files[key]);
-       else{
-         fd.append('file'+key, fileBrowser.files[key]);
-       }
-     }
-    //fd.append('file', fileBrowser.files[0]);
+      {
+        if(fileBrowser.files[key].size/1024/1024 > 9){
+          this.bigSizeImg.push(fileBrowser.files[key].name + "  size can not exceed 8MB.");
+                  if(fileBrowser.files.length==1)
+                    {
+                      this.isStartLoader=false;
+                      return false;
+                    }
+                   
+            }
+            else{
+              bigimgcontinue=true;
+                  if(key==0)
+                    fd.append('file', fileBrowser.files[key]);
+                  else{
+                    fd.append('file'+key, fileBrowser.files[key]);
+                  }
+            }
+      }
+    fd.append('file', fileBrowser.files[0]);
     fd.append('userid', currentuser.id);
     fd.append('username', currentuser.username);
     fd.append('password', currentuser.pwd);
     fd.append('encode', 'true');
     fd.append('auth_key', currentuser.auth);
+ if(bigimgcontinue){
     this.authService.uploadImageService(fd).subscribe(res => {
       // do stuff w/my uploaded file
-      if(res.description[0].url !== '') {
+       if(res.description==undefined){
+        this.isStartLoader=false;
+        //this.buttonsDisabled=false;
+        //this.imageUploadAlert = true;
+        //this.imageerrorAlert=true;
+      }else{
          res.description.forEach(image=>{
           this.imageSrc.push(image.url);
         });
@@ -185,12 +216,17 @@ upload(){
         this.isStartLoader = false;
       }
     },(err) => {
+      var errorMessage= this.errorservice.logError(err);
  this.isAlertPopup=true;
- this.alertMessage=this.connect_err;
+ this.alertMessage=errorMessage;
  this.isStartLoader = false;
      }, () => {
       this.isStartLoader = false;
-    });
+    });}
+    else{
+      this.isStartLoader = false;
+    }
+  }
 }
   removeImage(index){
       this.imageSrc.splice(index,1);
@@ -382,6 +418,7 @@ notselectTags:boolean=false;
     doctorName="";
     ionizedDate="";
     creadisCount:number=0;
+    isAlertForCredits=false;
     ionizeThePromotion(){
       var content="";
       const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -425,29 +462,42 @@ notselectTags:boolean=false;
             this.ionizedDate = months[m] +" "+ dd +" "+ y;
             this.doctorName=currentuser.name;
             this.promotionService.addPromotionService(this.promotionId,content,this.imageSrc[0],this.promotionTitle).subscribe(res => {
-            this.isStartLoader=false;
-            this.promotionStatus=4;
-            this.creadisCount=res.credits;
-            this.showRequestIsTaken=true;
+               if(res.status==="error")
+                { 
+                     this.isStartLoader=false;
+                     this.isAlertForCredits=true;
+                     this.alertMessage=res.message;
+                }
+                else{
+                    this.isStartLoader=false;
+                    this.promotionStatus=4;
+                    this.creadisCount=res.credits;
+                    this.showRequestIsTaken=true;
+                }
+           
             },(err) => {
+              var errorMessage= this.errorservice.logError(err);
               this.isAlertPopup=true;
-              this.alertMessage=this.connect_err;
+              this.alertMessage=errorMessage;
               this.isStartLoader=false;
             }, () => {
             })
         }
      
     }
+    
     closeRequestTakenPopUp(){
       this.router.navigate(['promotions']);
       this.showRequestIsTaken=!this.showRequestIsTaken;
     }
     promotionLink='';
     promotionfullviewimg(promotion){
-     console.log(promotion);
+      this.promotionService.getPromotionFullView(promotion.postid).subscribe(res=>{
       this.isOpenEditor=true;
-     this.ionizedPromotionTitle=promotion.title;
-     this.promotionLink=promotion.textplain;
+     this.ionizedPromotionTitle=res.title;
+     this.promotionLink=res.text;
+      })
+     
     }
     downLoadImage(image){
 
@@ -470,16 +520,19 @@ notselectTags:boolean=false;
         }
       }
      publishThePromotion(promotionblog){
+       this.isStartLoader=true;
         this.ionizedPromotionTitle=promotionblog.title;
         const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
           this.promotionService.updateThePromotion(promotionblog.postid,promotionblog.image.url,promotionblog.title,promotionblog.category.categoryid).subscribe(res => {
             this.promotionStatus=1;
+            this.isStartLoader=false;
             this.alertMessage="Your Promotion Will publish soon..";
             this.isAlertPopup=true;
             this.getIonizedBlogsData();
             },(err) => {
+              var errorMessage= this.errorservice.logError(err);
               this.isAlertPopup=true;
-              this.alertMessage=this.connect_err;
+              this.alertMessage=errorMessage;
               this.isStartLoader=false;
             }, () => {
             })
@@ -498,9 +551,10 @@ notselectTags:boolean=false;
                     this.messagesCount=res.count;
                     this.isSendSmspopup=true;
                     },(err) => {
+                      var errorMessage= this.errorservice.logError(err);
                       this.isStartLoader=false;
                       this.isAlertPopup=true;
-                      this.alertMessage=this.connect_err;
+                      this.alertMessage=errorMessage;
                     }, () => {
                       this.isStartLoader=false;
                     })
@@ -510,7 +564,7 @@ notselectTags:boolean=false;
                     this.messagesCount=0;
                     this.isSendSmspopup=true;
                   }
-            },(err) => {this.alertMessage=this.connect_err;}, () => {});
+            },(err) => {/*this.alertMessage=this.connect_err;*/}, () => {});
             
                
           }
@@ -523,7 +577,11 @@ notselectTags:boolean=false;
         omit_special_char(event) {
                 var k;  
                 k = event.charCode; 
-                console.log(k); //         k = event.keyCode;  (Both can be used)
                 return(k!=60 &&k!=62);
+        }
+        allow_only_numbers(event) {
+                var k;  
+                k = event.charCode; // k = event.keyCode;  (Both can be used)   
+                return(k>=48&&k<=57)||k===44 ||k===32;
         }
 }

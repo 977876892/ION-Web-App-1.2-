@@ -11,6 +11,7 @@ import { ForgotpasswordComponent } from './forgotpassword/forgotpassword.compone
 import { RegistrationComponent } from './registration/registration.component';
 import { VisitsComponent } from './visits/visits.component';
 import { AnalyticsComponent } from './analytics/analytics.component';
+import { YoutubeComponent } from './publish/youtube.component';
 import { Title } from '@angular/platform-browser';
 
 const appRoutes: Routes = [
@@ -40,9 +41,12 @@ const appRoutes: Routes = [
   { path: 'publish/calendar', component: PublishComponent },
   { path: 'publish/drafts', component: PublishComponent },
   { path: 'publish/online', component: PublishComponent },
+  { path: 'publish/youtube', component: YoutubeComponent },
   { path: 'publish/:isnewpost', component: PublishComponent },
   { path: 'queries/answered', component: QueriesComponent },
   { path: 'queries/popular', component: QueriesComponent },
+  
+
 ];
 
 @NgModule({

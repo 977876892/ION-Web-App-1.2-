@@ -111,6 +111,11 @@
                     <p>SMS </p><p style="margin-left: -12px;">Promotions</p>
                   </div>
                 </li>
+                <li  style="cursor: pointer;" class="info">
+                  <div class="info__count">
+                    <a href="http://dashboard.getion.in/index.php/email-campaigns" target="_blank" style="color: white;"><p>Email </p><p style="margin-left: -12px;">Promotions</p></a>
+                  </div>
+                </li>
               </ul>
             </div>
               <!-- Left Navigation queries-->
@@ -190,8 +195,8 @@
             </li>
             <li style="cursor: pointer;" class="info" [class.info__active]="settingsType == 'subscription'" (click)="settingsClick('subscription');">
                 <div class="info__count">
-                  <p style="margin-left: -16px;">Subscription</p>/<br>
-                    <p>Credits </p>
+                  <p style="margin-left: -16px;">Subscription</p>
+                  <!-- /<br><p>Credits </p> -->
                 </div>
             </li>
             <li style="cursor: pointer;" class="info" [class.info__active]="settingsType == 'users'" (click)="settingsClick('users');" *ngIf="currentuser.userGroup==17">
@@ -275,7 +280,7 @@
                                    [inputId]="'input2'" [locale]="en" (onSelect)="selectedVisitDate(input2Moment)"></owl-date-time>
         <div class="visit_nav_cal_2">
           <p></p>
-          {{calDate}}th {{calMonth}} : &#160;{{visitsCount}} Appointments 
+          {{calDate}} : &#160;{{visitsCount}} Appointments 
         </div>
   </div>
 </div>

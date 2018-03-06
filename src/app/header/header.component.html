@@ -14,7 +14,7 @@
                           <ul>
                             <li style="float:left;width: 23%;padding: 5px;"> 
                                 <img *ngIf="eachfeed.avatar == ''" src="assets/css/images/profile_no_img.png" width="65" height="65" alt="">
-                                <img *ngIf="eachfeed.avatar != ''" src="{{ eachfeed.avatar }}" width="65" height="65" alt="Hospital Feed">
+                                <img *ngIf="eachfeed.avatar != ''" style="border-radius: 30px;"src="{{ eachfeed.avatar }}" width="65" height="65">
                             </li>
                             <li style="float:left;width: 74%;     word-break: break-all;">
                               <span class="lg-text home--hosp-fld__txt" >
@@ -110,14 +110,14 @@
 <span class="model-title" style="display:none;">Popup Title</span>
 </div>
 <div class="model-content model-bg gradient-1">
- <h2>Hello Dr. {{ user.name }},
+ <h2>Hello {{ user.name }},
  <span style="font-size: 44px;">What would you to the start on?</span></h2>
 
   <div class="actions home552" style="width:95% !important;">
   <a style="cursor: pointer;" routerLink="/visits/addvisit" class="visit brd-radius-15 xs-bg-white new_add"><img src="assets/images/add-visits-icon.png"><br>Add Visit</a>
   <a (click) = "isSelectPromo = true; isPromoPopupOpen = false" class="promo brd-radius-15 xs-bg-white new_add" style="float: left !important;cursor: pointer;"><img src="assets/images/add-promo-icon.png"><br>Add Promo</a>
   <a (click)="isPromoPopupOpen = false;isSelectAddLeads=true" class="promo brd-radius-15 xs-bg-white new_add" style="float:right !important;cursor: pointer;"><img src="assets/images/lead_icon.png" height="40" width="40"><br>Add Lead</a>
-  <a style="cursor: pointer;" (click) = "isSelectBlog=true; isSelectPromo = false; isPromoPopupOpen = false" class="blog brd-radius-15 xs-bg-white home_new022"><img src="assets/images/add-blog-icon.png" align="absmiddle">Start a new Blog</a>
+  <a style="cursor: pointer;" (click) = "isSelectBlog=true; isSelectPromo = false; isPromoPopupOpen = false" class="blog brd-radius-15 xs-bg-white home_new022" [ngClass]="{'disabled': (loginUserGroupId==15||loginUserGroupId==16)}"><img src="assets/images/add-blog-icon.png" align="absmiddle">Start a new Blog</a>
   
   
   </div> 
@@ -158,16 +158,53 @@
   <div class="popular-promotions">
     
     <h2>{{ promotionsData[0]?.title }}</h2>
-    
-    
-    <div class="panel_promotions__list">
-      <ul>
-        <li *ngFor="let eachpromotion of promotionsData[0]?.child; let i = index" (click)="selectPromo(eachpromotion)">
-          <div class="promo-block"><img src="{{eachpromotion.avatar}}"></div>
-          <div class="promo-title" *ngIf="eachpromotion.parent_id == promotionsData[0].id"><a style="cursor: pointer;">{{ eachpromotion.title }}</a></div>
-        </li>     
-            </ul>             
-           
+    <div>
+               <!-- <img src="{{eachpromotion.avatar}}"> -->
+               <ul class="docTypeList">
+                  <span *ngFor="let eachpromotion of promotionsData[0]?.child; let i = index" (click)="selectPromo(eachpromotion)">
+                      <li class="docTypeItem docTypeItemBasic" *ngIf="eachpromotion.id == 90"  title="{{eachpromotion.title}}">
+                        <a class="docTypeItemLink">
+                            <figure class="docTypeItemFigure">
+                                <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail" width="160" height="61">
+                                <figcaption class="docTypeItemCaption">
+                                    <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                </figcaption>
+                          </figure>
+                        </a>
+                      </li>
+                      <li class="docTypeItem docTypeItemBasic" *ngIf="eachpromotion.id == 91" title="{{eachpromotion.title}}">
+                          <a class="docTypeItemLink">
+                              <figure class="docTypeItemFigure">
+                                  <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail" width="160" height="59">
+                                  <figcaption class="docTypeItemCaption">
+                                      <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                  </figcaption>
+                            </figure>
+                          </a>
+                        </li>
+                        <li class="docTypeItem docTypeItemBasic" *ngIf="eachpromotion.id == 101" title="{{eachpromotion.title}}">
+                            <a class="docTypeItemLink">
+                                <figure class="docTypeItemFigure">
+                                    <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail" width="160" height="90">
+                                    <figcaption class="docTypeItemCaption">
+                                        <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                    </figcaption>
+                              </figure>
+                            </a>
+                          </li>
+                          <li class="docTypeItem docTypeItemBasic" *ngIf="eachpromotion.id == 102" title="{{eachpromotion.title}}">
+                              <a class="docTypeItemLink">
+                                  <figure class="docTypeItemFigure">
+                                      <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail" width="160" height="90">
+                                      <figcaption class="docTypeItemCaption">
+                                          <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                      </figcaption>
+                                </figure>
+                              </a>
+                            </li>
+                      </span>
+                </ul>
+          <!-- <div class="promo-title" *ngIf="eachpromotion.parent_id == promotionsData[0].id"><a style="cursor: pointer;">{{ eachpromotion.title }}</a></div> -->
           </div>
     </div>
 
@@ -322,7 +359,7 @@
       <div class="loader" *ngIf="isStartLoader"></div>
     <a class="close" style="cursor: pointer;" (click)="isSelectAddLeads = false;clearForm()">Close</a>
    
-     <div class="model-content">
+     <div class="model-content" style="padding:0px;">
      <h2>Add patient Details</h2>
     <div class="lt-div" style="margin: 0px 3% 0px 0px;">
       <div class="profile_card">
@@ -384,10 +421,10 @@
              <input [value]="'Female'" [checked]="gender[1].checked" [formControl]="leadForm.controls['sex']" name="rdblGender" id="rdblGender_4" type="radio">
             <label for="rdblGender_4"> Female</label>
             </span>
-          </li>
+          </li> 
       <li>
       <label class="labels">City</label>
-      <input type="text" class="input" [formControl]="leadForm.controls['city']">
+      <input type="text" class="input" [formControl]="leadForm.controls['city']" (keypress)="omit_special_char($event)">
       <!-- <span style="color:red" *ngIf="leadForm.controls['city'].hasError('required') && leadForm.controls['city'].touched">Invalid city</span>
       <span style="color:red" *ngIf="leadForm.controls['city'].hasError('minlength') && leadForm.controls['city'].touched"> City be at least three characters in length.</span> -->
       </li>
@@ -403,7 +440,7 @@
       </li>
       <li>
       <label class="labels">Phone</label>
-      <input type="number" (input)="onTypeNumValid($event.target.value)" class="input" maxlength="12" [formControl]="leadForm.controls['phone']" required>
+      <input type="number" (input)="onTypeNumValid($event.target.value)" class="input" maxlength="12" [formControl]="leadForm.controls['phone']" onkeydown="javascript: return event.keyCode == 69 ? false : true" required>
       <span class="required_comments" *ngIf="leadForm.controls['phone'].hasError('required') && leadForm.controls['phone'].touched">{{num_required_comm}}</span>
       <!-- <span style="color:red" *ngIf="leadForm.controls['phone'].hasError('minlength')"> Phone Number Minimum 10 characters Required.</span>
       <span style="color:red" *ngIf="leadForm.controls['phone'].hasError('maxlength')">Phone Number Maximum 12 characters Only.</span> -->
@@ -426,7 +463,7 @@
       </li>
       <li>
       <label class="labels">Area Locality</label>
-      <input type="text" class="input" [formControl]="leadForm.controls['area']">
+      <input type="text" class="input" [formControl]="leadForm.controls['area']" (keypress)="omit_special_char($event)">
       <!-- <span style="color:red" *ngIf="leadForm.controls['doctor'].hasError('required') && leadForm.controls['doctor'].touched">Invalid doctor</span>
       <span style="color:red" *ngIf="leadForm.controls['doctor'].hasError('minlength') && leadForm.controls['doctor'].touched"> doctor be at least three characters in length.</span> -->
       </li>
@@ -438,10 +475,10 @@
       <ul>
       <li>
       <label class="labels">Add Remarks</label>
-      <input type="text" class="input" maxlength="120" [formControl]="leadForm.controls['remarks']">
+      <input type="text" class="input" maxlength="120" [formControl]="leadForm.controls['remarks']" (keypress)="omit_special_char($event)">
       </li>
       <li>
-          <tag-input [formControl]="leadForm.controls['ctags']" [(ngModel)]="leadtags">
+          <tag-input [formControl]="leadForm.controls['ctags']" [(ngModel)]="leadtags" (keypress)="omit_special_char($event)">
             <tag-input-dropdown [autocompleteItems]="autoComplete"></tag-input-dropdown>
           </tag-input>
       </li>
@@ -451,7 +488,7 @@
         <br>
       
       <div class="actions">
-      <button class="button profile-action ripple btn" type="submit">Submit</button>
+      <button class="button profile-action ripple btn" type="submit" [disabled]="buttonsDisabled">Submit</button>
       <button class="button cancel-action" (click)="isSelectAddLeads = false;clearForm()" style="margin-top: 1px;margin-left: 10px;">cancel</button>
       </div>
     </form>

@@ -175,9 +175,10 @@ export class API {
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_api&format=raw&app=easyblog&resource=latest&user_id=
     ${userId}&key=${authkey}&promos=1&status=0`);
   }
+   
    // get ionized blog full view api url
-  public static GET_BLOG_FULL_VIEW(userId) {
-    return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_api&format=raw&app=easyblog&resource=blog&id=6565`);
+  public static GET_BLOG_FULL_VIEW(id) {
+    return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_api&format=raw&app=easyblog&resource=blog&id=${id}`);
   }
   // add prootion api url
   public static ADD_PROMOTION() {
@@ -253,7 +254,7 @@ export class API {
     age=${leadObj.age}&firstname=${leadObj.firstname}&surname=${leadObj.surname}&mobile=${leadObj.phone}&
     email=${leadObj.email}&dob=${leadObj.dob}&sex=${leadObj.sex}&purpose=${leadObj.purpose}&image=${leadObj.image}&
     area=${leadObj.area}&city=${leadObj.city}&pincode=&remarks=${leadObj.remarks}&
-    userid=${leadObj.uid}&contactTags=${leadObj.ctags}&tagflag=1&misc=lead`);
+    userid=${leadObj.uid}&contactTags=${leadObj.ctags}&tagflag=1&misc=Lead`);
   }
   // update lead api url
   public static UPDATE_LEAD(leadObj,username,password){
@@ -450,8 +451,8 @@ public static ADD_USER_PROFILE(){
   return this.removeWhiteSpaces(IonServer.ION_SERVER+"/index.php?option=com_api&app=users&resource=users&format=raw");
 }
 public static UPDATE_USER_PROFILE(userform,key,id){
-  console.log(`${IonServer.ION_SERVER}/index.php?option=com_api&app=users&resource=users&format=raw&username=${userform.username}&password=${userform.password}&password2=${userform.reTypePassword}&name=${userform.firstname}&lastname=${userform.surname}&email=${userform.email}&groups=${userform.groups}&category=${userform.categories}&key=${key}&userid=${id}&avatar=${userform.image}`);
-  return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_api&app=users&resource=users&format=raw&username=${userform.username}&password=${userform.password}&password2=${userform.reTypePassword}&name=${userform.firstname}&lastname=${userform.surname}&email=${userform.email}&groups=${userform.groups}&category=${userform.categories}&key=${key}&userid=${id}&avatar=${userform.image}`)
+  console.log(`${IonServer.ION_SERVER}/index.php?option=com_api&app=users&resource=users&format=raw&username=${userform.username}&password=${userform.updatePassword}&password2=${userform.updateReTypePassword}&name=${userform.firstname}&lastname=${userform.surname}&email=${userform.email}&groups=${userform.groups}&category=${userform.categories}&key=${key}&userid=${id}&avatar=${userform.image}`);
+  return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_api&app=users&resource=users&format=raw&username=${userform.username}&password=${userform.updatePassword}&password2=${userform.updateReTypePassword}&name=${userform.firstname}&lastname=${userform.surname}&email=${userform.email}&groups=${userform.groups}&category=${userform.categories}&key=${key}&userid=${id}&avatar=${userform.image}`)
 }
 // getting all searches
 public static GET_ALL_SEARCHES(userId, type) {
@@ -469,6 +470,10 @@ public static GET_MESSAGES_COUNT(teamid,tags){
 
 public static SEND_REVIEW_LINK(values,currentuser){
   return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=contacts&resource=contacts&action=review&user_id=${currentuser.id}&email=${values.patientMailId}&mobile=${values.patientMobileNumber}`);
+}
+public static SEND_APPOINTMENT_LINK(values,currentuser){
+  console.log(`${IonServer.ION_SERVER}/index.php/request?module=contacts&resource=contacts&action=send&user_id=${currentuser.id}&email=${values.patientMailId}&mobile=${values.patientMobileNumber}`)
+  return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=contacts&resource=contacts&action=send&user_id=${currentuser.id}&email=${values.patientMailId}&mobile=${values.patientMobileNumber}`);
 }
 
 public static BLOCK_CALENDER(currentuser,visitForm){

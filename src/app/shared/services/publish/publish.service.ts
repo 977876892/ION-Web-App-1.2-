@@ -33,16 +33,12 @@ createTheBlogService(createBlogForm,tags) {
       const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
       var newDate=new Date();
       var created_date=format(newDate, ['YYYY-MM-DD HH:mm:ss']);
-    //   if(createBlogForm.createdDate=='' ||createBlogForm.createdDate==null)
-    //     {
-    //         finalpublished='';
-    //     }
-    // else{
-      
-      published_date=format(createBlogForm.createdDate, ['YYYY-MM-DD']);
-      published_time=format(createBlogForm.createdTime, ['HH:mm:ss']);
-      finalpublished=published_date+" "+published_time;
-    // }
+     // if(createBlogForm.createdDate!='' && createBlogForm.createdDate!=null)
+     //  {
+          published_date=format(createBlogForm.createdDate, ['YYYY-MM-DD']);
+          published_time=format(createBlogForm.createdTime, ['HH:mm:ss']);
+          finalpublished=published_date+" "+published_time;
+      //  }
       body.append('image', createBlogForm.image);
       body.append('groupTags', '');
       body.append('write_content_hidden', createBlogForm.content);
@@ -72,7 +68,21 @@ createTheBlogService(createBlogForm,tags) {
        const key = '_body';
        return JSON.parse(responseData[key]);
      },
-   );
+   )
+  //  .catch((error: any) => {
+  //               if (error.status === 500) {
+  //                   return Observable.throw(new Error(error.status));
+  //               }
+  //               else if (error.status === 400) {
+  //                   return Observable.throw(new Error(error.status));
+  //               }
+  //               else if (error.status === 409) {
+  //                   return Observable.throw(new Error(error.status));
+  //               }
+  //               else if (error.status === 406) {
+  //                   return Observable.throw(new Error(error.status));
+  //               }
+  //           });
  }
   // update blog service
 updateBlogService(blogData,tags) {
@@ -82,24 +92,25 @@ updateBlogService(blogData,tags) {
   const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
   
     let options;
+    blogData.title=blogData.title.replace(/&/g, "%26");
     //var newDate=new Date();
     //var created=newDate.getFullYear()+"-"+(newDate.getMonth()+1)+"-"+newDate.getDate()+" "+ newDate.toString().split(" ")[4];
-     var newDate=new Date();
-     var created_date=format(newDate, ['YYYY-MM-DD HH:mm:ss']);
+     //var newDate=new Date();
+     //var created_date=format(newDate, ['YYYY-MM-DD HH:mm:ss']);
      //var published_date=format(blogData.createdDate, ['YYYY-MM-DD']);
      //var published_time=format(blogData.createdTime, ['HH:mm:ss']);
-    //   if(blogData.createdDate=='' ||blogData.createdDate==null)
-    //     {
-    //          finalpublished='';
-    //     }
-    // else{
+     // if(blogData.createdDate!='' && blogData.createdDate!=null)
+     //   {
              published_date=format(blogData.createdDate, ['YYYY-MM-DD']);
              published_time=format(blogData.createdTime, ['HH:mm:ss']);
              finalpublished=published_date+" "+published_time;
-   // }
+             
+      //  }
+    //  else{
+            
+    // }
     //var created_date=newDate.getFullYear()+"-"+(newDate.getMonth()+1)+"-"+newDate.getDate()+" "+ newDate.toString().split(" ")[4];
     //var published_date=blogData.createdDate.getFullYear()+"-"+(blogData.createdDate.getMonth()+1)+"-"+blogData.createdDate.getDate()+" "+ blogData.createdTime.toString().split(" ")[4];
-    
     const headers = new Headers({'Content-Type' : 'application/X-www-form-urlencoded'});
      let resData = 'image=' +blogData.image +
       '&groupTags=' +

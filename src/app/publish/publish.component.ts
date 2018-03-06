@@ -4,6 +4,7 @@ import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { CalendarComponent } from 'ng-fullcalendar';
 import { Options } from 'fullcalendar';
 import { PublishService } from '../shared/services/publish/publish.service';
+import { ErrorService } from '../shared/services/error/error.service';
 import { AuthserviceService } from '../shared/services/login/authservice.service';
 import * as CryptoJS from 'crypto-js';
 import {DomSanitizer} from '@angular/platform-browser';
@@ -14,8 +15,7 @@ declare var $: any;
 @Component({
   selector: 'app-publish',
   templateUrl: './publish.component.html',
-  providers: [PublishService, AuthserviceService],
-  styleUrls: ['./publish.component.css']
+  providers: [PublishService, AuthserviceService,ErrorService]
 })
 export class PublishComponent implements OnInit {
   //format = require('date-fns/format');
@@ -29,9 +29,11 @@ export class PublishComponent implements OnInit {
   isStartLoader;
   isPageStartLoader;
   bigSizeImg:any=[];
+  bigSizecoverImg:any=[];
   publishedData: any = [];
   pstatus: any = 1;
   publishType: any = 'publish';
+  isBlogEditor:false;
   blogViewData: any;
   isBlogDraft: boolean = false;
   isIonizingBlog: boolean = false;
@@ -47,7 +49,6 @@ export class PublishComponent implements OnInit {
   isCalendarView: boolean = false;
   isClosingConformationAlertPopup:boolean=false;
   public calendarOptions: Options;
-  connect_err=IonServer.nointernet_connection_err;
   blogTitle="";
   offsetTop:string = "";
   offsetLeft:string = "";
@@ -123,7 +124,7 @@ export class PublishComponent implements OnInit {
   loginUser=this.currentuser.id;//login user id for blog credentials.
   constructor(private router: Router,
     private publishService: PublishService,
-    private authService: AuthserviceService,
+    private authService: AuthserviceService,private errorservice:ErrorService,
     private route: ActivatedRoute, private builder: FormBuilder,private santizer:DomSanitizer) {
       document.addEventListener('click', this.offClickHandler.bind(this));
       document.addEventListener('click', this.calendarClickHandler.bind(this));
@@ -242,7 +243,20 @@ export class PublishComponent implements OnInit {
       
       this.currentLoginUser=localStorage? JSON.parse(localStorage.getItem('user')) : 0;
       this.blogCount=localStorage? JSON.parse(localStorage.getItem('blogs')) : 0;
+      $.FroalaEditor.RegisterCommand('videoUpload', {
+        title: 'Youtube Video Upload',
+        focus: false,
+        undo: false,
+        refreshAfterCallback: false,
+  
+        callback: function () {
+          this.router.navigate(['login']);
+          // alert("hello")
+          // this.router.navigate(['publish']);
+        }
+      });
       if(this.router.url == '/publish/calendar') {
+        this.scrollForBlogs=false;
         this.blogCalendarCall();
         //this.getCategories();
       } else if(this.router.url == '/publish/online') {
@@ -285,6 +299,8 @@ export class PublishComponent implements OnInit {
         var hash = CryptoJS.HmacSHA1(policy, "L2YR1fuJHxAByS7eQNUYeDClGr6y3PMCfNxTVIo5"),
         base64 = CryptoJS.enc.Base64.stringify(hash);
         //video upload to s3 options
+     
+       
 this.editorImageoptions = {
                 
                 charCounterCount: true,
@@ -295,6 +311,24 @@ this.editorImageoptions = {
                         H1: 'Heading 1',
                         H2: 'Heading 2'
                       },
+                      linkList: [
+                        {
+                          text: 'GetION',
+                          href: 'http://getion.in/',
+                          target: '_blank'
+                        },
+                        {
+                          text: 'Google',
+                          href: 'http://google.com',
+                          target: '_blank'
+                        },
+                        {
+                          text: 'Facebook',
+                          href: 'https://facebook.com/',
+                          target: '_blank'
+                        }],
+                        videoInsertButtons: ['videoByURL'],
+                        imageInsertButtons:['imageUpload', 'imageByURL'],
                 //paragraphMultipleStyles: false,
                 // Set the image upload parameter.
                 //imageUploadParam: 'image_param',
@@ -350,6 +384,7 @@ this.editorImageoptions = {
                           signature: base64, // Signature computed in the backend.
                         }
                       },
+                      
 
                 //   // Set the video upload parameter.
                 //   videoUploadParam: 'video_param',
@@ -406,10 +441,16 @@ this.editorImageoptions = {
                 
                         // Response contains the original server response to the request if available.
                       },
+                      // 'froalaEditor.image.beforeUpload':function (e, editor, response) {
+                      //   this.buttonsDisabled=true;
+                      //       // Image was uploaded to the server.
+                      // },
+                      // 'froalaEditor.image.inserted': function (e, editor, $img, response) {
+                      //   this.buttonsDisabled=false;
+                      // },
                       'froalaEditor.video.inserted': function (e, editor, $video) {
                               var videoSource = $video.contents().get(0).src;
-                              //$video.html('<video src="'+videoSource+'" style="width: 600px;" controls="" class="fr-draggable">Your browser does not support HTML5 video.</video>');
-                              $video.html('<iframe width="640" height="360" src="'+videoSource+'" frameborder="0" allowfullscreen=""></iframe>');
+                              $video.html('<iframe width="640" height="360" src="'+videoSource+'&rel=0&showinfo=0" frameborder="0" allowfullscreen="false"></iframe>');
                           }
                 }
               };        
@@ -430,11 +471,12 @@ this.editorImageoptions = {
       let windowBottom = windowHeight + window.pageYOffset;
       if (Math.ceil(windowBottom) >= docHeight) {
         status = 'bottom reached!';
-        if (this.totalrecordLength > this.currentRecordCount) {
+        //if (this.totalrecordLength > this.currentRecordCount) {
+          if(this.scrollForBlogs){
           this.startsFrom = this.startsFrom + 20;
           this.endTo = this.endTo + 20;
           this.isPageStartLoader = true;
-          this.getPublishedBlogs(this.startsFrom, this.endTo);
+          this.getPublishedBlogs(this.startsFrom, 20);
         }
       }
       // this.windowBottom=(windowHeight + window.pageYOffset)-880;
@@ -451,55 +493,83 @@ this.editorImageoptions = {
   // uploadTextEditor() {
   // }
   // upload image
+  buttonsDisabled=false;
+  imageerrorcoverAlert:boolean=false;
 uploadCoverImage() {
-   this.isPageStartLoader=false;
+  this.bigSizecoverImg=[];
+  var bigsizeImgcontinue=false;
+  this.isPageStartLoader=false;
   const fileBrowser = this.fileInput.nativeElement;
 
   // fileBrowser.files.FileList.forEach(file=>{
   // })
   if (fileBrowser.files && fileBrowser.files[0]) {
-  if(fileBrowser.files[0].size/1024/1024 > 9) {
+  // if(fileBrowser.files[0].size/1024/1024 > 9) {
 
-    //  this.isStartLoader = true;
-    // this.imageSrc = "";
-    this.imageUploadAlert = true;
-    this.fileInput.nativeElement.value = '';
-    return false;
-  }
+  //   //  this.isStartLoader = true;
+  //   // this.imageSrc = "";
+  //   this.imageUploadAlert = true;
+  //   this.fileInput.nativeElement.value = '';
+  //   return false;
+  // }
   this.isStartLoader = true;
-  this.imageerrorAlert=false;
-  this.imageUploadAlert = false;
+  this.imageerrorcoverAlert=false;
+  //this.imageUploadAlert = false;
   // if (fileBrowser.files && fileBrowser.files[0]) {
+    this.buttonsDisabled=true;
     const fd = new FormData();
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
     for(var key=0;key<fileBrowser.files.length;key++)
-     {
+    {
        if(fileBrowser.files[key].size/1024/1024 > 9){
-        this.imageUploadAlert = false; 
-        this.bigSizeImg.push(fileBrowser.files[key].name + "  size can not exceed 8MB.");
+        //this.imageUploadAlert = false;
+        this.bigSizecoverImg.push(fileBrowser.files[key].name + "  size can not exceed 8MB.");
+        if(fileBrowser.files.length==1)
+          {
+            this.buttonsDisabled=false;
+            this.isStartLoader=false;
+            return false;
+          }
        }else{
+        bigsizeImgcontinue=true;
             if(key==0)
             fd.append('file', fileBrowser.files[key]);
             else{
               fd.append('file'+key, fileBrowser.files[key]);
             }
        }
-
      }
-
     //fd.append('file', fileBrowser.files[0]);
     fd.append('userid', currentuser.id);
     fd.append('username', currentuser.username);
     fd.append('password', currentuser.pwd);
     fd.append('encode', 'true');
     fd.append('auth_key', currentuser.auth);
-
+    this.fileInput.nativeElement.value = '';
+    if(bigsizeImgcontinue){
     this.authService.uploadImageService(fd).subscribe(res => {
-      // do stuff w/my uploaded file
-      if(res.description==undefined){
-        this.imageUploadAlert = false;
-        this.imageerrorAlert=true;
+      console.log(res);
+      if(res.errors.fileerror!==undefined)
+      {
+          this.isStartLoader=false;
+          this.buttonsDisabled=false;
+          this.imageerrorcoverAlert=true;
+      }
+     // do stuff w/my uploaded file
+      else if(res.description==undefined){
+        this.isStartLoader=false;
+        this.buttonsDisabled=false;
+        //this.imageerrorAlert=true;
       }else{
+        //console.log(res.description);
+        //console.log(res.description.reverse());
+        res.description.reverse();
+        if(this.coverImages.length==0)
+          {
+              this.createAndUpdateTheBlogForm.patchValue({
+                image:res.description[0].url
+              })
+          }
         res.description.forEach(image=>{
           this.coverImages.push(image.url);
         })
@@ -508,9 +578,9 @@ uploadCoverImage() {
           {
             this.draftCurrentClass='ionize';
           }
-        this.createAndUpdateTheBlogForm.patchValue({
-          image:res.description[0].url
-        })
+        
+        
+        this.buttonsDisabled=false;
         this.isStartLoader = false;
       }
     },(err) => {
@@ -518,26 +588,43 @@ uploadCoverImage() {
      }, () => {
       this.fileInput.nativeElement.value = '';
       this.isStartLoader = false;
-    });
+    });}else{
+      this.isStartLoader = false;
+    }
   }
 }
 // Getting All published blogs list
+scrollForBlogs=true;
 getPublishedBlogs(startfrom, limitto) {
+  this.scrollForBlogs=true;
   this.isPageStartLoader = true;
   this.showNoBlogsAvailable=false;
   this.publishService.getAllPublishMessages(this.pstatus, startfrom, limitto).subscribe(
     (publishResponse: any) => {
-      this.publishedData = publishResponse.data;
+      if(startfrom==0)
+        {
+            this.publishedData = publishResponse.data;
+        }
+      else{
+            this.publishedData = this.publishedData.concat(publishResponse.data);
+      }
+      
       if(this.publishedData.length==0)
         {
           this.showNoBlogsAvailable=true;
         }
+        if((this.publishedData.length%20)!=0)
+        {
+          this.scrollForBlogs=false;
+        }
+
     }, (err) => {
+      var errorMessage= this.errorservice.logError(err);
       this.isScrolled = false;
       this.isNoRecords = true;
       this.isPageStartLoader = false;
       this.isAlertPopuperror=true;
-      this.alertMessage=this.connect_err;
+      this.alertMessage=errorMessage;
     }, () => {
       this.isScrolled = false;
       this.isPageStartLoader = false;
@@ -585,7 +672,7 @@ getBlogDetailView(bid, viewType) {
         })
       }
        this.blogViewData = blogResponse;
-      if(this.blogViewData.publish_up=='0000-00-00 00:00:00')
+      if(this.blogViewData.published_date==null)
         {
             this.createdDate=''
             this.createdTime=''
@@ -620,13 +707,14 @@ getBlogDetailView(bid, viewType) {
           this.isIonizingBlog = false;
         }
     }, (err) => {
+      var errorMessage= this.errorservice.logError(err);
       this.isPageStartLoader = false;
       this.isStartLoader=false;
       this.isIonizingBlog=false;
       this.isAlertPopuperror=true;
       PublishComponent.showIonize=false;
       PublishComponent.showPublished=false;
-        this.alertMessage=this.connect_err;
+        this.alertMessage=errorMessage;
     }, () => {
         this.isStartLoader=false;
         this.isPageStartLoader = false;
@@ -672,6 +760,7 @@ addBlogComment(bid, comment) {
     }
   if(comment!=""||images!='')
     {
+        //comment=comment.replace(/&/g, "%26");
         this.isLoaderForUpdateBlog = true;
         this.publishService.addBlogCommentsService(bid, comment,images).subscribe(
           (blogResponse: any) => {
@@ -679,9 +768,10 @@ addBlogComment(bid, comment) {
             this.getBlogComments(bid);
             this.imageSrc=[];
           }, (err) => {
+            var errorMessage= this.errorservice.logError(err);
             this.isLoaderForUpdateBlog=false;
          this.isAlertPopup=true;
-         this.alertMessage=this.connect_err;
+         this.alertMessage=errorMessage;
           }, () => {
             //this.isLoaderForUpdateBlog = false;
           });
@@ -791,7 +881,6 @@ getCalendarEventsByMonth(month,defaultdate) {
   this.calendarEventsData=[];
   this.publishService.getPublishCalendarByMonthService(month).subscribe(
     (calResponse: any) => {
-      console.log(calResponse);
       if(calResponse[0]==null)
         {
             calendarResponse =[];
@@ -799,7 +888,6 @@ getCalendarEventsByMonth(month,defaultdate) {
         else{
             calendarResponse = calResponse[0].posts;
         }
-      
     }, (err) => {
 
     }, () => {
@@ -808,7 +896,7 @@ getCalendarEventsByMonth(month,defaultdate) {
       var time=this.format(resdata.publish_up,['hh:mm A']);
       var tempObj = {"4":"publish_cale_status publish_s_ionizing","3":"publish_cale_status publish_s_draft","2":"publish_cale_status publish_s_Online","1":"publish_cale_status publish_s_Online","0":"publish_cale_status publish_s_ionized"};
        
-          this.calendarEventsData.push({postid: resdata.postid, title: resdata.title, start: resdata.publish_up,className:tempObj[resdata.published],state:resdata.published,author:resdata.author,category:resdata.category,time:time});
+          this.calendarEventsData.push({postid: resdata.postid, title: resdata.title, start: resdata.publish_up,className:tempObj[resdata.published],state:resdata.published,author:resdata.author,category:resdata.category,time:time,userid:resdata.created_by});
      });
     //  this.calendarOptions = {
     //     editable: true,
@@ -822,7 +910,8 @@ getCalendarEventsByMonth(month,defaultdate) {
     //     events: this.calendarEventsData
     //   };
      this.calendarOptions = {
-       editable: true,
+       editable: false,
+       //disableDragging:true,
        eventLimit: true,
        defaultDate: new Date(defaultdate),
        header: {
@@ -834,7 +923,7 @@ getCalendarEventsByMonth(month,defaultdate) {
        eventMouseover: function(event, jsEvent, view) {
            let elemPos = $(this).offset();
            event.offsetTop = elemPos.top - 50;
-           event.offsetLeft = elemPos.left + $(this).parent().width();
+           event.offsetLeft = (elemPos.left+10) + $(this).parent().width();
 
            PublishComponent.calenderOverEvent(event);
         },
@@ -949,13 +1038,15 @@ this.displayEvent = model;
 eventMouseover(model: any) {
 }
 // add new topics call
+currentMonthForTrendingtopics:Date;
 addNewTopicsCall() {
+  this.currentMonthForTrendingtopics=new Date();
   PublishComponent.showDraft=false;
   PublishComponent.showIonize=false;
   PublishComponent.showPublished=false;
   PublishComponent.showIonized=false;
   this.isAddNewTopic = true;
-  this.getTrendingTopicsByMonth(new Date());
+  this.getTrendingTopicsByMonth(this.currentMonthForTrendingtopics);
   //this.getAllTrendingTopicsCall();
 }
 // get all trending topics  call
@@ -982,12 +1073,27 @@ getAllTrendingTopicsCall() {
    this.trendTopicClick(Object.keys(this.trendingTopicsData)[0]);
     });
 }
+
+nextMonthTrendingTopics(){
+  this.selectedTrendTopics=[];
+  this.totalTopicselect=0;
+  this.currentMonthForTrendingtopics.setMonth(this.currentMonthForTrendingtopics.getMonth() + 1);
+  this.getTrendingTopicsByMonth(this.currentMonthForTrendingtopics);
+}
+prevMonthTrendingTopics(){
+  this.selectedTrendTopics=[];
+  this.totalTopicselect=0;
+  this.currentMonthForTrendingtopics.setMonth(this.currentMonthForTrendingtopics.getMonth() - 1);
+  this.getTrendingTopicsByMonth(this.currentMonthForTrendingtopics);
+}
 // get trending topics by month call
+showMonthAndDate='';
 ShowNoTopicsAreAvailable=false;
 getTrendingTopicsByMonth(date) {
   this.isPageStartLoader = true;
   this.ShowNoTopicsAreAvailable=false;
   var month=this.format(date, ['YYYY-MM']);
+  this.showMonthAndDate=this.format(date, ['MMMM YYYY']);;
   this.trendingTopicsData=[];
   this.publishService.getTrendingTopicsService(month).subscribe(
     (trendResponse: any) => {
@@ -997,8 +1103,9 @@ getTrendingTopicsByMonth(date) {
           this.ShowNoTopicsAreAvailable=true;
         }
     }, (err) => {
+      var errorMessage= this.errorservice.logError(err);
         this.isAlertPopuperror=true;
-        this.alertMessage=this.connect_err;
+        this.alertMessage=errorMessage;
         this.isPageStartLoader = false;
         this.isAddNewTopic=false;
     }, () => {
@@ -1021,26 +1128,29 @@ getTrendingTopicsByMonth(date) {
       }
     }
    this.trendTopicClick(Object.keys(this.trendingTopicsData)[0]);
-
     });
 }
 totalTopicselect=0;
 // calendar create new post checked event
 checkedTrendingTopic(ikey, jindx, ischecked) {
     this.showSelectedTrendingError=false;
+    this.showSelectedTopicDateError=false;
     if (this.trendingTopicsData.hasOwnProperty(ikey)) {
       if(ischecked) {
-       // this.trendingTopicsData[ikey][jindx].ischecked = true;
+        this.trendingTopicsData[ikey][jindx].ischecked = true;
         (this.trendingTopicsData[ikey][jindx]).isdateselected=false;
-        const topicObj = {ikey : this.trendingTopicsData[ikey][jindx]};
-        this.selectedTrendTopics.push(topicObj);
+        this.totalTopicselect=this.totalTopicselect+1;
+        // const topicObj = {ikey : this.trendingTopicsData[ikey][jindx]};
+        // this.selectedTrendTopics.push(topicObj);
       } else {
-        // this.trendingTopicsData[ikey][jindx].ischecked = false;
+         this.trendingTopicsData[ikey][jindx].ischecked = false;
         (this.trendingTopicsData[ikey][jindx]).isdateselected=true;
-        const index = this.deepIndexOf(this.selectedTrendTopics, ikey);
-        this.selectedTrendTopics.splice(index, 1);
+         this.totalTopicselect=this.totalTopicselect-1;
+        //  const index = this.deepIndexOf(this.selectedTrendTopics, ikey);
+        // this.selectedTrendTopics.splice(index, 1);
     }
-    this.totalTopicselect=this.selectedTrendTopics.length;
+    //this.showSelectedTopicDateError=false;
+   // this.totalTopicselect=
   }
 }
 // check index
@@ -1078,47 +1188,31 @@ showSelectedTrendingError=false;
 showSelectedTopicDateError=false;
 selectTheDate="";
 addToCalendar(){
-  if(this.selectedTrendTopics.length==0)
+  if(this.totalTopicselect==0)
     {
         this.showSelectedTrendingError=true;
     }
       else{
-            var idAndDate="";
-            //this.isStartLoader=true;
-            this.selectedTrendTopics.forEach((topic,index)=>{
-                if(topic.ikey.selectedDate!='0000-00-00')
-                  {
-                    var date=topic.ikey.selectedDate;
-                    var dd:any=date.getDate();
-                    var mm:any=(date.getMonth()+1);
-
-                    if(dd<10){
-                      dd='0'+dd;
-                    } 
-                    if(mm<10){
-                      mm='0'+mm;
-                    } 
-                    var selectedDate=date.getFullYear()+"-"+mm+"-"+dd;
-                    idAndDate=idAndDate+topic.ikey.id+":"+selectedDate+",";                      
-                  }
-                else{
-                  if(this.selectedTrendTopics.length==0)
-                      this.showSelectedTrendingError=true;
-                  else{
-                      this.showSelectedTopicDateError=true;
-                      if(this.showSelectedTopicDateError&& this.selectTheDate=='')
-                        {
-                            this.selectTheDate=index;
-                            
-                        }
-                      
-                  }
+        var proceed=false;
+        var idAndDate="";
+        for (const key in this.trendingTopicsData) {
+          var topics=this.trendingTopicsData[key];
+          for(let data of topics)
+          {
+             if(!data.isdateselected && data.selectedDate!='0000-00-00')
+              {
+                var selectedDate=this.format(data.selectedDate, ['YYYY-MM-DD']);
+                idAndDate=idAndDate+data.id+":"+selectedDate+",";                      
+              }
+             else{
+                  if(!data.isdateselected)
+                    {
+                        this.showSelectedTopicDateError=true;
+                        this.selectTheDate=data.title;
+                    }
                 }
-            })
-            // for(let topic of this.selectedTrendTopics)
-            //   {
-               
-            //   }
+          }
+    }
               if(!this.showSelectedTrendingError && !this.showSelectedTopicDateError){
                 this.isPageStartLoader=true;
                   this.publishService.addTopicToCalendar(idAndDate).subscribe(
@@ -1131,9 +1225,10 @@ addToCalendar(){
                         this.blogCalendarCall();
                   },
                   err =>{
+                    var errorMessage= this.errorservice.logError(err);
                     this.isAddNewTopic=false;
                     this.isAlertPopuperror=true;
-                    this.alertMessage=this.connect_err;
+                    this.alertMessage=errorMessage;
                     this.isPageStartLoader=false;
                   },()=>{
                     this.isPageStartLoader=false;
@@ -1158,16 +1253,17 @@ addNewTrendingTopic() {
         'tag' : this.newTrendTopicForm.value.tag
       };
     this.isPageStartLoader=true;
-    this.publishService.createTrendingTopic(resData,this.topicsDate).subscribe(
+    this.publishService.createTrendingTopic(resData,this.currentMonthForTrendingtopics).subscribe(
       data=>{
         this.isAddNewTopicButton=true;
         //this.getAllTrendingTopicsCall();
-        this.getTrendingTopicsByMonth(this.topicsDate);
+        this.getTrendingTopicsByMonth(this.currentMonthForTrendingtopics);
       },
       err=>{
+        var errorMessage= this.errorservice.logError(err);
         this.isPageStartLoader=false;
         this.isAlertPopuperror=true;
-        this.alertMessage=this.connect_err;
+        this.alertMessage=errorMessage;
         this.isAddNewTopic=false;
       },
       ()=>{
@@ -1210,6 +1306,7 @@ noofdays:any="";
 showPublishedDate="";
 showPublishedTime="";
 creaditsCount:number;
+creditsError=false;
 createTheBlog(blogStatus){
     //this.isStartLoader = true;
     var tags="";
@@ -1220,6 +1317,7 @@ createTheBlog(blogStatus){
          if(this.coverImages.length>1)
           {
             this.coverImages.forEach((image,index)=>{
+                    if(index>0)
                     content=content+'<img src="'+image+'"/><br>';
             })
             this.createAndUpdateTheBlogForm.value.content=this.createAndUpdateTheBlogForm.value.content+content;
@@ -1235,7 +1333,7 @@ createTheBlog(blogStatus){
           this.createAndUpdateTheBlogForm.value.status=blogStatus;
     // if(this.createAndUpdateTheBlogForm.value.status==3)
     //   {
-    //     if(this.createAndUpdateTheBlogForm.value.content=='' && this.createAndUpdateTheBlogForm.value.title=='')
+    //     if(this.createAndUpdateTheBlogForm.value.content=='' || this.createAndUpdateTheBlogForm.value.title=='')
     //       {
     //         this.validateAllFormFields(this.createAndUpdateTheBlogForm);
     //       }
@@ -1250,6 +1348,7 @@ createTheBlog(blogStatus){
     //           this.isOpenEditor=false;
     //           this.isLoaderForEditor=false;
               
+              
     //           //testing script
     //           // var minutes = 1000*60;
     //           // var hours = minutes*60;
@@ -1258,11 +1357,20 @@ createTheBlog(blogStatus){
     //           // var start_date:any = new Date();
     //           // var end_date:any = new Date(this.createAndUpdateTheBlogForm.value.createdDate);
     //           // var diff_date = Math.round((end_date - start_date)/days);
-    //           // this.noofdays=diff_date+1;
+    //           // this.noofdays=diff_date;
+    //           if(this.createAndUpdateTheBlogForm.value.createdDate!='' && this.createAndUpdateTheBlogForm.value.createdDate!=null)
+    //           {
+    //               this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['YYYY-MM-DD']);
+    //               this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh:mm A']);
+    //           }
+    //             else{
+    //                this.showPublishedDate='';
+    //               this.showPublishedTime='';
+    //             }
+                
     //           this.getPublishedBlogs(0,20);
     //           this.showRequestIsTaken=true;
-    //           //this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['YYYY-MM-DD']);
-    //           //this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh:mm A']);
+              
     //         }, (err) => {
     //                 console.log(err);
     //         }, () => {
@@ -1272,50 +1380,81 @@ createTheBlog(blogStatus){
     //       }
     //   }
     // else
-       if(this.createAndUpdateTheBlogForm.valid)
+    //   {
+        if(this.createAndUpdateTheBlogForm.valid)
       {
           this.isLoaderForEditor=true;
+          this.buttonsDisabled=true;
           this.publishService.createTheBlogService(this.createAndUpdateTheBlogForm.value,tags)
             .subscribe(
             (cteateBlogResponse: any) => {
-              this.createAndUpdateTheBlogForm.patchValue({
-                status:blogStatus
-              })
-              this.isOpenEditor=false;
-              this.isLoaderForEditor=false;
-              
-              //testing script
-              var minutes = 1000*60;
-              var hours = minutes*60;
-              var days = hours*24;
-              
-              var start_date:any = new Date();
-              var end_date:any = new Date(this.createAndUpdateTheBlogForm.value.createdDate);
-              var diff_date = Math.round((end_date - start_date)/days);
-              this.noofdays=diff_date+1;
-              this.creaditsCount=cteateBlogResponse.credits;
-              
-              if(blogStatus==2){
-                    this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['DD MMMM, YYYY']);
-                    this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh.mm A']);
-              }
-              else if(blogStatus==1){
-                    //this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['DD MMMM, YYYY']);
-                    this.showPublishedDate="Today";
-                    this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh.mm A']);
-              }
-              else if(blogStatus==4 ||blogStatus==3){
-                    this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['MMM DD YYYY']);
-                    this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh.mm A']);
-              }
-                this.showRequestIsTaken=true;
-                this.getPublishedBlogs(0,20);
-              //this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['YYYY-MM-DD']);
-              //this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh:mm A']);
+              console.log(cteateBlogResponse);
+              if(cteateBlogResponse.code==404)
+                {
+                  this.isLoaderForEditor=false;
+                  this.buttonsDisabled=false;
+                  this.creditsError=true;
+                  this.alertMessage=" * Please add some description."
+                }
+              else if(cteateBlogResponse.status==="error")
+                {
+                      this.creditsError=true;
+                      this.isLoaderForEditor=false;
+                      this.alertMessage=cteateBlogResponse.message;
+                      this.buttonsDisabled=false;
+                      // this.isOpenEditor=false;
+                      // this.buttonsDisabled=false;
+                      // this.isAlertPopuperror=true;
+                      //this.alertMessage="You don't have enough credits to crrate the blog";
+                      //this.clearTheForm();
+                }
+                else{
+                  this.createAndUpdateTheBlogForm.patchValue({
+                    status:blogStatus
+                  })
+                  this.isOpenEditor=false;
+                  this.isLoaderForEditor=false;
+                  
+                  //testing script
+                  // var minutes = 1000*60;
+                  // var hours = minutes*60;
+                  // var days = hours*24;
+                  // var differenceInCalendarDays = require('date-fns/difference_in_calendar_days');
+                  // var diff_date = differenceInCalendarDays(
+                  //       new Date(this.createAndUpdateTheBlogForm.value.createdDate),      
+                  //       new Date());
+                     // console.log(result);
+                  // var start_date:any = new Date();
+                  // var end_date:any = new Date(this.createAndUpdateTheBlogForm.value.createdDate);
+                  // var diff_date = Math.round((end_date - start_date)/days);
+                  this.noofdays=cteateBlogResponse.daysleft;
+                  this.creaditsCount=cteateBlogResponse.credits;
+                  
+                  if(blogStatus==2){
+                        this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['DD MMMM, YYYY']);
+                        this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh:mm A']);
+                  }
+                  else if(blogStatus==1){
+                        //this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['DD MMMM, YYYY']);
+                        this.showPublishedDate="Today";
+                        this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh:mm A']);
+                  }
+                  else if(blogStatus==4 ||blogStatus==3){
+                        this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['MMM DD YYYY']);
+                        this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh:mm A']);
+                  }
+                    this.showRequestIsTaken=true;
+                    this.getPublishedBlogs(0,20);
+                    this.buttonsDisabled=false;
+                  //this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['YYYY-MM-DD']);
+                  //this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh:mm A']);
+                    }
             }, (err) => {
-                   this.isAlertPopuperror=true;
-                   this.alertMessage=this.connect_err;
-                   this.isLoaderForEditor=false;
+                  this.buttonsDisabled=false;
+                  var errorMessage= this.errorservice.logError(err);
+                  this.isAlertPopuperror=true; 
+                  this.alertMessage=errorMessage;
+                  this.isLoaderForEditor=false;
             }, () => {
               
            });
@@ -1324,7 +1463,11 @@ createTheBlog(blogStatus){
         this.validateAllFormFields(this.createAndUpdateTheBlogForm);
       }
     
+    //  }
+       
+      
 }
+
 isLoaderForUpdateBlog:boolean=false;
 createdDate="";
 createdTime="";
@@ -1333,10 +1476,10 @@ showTimeRequired=false;
 updateTheBlogDirectly(blogStatus) {
   // blog subcategory mandatory.
    var keepGoing = true;
-    if(this.blogTypes.length>0)
-      {
-        //var blogtypeSelected=false;
-        //for()
+   if(blogStatus!=0||blogStatus!=1)
+    {
+      if(this.blogTypes.length>0)
+        {
           this.blogTypes.forEach(btype=>{
 
             if(btype.selected)
@@ -1354,6 +1497,7 @@ updateTheBlogDirectly(blogStatus) {
                 return;
             }
       }
+  }
   // blog subcategory mandatory.
   if(this.createdDate===""){
     this.showDateRequired=true;
@@ -1378,7 +1522,6 @@ updateTheBlogDirectly(blogStatus) {
           title:this.blogViewData.title,
           content:this.blogViewData.text,
           postid:this.blogViewData.postid,
-          type:this.blogViewData.category.categoryid,
           status:blogStatus,
           image:this.blogViewData.image.url,
           createdDate:this.createdDate,
@@ -1404,67 +1547,92 @@ updateTheBlogDirectly(blogStatus) {
           blogStatus=this.blogViewData.published;
         }
     this.isStartLoader = true;
+    this.buttonsDisabled=true;
     this.publishService.updateBlogService(this.createAndUpdateTheBlogForm.value, tags)
     .subscribe(
     (updateblogResponse: any) => {
-      this.creaditsCount=updateblogResponse.credits;
-      this.isIonizingBlog = false;
-      this.isBlogDraft = false;
-      this.isPublishNow = false;
-      this.isIonizeNow = false;
-      var minutes = 1000*60;
-      var hours = minutes*60;
-      var days = hours*24;
-      var start_date:any = new Date();
-      var end_date:any = new Date(this.createdDate);
-      var diff_date = Math.round((end_date - start_date)/days);
-      this.noofdays=diff_date;
-      var showPublishedDate=new Date(this.createdDate).toString().split(" ");
-      //this.showPublishedDate=showPublishedDate[2]+" "+showPublishedDate[1]+" "+showPublishedDate[3];
-      //var showPublishedTime=new Date(this.createdTime).toString().split(" ");
-      //this.showPublishedTime=showPublishedTime[4];
-      // this.showPublishedDate=this.format(this.createdDate, ['YYYY-MM-DD']);
-      // this.showPublishedTime=this.format(this.createdTime, ['hh:mm A']);
-      
-       if(blogStatus==2)
-                {
-                      this.showPublishedDate=this.format(this.createdDate, ['DD MMMM, YYYY']);
-                      this.showPublishedTime=this.format(this.createdTime, ['hh.mm A']);
+                if(updateblogResponse.status==="error")
+                { 
+                      // this.isIonizeNow = false;  
+                      // this.isStartLoader=false;
+                      // this.buttonsDisabled=false;
+                      // this.isAlertPopuperror=true;
+                      // this.alertMessage=updateblogResponse.message;
+                      // //this.alertMessage="You don't have enough credits to crrate the blog";
+                      // this.clearTheForm();
+                      this.creditsError=true;
+                      this.isStartLoader=false;
+                      this.alertMessage=updateblogResponse.message;
+                      this.buttonsDisabled=false;
                 }
-              else if(blogStatus==1){
-                      //this.showPublishedDate=this.format(this.createdDate, ['DD MMMM, YYYY']);
-                      this.showPublishedDate="Today";
-                      this.showPublishedTime=this.format(this.createdTime, ['hh.mm A']);
-              }
-              else if(blogStatus==4)
-                {
-                     this.showPublishedDate=this.format(this.createdDate, ['MMM DD YYYY']);
-                      this.showPublishedTime=this.format(this.createdTime, ['hh.mm A']);
-            
+                else{
+                  this.creaditsCount=updateblogResponse.credits;
+                  this.isIonizingBlog = false;
+                  this.isBlogDraft = false;
+                  this.isPublishNow = false;
+                  this.isIonizeNow = false;
+                  var differenceInCalendarDays = require('date-fns/difference_in_calendar_days');
+                  var diff_date = differenceInCalendarDays(
+                        new Date(this.createAndUpdateTheBlogForm.value.createdDate),      
+                        new Date());
+                  // var minutes = 1000*60;
+                  // var hours = minutes*60;
+                  // var days = hours*24;
+                  // var start_date:any = new Date();
+                  // var end_date:any = new Date(this.createdDate);
+                  // var diff_date = Math.round((end_date - start_date)/days);
+                  this.noofdays=updateblogResponse.daysleft;
+                  var showPublishedDate=new Date(this.createdDate).toString().split(" ");
+                  this.buttonsDisabled=false;
+                  //this.showPublishedDate=showPublishedDate[2]+" "+showPublishedDate[1]+" "+showPublishedDate[3];
+                  //var showPublishedTime=new Date(this.createdTime).toString().split(" ");
+                  //this.showPublishedTime=showPublishedTime[4];
+                  // this.showPublishedDate=this.format(this.createdDate, ['YYYY-MM-DD']);
+                  // this.showPublishedTime=this.format(this.createdTime, ['hh:mm A']);
+                  
+                  if(blogStatus==2)
+                            {
+                                  this.showPublishedDate=this.format(this.createdDate, ['DD MMMM, YYYY']);
+                                  this.showPublishedTime=this.format(this.createdTime, ['hh:mm A']);
+                            }
+                          else if(blogStatus==1){
+                                  //this.showPublishedDate=this.format(this.createdDate, ['DD MMMM, YYYY']);
+                                  this.showPublishedDate="Today";
+                                  this.showPublishedTime=this.format(this.createdTime, ['hh:mm A']);
+                          }
+                          else if(blogStatus==4)
+                            {
+                                this.showPublishedDate=this.format(this.createdDate, ['MMM DD YYYY']);
+                                  this.showPublishedTime=this.format(this.createdTime, ['hh:mm A']);
+                        
+                            }
+                          this.showRequestIsTaken=true;
+                          if(this.router.url == '/publish/calendar') {
+                              this.blogCalendarCall();
+                          }
+                          else{
+                              this.getPublishedBlogs(0,20);
+                          }
+                  //this.getPublishedBlogs(0,20);
+                
+                  //this.clearTheForm();
+                  
+                  //this.isLoaderForEditor=false;
+                  // if(blogStatus == 1) {
+                  //   this.showRequestIsTaken = true;
+                  //  // this.alertMessage = 'Blog Published Successfully.';
+                  //   } else {
+                  //     this.isAlertPopup = true;
+                  //     this.alertMessage = 'blog Inoized Successfully.';
+                  //   }
+                    // this.trendingTopicsData = trendResponse.description;
                 }
-              this.showRequestIsTaken=true;
-              if(this.router.url == '/publish/calendar') {
-                  this.blogCalendarCall();
-              }
-              else{
-                  this.getPublishedBlogs(0,20);
-              }
-      //this.getPublishedBlogs(0,20);
-     
-      //this.clearTheForm();
       
-      //this.isLoaderForEditor=false;
-      // if(blogStatus == 1) {
-      //   this.showRequestIsTaken = true;
-      //  // this.alertMessage = 'Blog Published Successfully.';
-      //   } else {
-      //     this.isAlertPopup = true;
-      //     this.alertMessage = 'blog Inoized Successfully.';
-      //   }
-        // this.trendingTopicsData = trendResponse.description;
     }, (err) => {
+      this.buttonsDisabled=false;
+      var errorMessage= this.errorservice.logError(err);
          this.isAlertPopuperror=true;
-         this.alertMessage=this.connect_err;
+         this.alertMessage=errorMessage;
          this.isLoaderForUpdateBlog=false;
          this.isStartLoader = false;
     }, () => {
@@ -1480,6 +1648,8 @@ updateTheBlogDirectly(blogStatus) {
   updateTheBlogFromEdit(blogStatus) {
    // blog subcategory mandatory.
     var keepGoing = true;
+    if(blogStatus!=0||blogStatus!=1)
+    {
     if(this.blogTypes.length>0)
       {
         //var blogtypeSelected=false;
@@ -1501,6 +1671,7 @@ updateTheBlogDirectly(blogStatus) {
                 return;
             }
       }
+    }
     // blog subcategory mandatory.
    var tags="";
    this.blogTags.forEach(tag=>{
@@ -1512,10 +1683,20 @@ updateTheBlogDirectly(blogStatus) {
           tags =tags+tag + ',';
       }
    })
+    var content="";
+    if(this.coverImages.length>1)
+          {
+            this.coverImages.forEach((image,index)=>{
+                    if(index>0)
+                    content=content+'<img src="'+image+'"/><br>';
+            })
+            this.createAndUpdateTheBlogForm.value.content=this.createAndUpdateTheBlogForm.value.content+content;
+            //this.createAndUpdateTheBlogForm.value.content=content;
+          }
    this.createAndUpdateTheBlogForm.value.status=blogStatus;
     // if(this.createAndUpdateTheBlogForm.value.status==3)
     //   {
-    //     if(this.createAndUpdateTheBlogForm.value.content=='' && this.createAndUpdateTheBlogForm.value.title=='')
+    //     if(this.createAndUpdateTheBlogForm.value.content=='' || this.createAndUpdateTheBlogForm.value.title=='')
     //       {
     //         this.validateAllFormFields(this.createAndUpdateTheBlogForm);
     //       }
@@ -1531,30 +1712,25 @@ updateTheBlogDirectly(blogStatus) {
     //           this.isEditorForEditTheDraft=false;
     //           this.isEditorForEditTheOnline=false;
               
-    //           this.showRequestIsTaken=true;
+              
     //           var minutes = 1000*60;
     //           var hours = minutes*60;
     //           var days = hours*24;
-    //           var start_date:any = new Date();
-    //           var end_date:any = new Date(this.createAndUpdateTheBlogForm.value.createdDate);
-    //           var diff_date = Math.round((end_date - start_date)/days);
-    //           this.noofdays=diff_date+1;
-    //           if(blogStatus==2)
-    //             {
-    //                   this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['DD MMMM, YYYY']);
-    //                   this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh.mm A']);
-    //             }
-    //           else if(blogStatus==1){
-    //                   this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['DD MMMM, YYYY']);;
-    //                   this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh.mm A']);
-    //           }
-    //           else if(blogStatus==4)
-    //             {
-    //                  this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['MMM DD YYYY']);
-    //                   this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh.mm A']);
-            
-    //             }
              
+    //           if(this.createAndUpdateTheBlogForm.value.createdDate!='' && this.createAndUpdateTheBlogForm.value.createdDate!=null)
+    //           {
+    //               var start_date:any = new Date();
+    //               var end_date:any = new Date(this.createAndUpdateTheBlogForm.value.createdDate);
+    //               var diff_date = Math.round((end_date - start_date)/days);
+    //               this.noofdays=diff_date;
+    //               this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['YYYY-MM-DD']);
+    //               this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh:mm A']);
+    //           }
+    //             else{
+    //                this.showPublishedDate='';
+    //                this.showPublishedTime='';
+    //             }
+    //           this.showRequestIsTaken=true;
     //           this.isLoaderForUpdateBlog=false;
     //           if(this.router.url == '/publish/calendar') {
     //               this.blogCalendarCall();
@@ -1570,58 +1746,95 @@ updateTheBlogDirectly(blogStatus) {
     //         });
     //       }
     //   }
-    // else 
-      if(this.createAndUpdateTheBlogForm.valid)
-      {
+    // else
+    //   {
+          if(this.createAndUpdateTheBlogForm.valid)
+          {
            this.isLoaderForUpdateBlog=true;
+           this.buttonsDisabled=true;
            this.publishService.updateBlogService(this.createAndUpdateTheBlogForm.value,tags)
             .subscribe(
             (updateblogResponse: any) => {
-               this.createAndUpdateTheBlogForm.patchValue({
-                  status:blogStatus
-                })
-              this.creaditsCount=updateblogResponse.credits;
-              this.isEditorForEditThePublish=false;
-              this.isEditorForEditTheDraft=false;
-              this.isEditorForEditTheOnline=false;
-              this.getPublishedBlogs(0,20);
-              this.showRequestIsTaken=true;
-              var minutes = 1000*60;
-              var hours = minutes*60;
-              var days = hours*24;
-              var start_date:any = new Date();
-              var end_date:any = new Date(this.createAndUpdateTheBlogForm.value.createdDate);
-              var diff_date = Math.round((end_date - start_date)/days);
-              this.noofdays=diff_date;
-              this.getPublishedBlogs(0,20);
-               if(blogStatus==2)
-              {
-                    this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['DD MMMM, YYYY']);
-                    this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh.mm A']);
-              }
-              else if(blogStatus==1){
-                    //this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['DD MMMM, YYYY']);
-                    this.showPublishedDate="Today";
-                    this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh.mm A']);
-              }
-              else if(blogStatus==4 ||blogStatus==3)
-              {
-                    this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['MMM DD YYYY']);
-                    this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh.mm A']);
-              }
-              //this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['YYYY-MM-DD']);
-              //this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh:mm A']);
-                this.isLoaderForUpdateBlog=false;
-                 if(this.router.url == '/publish/calendar') {
-                  this.blogCalendarCall();
-              }
-              else{
+              console.log(updateblogResponse);
+               if(updateblogResponse.code==404)
+                {
+                  this.isLoaderForUpdateBlog=false;
+                  this.buttonsDisabled=false;
+                  this.creditsError=true;
+                  this.alertMessage=" * Please add some description."
+                }
+                else if(updateblogResponse.status==="error")
+                {
+                      this.creditsError=true;
+                      this.isLoaderForUpdateBlog=false;
+                      this.alertMessage=updateblogResponse.message;
+                      this.buttonsDisabled=false;
+                      // this.isEditorForEditThePublish=false;
+                      // this.isEditorForEditTheDraft=false;
+                      // this.isEditorForEditTheOnline=false;
+                      // this.isLoaderForUpdateBlog=false;
+                      // this.buttonsDisabled=false;
+                      // this.isAlertPopuperror=true;
+                      // this.alertMessage=updateblogResponse.message;
+                      // //this.alertMessage="You don't have enough credits to crrate the blog";
+                      // this.clearTheForm();
+                }
+                else{
+                  this.createAndUpdateTheBlogForm.patchValue({
+                      status:blogStatus
+                  })
+                  this.creaditsCount=updateblogResponse.credits;
+                  this.isEditorForEditThePublish=false;
+                  this.isEditorForEditTheDraft=false;
+                  this.isEditorForEditTheOnline=false;
                   this.getPublishedBlogs(0,20);
-              }
+                  this.showRequestIsTaken=true;
+                  //   var differenceInCalendarDays = require('date-fns/difference_in_calendar_days');
+                  // var diff_date = differenceInCalendarDays(
+                  //       new Date(this.createAndUpdateTheBlogForm.value.createdDate),      
+                  //       new Date());
+                  // var minutes = 1000*60;
+                  // var hours = minutes*60;
+                  // var days = hours*24;
+                  // var start_date:any = new Date();
+                  // var end_date:any = new Date(this.createAndUpdateTheBlogForm.value.createdDate);
+                  // var diff_date = Math.round((end_date - start_date)/days);
+                  this.noofdays=updateblogResponse.daysleft;
+                  this.getPublishedBlogs(0,20);
+                  if(blogStatus==2)
+                  {
+                        this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['DD MMMM, YYYY']);
+                        this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh:mm A']);
+                  }
+                  else if(blogStatus==1){
+                        //this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['DD MMMM, YYYY']);
+                        this.showPublishedDate="Today";
+                        this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh:mm A']);
+                  }
+                  else if(blogStatus==4 ||blogStatus==3||blogStatus==0)
+                  {
+                        this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['MMM DD YYYY']);
+                        this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh:mm A']);
+                  }
+                  this.buttonsDisabled=false;
+                  //this.showPublishedDate=this.format(this.createAndUpdateTheBlogForm.value.createdDate, ['YYYY-MM-DD']);
+                  //this.showPublishedTime=this.format(this.createAndUpdateTheBlogForm.value.createdTime, ['hh:mm A']);
+                    this.isLoaderForUpdateBlog=false;
+
+                    if(this.router.url == '/publish/calendar') {
+                      this.blogCalendarCall();
+                  }
+                  else{
+                      this.getPublishedBlogs(0,20);
+                  }
+                }
+               
             }, (err) => {
-                 this.isAlertPopuperror=true;
-                 this.alertMessage=this.connect_err;
-                 this.isLoaderForUpdateBlog=false;
+                  this.buttonsDisabled=false;
+                  var errorMessage= this.errorservice.logError(err);
+                  this.isAlertPopuperror=true;
+                  this.alertMessage=errorMessage;
+                  this.isLoaderForUpdateBlog=false;
 
             }, () => {
               //this.isStartLoader = false;
@@ -1630,6 +1843,8 @@ updateTheBlogDirectly(blogStatus) {
           else{
             this.validateAllFormFields(this.createAndUpdateTheBlogForm);
           }
+     // }
+      
 }
 
 
@@ -1658,9 +1873,6 @@ editBlogCall(eachData,type) {
    this.blogTags=[];
    this.getBlogComments(eachData.postid);
    this.publishService.getBlogDetailViewService(eachData.postid).subscribe(data=>{
-        this.dateChange(data.publish_up);
-        this.timeChange(data.publish_up);
-       
    if(data.tags.length!=0)
           {
             data.tags.forEach(tag=>{
@@ -1670,7 +1882,7 @@ editBlogCall(eachData,type) {
     if(this.blogTypes.length>0)
       {
         this.blogTypes.forEach(category=>{
-          if(category.id==eachData.category.categoryid)
+          if(category.id==data.category.categoryid)
             {
                   category.selected=true;
             }
@@ -1679,16 +1891,41 @@ editBlogCall(eachData,type) {
             }
         })
       }
-    this.createAndUpdateTheBlogForm.patchValue({
-        title:data.title,
-        content:data.text,
-        postid:data.postid,
-        type:data.category.categoryid,
-        status:data.published,
-        image:data.image.url,
-        createdDate:data.publish_up,
-        createdTime:data.publish_up,
-    })
+      if(data.published_date==null)
+        {
+             this.dateChange('');
+             this.timeChange('');
+             if(data.image.url!=''&& data.image.url!=null)
+                this.coverImages.push(data.image.url);
+             this.createAndUpdateTheBlogForm.patchValue({
+              title:data.title,
+              content:data.text,
+              postid:data.postid,
+              type:data.category.categoryid,
+              status:data.published,
+              image:data.image.url,
+              createdDate:'',
+              createdTime:'',
+          })
+        }
+        else{
+            this.dateChange(data.publish_up);
+            this.timeChange(data.publish_up);
+            if(data.image.url!=''&& data.image.url!=null)
+                 this.coverImages.push(data.image.url);
+             this.createAndUpdateTheBlogForm.patchValue({
+              title:data.title,
+              content:data.text,
+              postid:data.postid,
+              type:data.category.categoryid,
+              status:data.published,
+              image:data.image.url,
+              createdDate:data.publish_up,
+              createdTime:data.publish_up,
+          })
+        }
+   
+   
        
    if(type=='publish')
     {
@@ -1709,8 +1946,9 @@ editBlogCall(eachData,type) {
         this.isEditorForEditTheOnline=true;
       }
    },err=>{
+    var errorMessage= this.errorservice.logError(err);
     this.isAlertPopuperror=true;
-    this.alertMessage=this.connect_err;
+    this.alertMessage=errorMessage;
     PublishComponent.showDraft=false;
     PublishComponent.showIonized=false;
     this.isPageStartLoader=false;
@@ -1728,9 +1966,15 @@ editBlogCall(eachData,type) {
 isIonizedBlog=false; 
 getBlogView(eachData,type) {
     this.isPageStartLoader=true;
+    PublishComponent.showDraft=false;
+    PublishComponent.showIonize=false;
+    PublishComponent.showPublished=false;
+    PublishComponent.showIonized=false;
+
     this.blogTags=[];
     this.getBlogComments(eachData.postid);
     this.publishService.getBlogDetailViewService(eachData.postid).subscribe(data=>{
+      data.text=this.santizer.bypassSecurityTrustHtml(data.text);
       this.blogViewData=data;
     if(type=='publish')
       {
@@ -1778,9 +2022,10 @@ deleteTheBlog(){
      this.alertMessage = '';
      this.publishedData.splice(this.deleteBlogIndex,1);
   }, (err) => {
+    var errorMessage= this.errorservice.logError(err);
     this.isAlertPopuperror=true;
     this.isDeleteAlertPopup = false;
-      this.alertMessage=this.connect_err;
+      this.alertMessage=errorMessage;
   }, () => {
     this.isPageStartLoader = false;
   });
@@ -1944,29 +2189,43 @@ blogTopicClick(key) {
   // }
   // upload publish comment image
   uploadPublishImage() {
-    
+    this.bigSizeImg=[];
+    var bigimgcontinue=false;
     const fileBrowser = this.filePublishInput.nativeElement;
+    this.buttonsDisabled=true;
      if (fileBrowser.files && fileBrowser.files[0]) {
-      if(fileBrowser.files[0].size/1024/1024 > 9) {
-        this.imageUploadAlert = true;
-        this.imageerrorAlert = false;
-        // this.imageSrc = "";
-        this.filePublishInput.nativeElement.value = '';
-        return false;
-      }
+      // if(fileBrowser.files[0].size/1024/1024 > 9) {
+      //   this.imageUploadAlert = true;
+      //   this.imageerrorAlert = false;
+      //   // this.imageSrc = "";
+      //   this.filePublishInput.nativeElement.value = '';
+      //   return false;
+      // }
       this.imageUploadAlert = false;
       this.imageerrorAlert = false;
       this.isLoaderForUpdateBlog=true;
       const fd = new FormData();
       for(var key=0;key<fileBrowser.files.length;key++)
-     {
-        if(key==0)
-          fd.append('file', fileBrowser.files[key]);
-       else{
-         fd.append('file'+key, fileBrowser.files[key]);
-       }
-        
-     }
+      {
+        if(fileBrowser.files[key].size/1024/1024 > 9){
+          //this.buttonsDisabled=false;
+          //this.imageUploadAlert = false;
+          this.bigSizeImg.push(fileBrowser.files[key].name + "  size can not exceed 8MB.");
+          if(fileBrowser.files.length==1)
+            {
+              this.buttonsDisabled=false;
+              this.isLoaderForUpdateBlog=false;
+              return false;
+            }
+        }else{
+          bigimgcontinue=true;
+              if(key==0)
+              fd.append('file', fileBrowser.files[key]);
+              else{
+                fd.append('file'+key, fileBrowser.files[key]);
+              }
+        }
+      }
       const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
       //fd.append('file', fileBrowser.files[0]);
       fd.append('userid', currentuser.id);
@@ -1974,37 +2233,51 @@ blogTopicClick(key) {
       fd.append('password', currentuser.pwd);
       fd.append('encode', 'true');
       fd.append('auth_key', currentuser.auth);
-      
+     if(bigimgcontinue){ 
       this.authService.uploadImageService(fd).subscribe(res => {
-        // do stuff w/my uploaded file
+      //   if(res.errors.fileerror!==undefined)
+      // {
+      //     this.isLoaderForUpdateBlog=false;
+      //     this.buttonsDisabled=false;
+      //     this.imageerrorAlert=true;
+      // }
+      // else 
         if(res.description==undefined)
         {
+              this.isLoaderForUpdateBlog=false;
+              this.buttonsDisabled=false;
               this.imageUploadAlert = false;
-              this.imageerrorAlert=true;
+              //this.imageerrorAlert=true;
         }else{
-          res.description.forEach(image=>{
-          this.imageSrc.push(image.url);
-        })
+              res.description.forEach(image=>{
+              this.imageSrc.push(image.url);
+            })
           //this.imageSrc.push(res.description[0].url);
-          this.isStartLoader = false; 
+          //this.isStartLoader = false; 
         }         
-        
+        this.buttonsDisabled=false;
       },(err) => {
+        this.buttonsDisabled=false;
+        var errorMessage= this.errorservice.logError(err);
         this.isLoaderForUpdateBlog=false;
         this.isAlertPopuperror=true;
-        this.alertMessage=this.connect_err;
+        this.alertMessage=errorMessage;
         //this.isStartLoader = false;
        }, () => {
+         this.buttonsDisabled=false;
          this.filePublishInput.nativeElement.value = '';
          this.isLoaderForUpdateBlog=false;
         //this.isStartLoader = false;
-      });
+      });}else{
+        this.isLoaderForUpdateBlog=false;
+      }
     }
   }
   removeImage(index){
       this.imageSrc.splice(index,1);
       this.imageerrorAlert=false;
       this.imageUploadAlert = false;
+      this.imageerrorcoverAlert=false;
   }
   // Publish the blog
   publishTheBlog(blog) {
@@ -2023,22 +2296,35 @@ blogTopicClick(key) {
                 this.blogTags.push(tag.title);
             })
           }
-    }, (err) => {
-      this.isStartLoader=false;
-      this.isPageStartLoader=false;
-      this.isAlertPopuperror=true;
-      this.isPublishNow=false;
-      PublishComponent.showIonized=false;
-      this.alertMessage=this.connect_err;
-    }, () => {
-    });
-      
-    //this.postionizeorpublish=blog;
+          this.createAndUpdateTheBlogForm.patchValue({
+                    btype:blogResponse.category.categoryid
+          })
+      //this.postionizeorpublish=blog;
     this.isPublishNow = true;
     PublishComponent.showDraft=false;
     PublishComponent.showIonize=false;
     PublishComponent.showPublished=false;
     PublishComponent.showIonized=false;
+      //   this.blogTypes.forEach(category=>{
+      //   if(category.id==blogResponse.category.categoryid)
+      //     {
+      //           category.selected=true;
+      //           return false;
+      //     }
+      //     else{
+      //           category.selected=false;
+      //     }
+      // })
+    }, (err) => {
+      var errorMessage= this.errorservice.logError(err);
+      this.isStartLoader=false;
+      this.isPageStartLoader=false;
+      this.isAlertPopuperror=true;
+      this.isPublishNow=false;
+      PublishComponent.showIonized=false;
+      this.alertMessage=errorMessage;
+    }, () => {
+    });
     
   }
   // ionize the draft
@@ -2049,10 +2335,19 @@ blogTopicClick(key) {
     this.publishService.getBlogDetailViewService(blog.postid).subscribe( 
     (blogResponse: any) => { 
       this.isPageStartLoader=false;
-      this.createdDate=blogResponse.publish_up;
-      this.createdTime=blogResponse.publish_up;
-      this.dateChange(this.createdDate);
-      this.timeChange(this.createdDate);
+      // if(blogResponse.published_date==null)
+      //   {
+      //     this.createdDate='';
+      //     this.createdTime=''
+      //     this.dateChange('');
+      //     this.timeChange('');
+      //   }
+      //   else{
+          this.createdDate=blogResponse.publish_up;
+          this.createdTime=blogResponse.publish_up;
+          this.dateChange(this.createdDate);
+          this.timeChange(this.createdDate);
+        //}
        this.blogViewData = blogResponse;
         if(blogResponse.tags.length!=0)
           {
@@ -2065,6 +2360,9 @@ blogTopicClick(key) {
         this.blogTypes.forEach(category=>{
           if(category.id==blogResponse.category.categoryid)
             {
+                  this.createAndUpdateTheBlogForm.patchValue({
+                    type:blogResponse.category.categoryid
+                  })
                   category.selected=true;
             }
             else{
@@ -2079,11 +2377,12 @@ blogTopicClick(key) {
     PublishComponent.showPublished=false;
     PublishComponent.showIonized=false;
     }, (err) => {
+      var errorMessage= this.errorservice.logError(err);
       this.isAlertPopuperror=true;
       this.isIonizeNow=false;
       this.isPageStartLoader=false;
       PublishComponent.showDraft=false;
-      this.alertMessage=this.connect_err;
+      this.alertMessage=errorMessage;
     }, () => {
     });
      
@@ -2092,6 +2391,7 @@ blogTopicClick(key) {
     this.blogTypes.forEach(btype=>{
         btype.selected=false;
         this.blogtypeSelected=true;
+        
         if(btype.id==type.id)
           {
             type.selected=true;
@@ -2131,7 +2431,10 @@ blogTopicClick(key) {
     this.clearTheForm();
   }
   clearTheForm(){
+    this.creditsError=false;
+    this.blogtypeSelected=true;
     this.bigSizeImg=[];
+    this.bigSizecoverImg=[];
     this.createAndUpdateTheBlogForm.reset();
     this.draftCurrentClass='';
     this.blogTitle="";
@@ -2250,32 +2553,65 @@ blogTopicClick(key) {
       showTime="";
       enablePublish=false;
       enableSchedule=false;
-      stopTimes=""
+      stopTimes="";
+      //today_date=new Date();
       dateChange(createdDate){
-        var today=new Date();
-        var current_date=this.format(today, ['DD']);
-        var current_month=this.format(today, ['MM']);
-        var current_year=this.format(today, ['YYYY']);
-        var selected_month=this.format(createdDate, ['MM']);
-        var selected_year=this.format(createdDate, ['YYYY']);
-        this.showDate=this.format(createdDate, ['DD']);
-        this.showDay= this.format(createdDate, ['ddd']);
-        this.showMonth=this.format(createdDate, ['MMMM']);
-        if(current_date===this.showDate && current_month==selected_month && current_year== selected_year)
+        var format = /[-]+/;
+        var today_date=new Date();
+        today_date.setHours(0,0,0,0);
+        if(format.test(createdDate)){
+          createdDate=new Date(createdDate.replace(/-/g, "/"));
+          } else {
+          }
+        createdDate.setHours(0,0,0,0);
+        if(createdDate==''||createdDate==null)
           {
-              this.stopTimes=this.format(today, ['YYYY-MM-DD HH:mm:ss']);
+              this.showDate='';
+              this.showDay= '';
+              this.showMonth='';
               this.enablePublish=false;
-              this.enableSchedule=true;
+              this.enableSchedule=false;
           }
           else{
+          // var current_date=this.format(today, ['DD']);
+          // var current_month=this.format(today, ['MM']);
+          // var current_year=this.format(today, ['YYYY']);
+          // var selected_month=this.format(createdDate, ['MM']);
+          // var selected_year=this.format(createdDate, ['YYYY']);
+          this.showDate=this.format(createdDate, ['DD']);
+          this.showDay= this.format(createdDate, ['ddd']);
+          this.showMonth=this.format(createdDate, ['MMMM']);
+        if(createdDate.getTime()>today_date.getTime())
+          {
               this.stopTimes='';
               this.enablePublish=true;
               this.enableSchedule=false;
           }
+          else{
+              this.stopTimes=this.format(today_date, ['YYYY-MM-DD HH:mm:ss']);
+              this.enablePublish=false;
+              this.enableSchedule=true;
+          }
+        // if(current_date===this.showDate && current_month==selected_month && current_year== selected_year)
+        //   {
+             
+        //   }
+        //   else{
+              
+        //   }
+          }
+        
       }
        timeChange(createdTime){
         //format(input10Moment, ['yyyy-mm-dd'])
-        this.showTime=this.format(createdTime, ['hh:mm a']);
+        if(createdTime!='')
+          {
+              this.showTime=this.format(createdTime, ['hh:mm a']);
+          }
+          else{
+              this.showTime='';
+          }
+        
         //this.showDay= this.format(input10Moment, ['ddd']);
         //this.showMonth=this.format(input10Moment, ['MMMM']);
       }

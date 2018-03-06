@@ -7,8 +7,7 @@ import { AuthserviceService } from '../shared/services/login/authservice.service
 @Component({
   selector: 'app-login',
   providers: [ AuthserviceService],
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  templateUrl: './login.component.html'
 })
 export class LoginComponent implements OnInit {
 
@@ -60,7 +59,8 @@ export class LoginComponent implements OnInit {
                         publishid:loginUserResponse.publishid,
                         smsSenderId:commonDetails.description[0].sender_id,
                         userGroup:(loginUserResponse.groups.split(","))[0],
-                        smsbalance:commonDetails.description[0].smsbalance
+                        smsbalance:commonDetails.description[0].smsbalance,
+                        onesignal:''
                       }));
                     this.router.navigate(['home']);
                 }, (err) => {

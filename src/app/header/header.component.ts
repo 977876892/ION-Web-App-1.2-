@@ -8,19 +8,25 @@ import { PromotionsService } from '../shared/services/promotions/promotions.serv
 import { DashboardService } from '../shared/services/dashboard/dashboard.service';
 import { IonServer } from '../shared/globals/global';
 import {PublishComponent} from '../publish/publish.component';
+import { ErrorService } from '../shared/services/error/error.service';
 declare var require: any;
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  providers: [SearchService,AuthserviceService,LeadsService,PromotionsService,DashboardService],
-  styleUrls: ['./header.component.css']
+  providers: [SearchService,AuthserviceService,LeadsService,PromotionsService,DashboardService,ErrorService]
 })
 export class HeaderComponent implements OnInit {
+  format = require('date-fns/format');
+  today=new Date();
+  stopDates=this.format(this.today, ['YYYY-MM-DD']);
   //@ContentChildren('feedsNotificationClick') feedsNotificationClick;
+  currentuser=localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+  loginUserGroupId=this.currentuser.userGroup;
   isSearchPopup: boolean = false;
   isStartLoader: boolean = false;
   isNoResult:boolean=false;
   isAlertPopupError:boolean=false;
+  isSelectBlog:false;
   isFeedsNotification:boolean=false;
   imageSrc: any = '';
   alertMessage: string = '';
@@ -37,7 +43,6 @@ export class HeaderComponent implements OnInit {
   isPromoPopupOpen: boolean = false;
   isAlertPopup: boolean = false;
   isSelectAddLeads:boolean=false;
-  connect_err=IonServer.nointernet_connection_err;
   gender=[{checked:true},{checked:false}];
   spaceComment=IonServer.Space_Not_required;  
   f_name_req_comm=IonServer.f_name_required;
@@ -46,6 +51,7 @@ export class HeaderComponent implements OnInit {
   email_required_comm=IonServer.email_required;
   invalid_email_comm=IonServer.invalid_email;
   num_required_comm=IonServer.num_required;
+  promotion_Social_imgpath=IonServer.promotion__imgpath;
   imgerror="Choose Only Image.";
   imgsize="The file size can not exceed 8MB.";
   @ViewChild('fileInput') fileInput;
@@ -67,7 +73,7 @@ export class HeaderComponent implements OnInit {
   });
   @ViewChild('filtercontainer') filtercontainer;
    autoComplete=[];
-  constructor(private router: Router, private searchService: SearchService,private authService: AuthserviceService,private builder: FormBuilder,private leadsService: LeadsService,private promotionService:PromotionsService,private dashboardService: DashboardService) {
+  constructor(private router: Router, private searchService: SearchService,private authService: AuthserviceService,private builder: FormBuilder,private leadsService: LeadsService,private promotionService:PromotionsService,private dashboardService: DashboardService,private errorservice:ErrorService) {
      //document.addEventListener('click', this.offClickHandler.bind(this));
      document.addEventListener('click', this.offClickHandler.bind(this));
    }
@@ -120,8 +126,9 @@ topNotification:any=[];
     (notificationResponse: any) => {
       this.notificationFeedData = notificationResponse.description;    
     }, (err) => {
+      var errorMessage= this.errorservice.logError(err);
       this.isAlertPopup=true;
-      this.alertMessage=this.connect_err;
+      this.alertMessage=errorMessage;
       this.isFeedsNotification=false;
     }, () => {
     });
@@ -150,17 +157,17 @@ searchCall(searchtext) {
                 this.isNoResult=true;
               }
           }, (err) => {
+            var errorMessage= this.errorservice.logError(err);
             this.isStartLoader = false;
             this.isAlertPopup=true;
             this.isSearchPopup=false;
-            this.alertMessage=this.connect_err;
+            this.alertMessage=errorMessage;
           }, () => {
             this.isStartLoader = false;
 
           });
     }
         else{
-          console.log(searchtext)
           if(searchtext===undefined||searchtext.length<4)
             {
               this.isNoResult=false;
@@ -190,6 +197,8 @@ searchCall(searchtext) {
   selectPromo(eachpromotion){
   this.router.navigate(['promotions/promotiondemo',eachpromotion.id,eachpromotion.avatar,eachpromotion.title]);
 }
+
+buttonsDisabled=false;
  // upload image
  upload() {
   
@@ -213,7 +222,7 @@ searchCall(searchtext) {
     fd.append('password', currentuser.pwd);
     fd.append('encode', 'true');
     fd.append('auth_key', currentuser.auth);
-    
+    this.buttonsDisabled=true;
     this.authService.uploadImageService(fd).subscribe(res => {
       // do stuff w/my uploaded file
       
@@ -224,10 +233,12 @@ searchCall(searchtext) {
         this.imageSrc = res.description[0].url;
          this.isShowImgDeleteButt=true;
       }
+        this.buttonsDisabled=false;
     
     },(err) => {
-
+        this.buttonsDisabled=false;
      }, () => {
+      this.buttonsDisabled=false;
       this.fileInput.nativeElement.value = '';
        setTimeout (() => {
             this.isStartLoader = false;
@@ -356,9 +367,10 @@ addLeads() {
                           this.isSelectAddLeads=false;
                       }
                     }, (err) => {
+                      var errorMessage= this.errorservice.logError(err);
                       this.isAlertPopup=true;
                       this.isSelectAddLeads=false;
-                      this.alertMessage=this.connect_err;
+                      this.alertMessage=errorMessage;
                       this.isFeedsNotification=false; 
                     }, () => {
                       this.isStartLoader = false;
@@ -387,5 +399,10 @@ addNew(){
   PublishComponent.showIonize=false;
   PublishComponent.showPublished=false;
   PublishComponent.showIonized=false;
+}
+omit_special_char(event) {
+  var k;  
+  k = event.charCode; 
+  return(k!=35);
 }
 }

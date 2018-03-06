@@ -5,7 +5,7 @@
     <div class="panel-rt  panel_bg__sty_3">
       <app-header></app-header>
       <div class="panel">
-          <div class="loader" *ngIf="isStartLoader"></div>
+          <div class="loader" *ngIf="isStartLoader" [style.margin-top.px]="windowBottom"></div>
         <div class="leads_main">
           <div class="search-filter">
             <div class="filter-items" *ngIf="!isCheckBoxChecked">
@@ -188,10 +188,11 @@
                 <button class="button ripple" (click)="sendSms()"><img src="assets/css/images/sms-icon.png"><span>Send SMS</span></button>
                 </div>
             <div class="filter-add">
-			<button class="button add-icon" (click)="clearForm(); isAddLead = !isAddLead;" style="border: 2px #33CCCC solid !important;">Add Lead</button>
-			<a class="downloads" (click)="downloadLeads()"><img src="assets/css/images/download-icon-2.png" width="33" height="30"></a>
-			<a  class="print"><img src="assets/css/images/print-icon.png" width="33" height="31"></a>
-			</div>
+              <a class="button" href="http://dashboard.getion.in/index.php/import-bulk-leads" style="border: 2px #33CCCC solid !important;border-radius: 18px;margin-left: -150px;position: absolute;color: #33cccc;font-weight: bold;" target="_blank">Import Leads</a>
+              <button class="button add-icon" (click)="clearForm(); isAddLead = !isAddLead;" style="border: 2px #33CCCC solid !important;">Add Lead</button>
+              <a class="downloads" (click)="downloadLeads()"><img src="assets/css/images/download-icon-2.png" width="33" height="30"></a>
+              <!-- <a  class="print"><img src="assets/css/images/print-icon.png" width="33" height="31"></a> -->
+			      </div>
           </div> <!-- Visits search Ends -->
     <div *ngIf="showNoleadsAvailable" style="margin-top: 40px;text-align: center;">No Leads Are Available.</div>
 		<div class="table-data" *ngIf="!showNoleadsAvailable">
@@ -229,9 +230,9 @@
     </label> 
     </td>
     <td [class.seleted]="eachdata.isChecked" *ngIf="eachdata.image!=''&&eachdata.image!='undefined'"><img src="{{eachdata.image}}" style="width: 34px;height: 34px;border-radius: 50%;object-fit: cover;"></td>
-    <td [class.seleted]="eachdata.isChecked"  *ngIf="eachdata.image==''||eachdata.image=='undefined'"><span class="avatar avatar-r" style="margin: inherit !important;">{{ eachdata.imgTag }}</span></td>
+    <td [class.seleted]="eachdata.isChecked"  *ngIf="eachdata.image==''||eachdata.image=='undefined'"><span class="avatar avatar-r" [style.background-color]="eachdata.color"   style="margin: inherit !important;">{{ eachdata.imgTag }}</span></td>
     <td class="v-name" [class.seleted]="eachdata.isChecked" title="{{ eachdata.firstname }}">{{ eachdata.firstname }}</td>
-     <td class="v-sex " [class.seleted]="eachdata.isChecked">{{ eachdata.sex }}</td>
+    <td class="v-sex " [class.seleted]="eachdata.isChecked"><span *ngIf="eachdata.sex!='null'">{{ eachdata.sex }}</span></td>
     <td class="v-age " [class.seleted]="eachdata.isChecked">{{ eachdata.age }}</td>
     <td class="v-mobile " [class.seleted]="eachdata.isChecked">{{ eachdata.mobile }}</td>
     <td class="v-email " [class.seleted]="eachdata.isChecked">{{ eachdata.email }}</td>
@@ -253,7 +254,7 @@
        </a> 
     </td>
     <!-- <td class="tags"><a class="reject">rejected</a></td> -->
-    <td class="v-edit " [class.seleted]="eachdata.isChecked"><a class="edit" (click)="editLeadFunction(eachdata)">edit</a></td>
+    <td class="v-edit " [class.seleted]="eachdata.isChecked"><a class="edit" (click)="editLeadFunction(eachdata)" style="cursor:pointer;">edit</a></td>
   </tr>  
    
   
@@ -383,9 +384,9 @@
             <label for="rdblGender_4"> Female</label>
             </span>
           </li>
-      <li>
+      <li> 
       <label class="labels">City</label>
-      <input type="text" class="input" [formControl]="leadForm.controls['city']" tabindex="8">
+      <input type="text" class="input" [formControl]="leadForm.controls['city']" tabindex="8" (keypress)="omit_special_char($event)">
       <!-- <span style="color:red" *ngIf="leadForm.controls['city'].hasError('required') && leadForm.controls['city'].touched">Invalid city</span>
       <span style="color:red" *ngIf="leadForm.controls['city'].hasError('minlength') && leadForm.controls['city'].touched"> City be at least three characters in length.</span> -->
       </li>
@@ -401,11 +402,12 @@
       </li>
       <li>
       <label class="labels">Phone</label>
-      <input type="number" (input)="onTypeNumValid($event.target.value)" class="input" maxlength="12" [formControl]="leadForm.controls['phone']" tabindex="4" onkeyup="if(!this.checkValidity()){this.value='e';alert('Please enter a number');};" required>
+      <input type="number" (input)="onTypeNumValid($event.target.value)" class="input" maxlength="12" [formControl]="leadForm.controls['phone']" tabindex="4" onkeyup="if(!this.checkValidity()){};" onkeydown="javascript: return event.keyCode == 69 ? false : true" required>
       <span class="required_comments" *ngIf="leadForm.controls['phone'].hasError('required') && leadForm.controls['phone'].touched">{{num_required_comm}}</span>
       <!-- <span style="color:red" *ngIf="leadForm.controls['phone'].hasError('minlength')"> Phone Number Minimum 10 characters Required.</span>
       <span style="color:red" *ngIf="leadForm.controls['phone'].hasError('maxlength')">Phone Number Maximum 12 characters Only.</span> -->
       <span class="required_comments" *ngIf="phoneMinlength"> Phone Number Should Be 10 Numbers.</span>
+      <span class="required_comments" *ngIf="zeroInput">Invalid Phone Number.</span>
       </li>
       <!-- <li>
       <label class="labels">Doctor</label> 
@@ -425,7 +427,7 @@
       </li>
       <li>
       <label class="labels">Area Locality</label>
-      <input type="text" class="input" [formControl]="leadForm.controls['area']" tabindex="9">
+      <input type="text" class="input" [formControl]="leadForm.controls['area']" tabindex="9" (keypress)="omit_special_char($event)">
       <!-- <span style="color:red" *ngIf="leadForm.controls['doctor'].hasError('required') && leadForm.controls['doctor'].touched">Invalid doctor</span>
       <span style="color:red" *ngIf="leadForm.controls['doctor'].hasError('minlength') && leadForm.controls['doctor'].touched"> doctor be at least three characters in length.</span> -->
       </li>
@@ -437,10 +439,10 @@
       <ul>
       <li>
       <label class="labels">Add Remarks</label>
-      <input type="text" class="input" maxlength="120" [formControl]="leadForm.controls['remarks']" tabindex="10">
+      <input type="text" class="input" maxlength="120" [formControl]="leadForm.controls['remarks']" tabindex="10" (keypress)="omit_special_char($event)">
       </li>
       <li>
-          <tag-input [formControl]="leadForm.controls['ctags']" [(ngModel)]="leadtags" tabindex="11">
+          <tag-input [formControl]="leadForm.controls['ctags']" [(ngModel)]="leadtags" tabindex="11" secondaryPlaceholder="Enter the Group." (keypress)="omit_special_char($event)"  addOnBlur=true>
             <tag-input-dropdown [autocompleteItems]="autoComplete"></tag-input-dropdown>
           </tag-input>
       </li>
@@ -450,7 +452,7 @@
         <br>
       
       <div class="actions">
-      <button class="button profile-action ripple btn" type="submit" tabindex="12">Submit</button>
+      <button class="button profile-action ripple btn" type="submit" tabindex="12" [disabled]="buttonsDisabled">Submit</button>
       <button class="button cancel-action" (click)="isAddLead = false;isEditLead=false;clearForm();" tabindex="13" style="margin-top: 1px;margin-left: 10px;">cancel</button>
       </div>
     </form>
@@ -502,6 +504,20 @@
        </div>
       </div>
       <!-- Popup -->
+        <!-- iserror popup -->
+     <div class="model model-alerts" *ngIf="deleteSuccessPopup" style="margin-top: 275px;box-shadow: 0 0 5px #777;"> 
+      <!-- <a class="close" href="#">Close</a> -->
+      
+      <div class="model-content">
+       <p>{{ alertMessage }}</p>           
+      <div class="btn_actions">
+        <div class="button btn-ok" (click)="deleteSuccessPopup = false;setPage(page);" >ok</div>
+       <!--   <div class="button btn-dismiss" (click)="isAlertPopup = false;">cancel</div> --> 
+    
+        </div>
+       </div>
+      </div>
+      <!-- Popup -->
         <!-- alert -->
     <div class="model model-alerts" *ngIf="isAlertPopup" style="margin-top: 275px;"> 
                 <!-- <a class="close" href="#">Close</a> -->
@@ -547,4 +563,4 @@
 </div>
 
 <!-- Container ends -->
-<div class="overlay" *ngIf="isAddLead || isEditLead || isStartLoader || isAlertPopupError || isAlertPopup || isPatientGroups || isDeleteAlertPopup"></div>
+<div class="overlay" *ngIf="isAddLead || isEditLead || isStartLoader || isAlertPopupError || isAlertPopup || isPatientGroups || isDeleteAlertPopup ||deleteSuccessPopup"></div>

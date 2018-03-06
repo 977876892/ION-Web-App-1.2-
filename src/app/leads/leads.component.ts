@@ -6,11 +6,11 @@ import { AuthserviceService } from '../shared/services/login/authservice.service
 import { PagerService } from '../shared/services/leads/pagination.service'
 import { IonServer } from '../shared/globals/global';
 declare var require: any;
+import { ErrorService } from '../shared/services/error/error.service';
 @Component({
   selector: 'app-leads',
   templateUrl: './leads.component.html',
-  providers: [LeadsService, AuthserviceService,PagerService],
-  styleUrls: ['./leads.component.css']
+  providers: [LeadsService, AuthserviceService,PagerService,ErrorService]
 })
 export class LeadsComponent implements OnInit {
   format = require('date-fns/format');
@@ -34,7 +34,6 @@ export class LeadsComponent implements OnInit {
   email_required_comm=IonServer.email_required;
   invalid_email_comm=IonServer.invalid_email;
   num_required_comm=IonServer.num_required;
-  connect_err=IonServer.nointernet_connection_err;
   @ViewChild('fileInput') fileInput;
   @ViewChild('editcontainer') editcontainer;
   imageSrc: any = '';
@@ -75,7 +74,7 @@ export class LeadsComponent implements OnInit {
     id:new FormControl(''),
     source:new FormControl('')
   });
-  
+  buttonsDisabled=false;
   checkboxGroup: FormGroup;
   gender=[{checked:true},{checked:false}];
  
@@ -109,7 +108,7 @@ export class LeadsComponent implements OnInit {
 
   constructor(private router: Router, private leadsService: LeadsService, private route: ActivatedRoute,
       private builder: FormBuilder, private authService: AuthserviceService,private pagerService: PagerService,
-      private _eref: ElementRef) { 
+      private _eref: ElementRef,private errorservice:ErrorService) { 
         document.addEventListener('click', this.offClickHandler.bind(this));
         document.addEventListener('click', this.leadtagsSuggestion.bind(this));
       }
@@ -180,7 +179,7 @@ export class LeadsComponent implements OnInit {
   }
 // Getting All leads
 getLeads() {
-  this.isStartLoader = true;
+  
   this.setPage(this.page);
   // this.leadsService.getLeadsListService().subscribe(
   //   (leadsResponse: any) => {
@@ -198,7 +197,10 @@ getLeads() {
 
 // add lead call
 addLeadStatus="";
+zeroInput:boolean=false;
 addLeads() {
+ console.log(this.leadForm.value.phone);
+  
   if(this.leadForm.value.firstname=='')
     {
       this.firstnameError=true;
@@ -206,10 +208,21 @@ addLeads() {
  if(this.numLength!=10 && this.numLength!=0)
         {
            this.phoneMinlength=true;
+           this.zeroInput=false;
         }
-        else{
-          this.phoneMinlength=false;
-        }
+    else{
+      this.phoneMinlength=false;
+    }
+  if(this.leadForm.value.phone == '0'){
+      if(!this.phoneMinlength){
+        this.zeroInput=true;
+      }
+     else{
+      this.zeroInput=false;
+     }
+    }else{
+    this.zeroInput=false;
+    }
  this.tags="";
  this.leadForm.value.id=this.leadId;
  this.isStartLoader = true;
@@ -242,10 +255,10 @@ addLeads() {
   {
       if(this.leadForm.value.sex=='')    
           this.leadForm.value.sex="Male";
-      if (this.leadForm.valid  &&  !this.phoneMinlength ) {
+      if (this.leadForm.valid  &&  !this.phoneMinlength && !this.zeroInput) {
+                this.buttonsDisabled=true;
                 this.leadsService.addLeadService(this.leadForm.value).subscribe(
-                    (leadResponse: any) => {
-                      console.log(leadResponse);
+                    (leadResponse: any) => { 
                       if(leadResponse.status === 'success' ||leadResponse.status==='ok') {
                         this.isAlertPopup = true;
                         this.alertMessage = 'Lead added successfully.';
@@ -259,12 +272,16 @@ addLeads() {
                         this.isAddLead = false;
                         this.addLeadStatus=leadResponse.status;
                       }
+                      this.buttonsDisabled=false;
                     }, (err) => {
+                      this.buttonsDisabled=false;
+                      var errorMessage= this.errorservice.logError(err);
                       this.isAlertPopupError=true;
-                      this.alertMessage=this.connect_err;
+                      this.alertMessage=errorMessage;
                       this.isStartLoader=false;
                       this.isAddLead = false;
                     }, () => {
+                      this.buttonsDisabled=false;
                       this.isStartLoader = false;
                       this.clearForm();
                     });
@@ -274,9 +291,11 @@ addLeads() {
       }
   }
   else{
-          if (this.leadForm.valid &&  !this.phoneMinlength ) {
+          if (this.leadForm.valid &&  !this.phoneMinlength && !this.zeroInput) {
+            this.buttonsDisabled=true;
               this.leadsService.updateLeadService(this.leadForm.value).subscribe(
                   (leadResponse: any) => {
+                    this.buttonsDisabled=false;
                     if(leadResponse.status === 'ok') {
                       this.isAlertPopup = true;
                       this.alertMessage = 'Lead updated successfully.';
@@ -284,8 +303,10 @@ addLeads() {
                         //this.getLeads();
                     }
                   }, (err) => {
+                    this.buttonsDisabled=false;
+                    var errorMessage= this.errorservice.logError(err);
                     this.isAlertPopupError=true;
-                    this.alertMessage=this.connect_err;
+                    this.alertMessage=errorMessage;
                     this.isStartLoader=false;
                     this.isEditLead = false;
                   }, () => {
@@ -301,9 +322,11 @@ onTypeNumValid(numValue) {
 this.numLength=numValue.length;
     if(numValue.length > 10 ){
       this.phoneMinlength=true;
+      this.zeroInput=false;
     }
     else{
        this.phoneMinlength=false;
+       this.zeroInput=false;
     }
 }
 // selectedLead(indx) {
@@ -344,7 +367,7 @@ upload() {
     fd.append('password', currentuser.pwd);
     fd.append('encode', 'true');
     fd.append('auth_key', currentuser.auth);
-    
+    this.buttonsDisabled=true;
     this.authService.uploadImageService(fd).subscribe(res => {
       // do stuff w/my uploaded file
       
@@ -355,12 +378,14 @@ upload() {
         this.imageSrc = res.description[0].url;
          this.isShowImgDeleteButt=true;
       }
+        this.buttonsDisabled=false;
     
     },(err) => {
 
      }, () => {
       this.fileInput.nativeElement.value = '';
        setTimeout (() => {
+            this.buttonsDisabled=false;
             this.isStartLoader = false;
     }, 3000)
     });
@@ -378,6 +403,7 @@ clearForm() {
   this.firstnameError=false;
   this.leadForm.reset();
   this.isShowImgDeleteButt=false;
+  this.zeroInput=false;
   this.gender[0].checked=true;
   this.gender[1].checked=false;
   this.phoneMinlength=false;
@@ -406,9 +432,11 @@ clearForm() {
   limit:number;
   showNoleadsAvailable=false;
        setPage(page: number) {
+        window.scrollTo(0, 0);
+        this.isStartLoader = true;
         this.page=page;
-        this.limitstart=(page-1)*10;
-        this.limit=10;
+        this.limitstart=(page-1)*25;
+        this.limit=25;
         this.pageItems=[];
         if(this.leadFilterForm.value.ageFrom!='' && this.leadFilterForm.value.ageFrom!=null)
           {
@@ -428,7 +456,10 @@ clearForm() {
                   else{
                       this.showNoleadsAvailable=false;
                       this.pageItems=leadsResponse.description;
-                      for(let i = 0; i < this.pageItems.length; i++) {
+                      for (var i = 0; i < this.pageItems.length; i++) {
+                        this.pageItems[i].color = ('#' + Math.floor(Math.random() * 16777215).toString(16));
+                        }
+                     for(let i = 0; i < this.pageItems.length; i++) {
                         this.pageItems[i].tagArr=[];
                         if(this.pageItems[i].leadsTags != "") {
                         this.pageItems[i].tagArr= this.pageItems[i].leadsTags.split(/\s*,\s*/);
@@ -452,9 +483,10 @@ clearForm() {
                       this.pager = this.pagerService.getPager(this.leadcount, page);
                 
               },(err)=>{
+                var errorMessage= this.errorservice.logError(err);
                 console.log(err);
                 this.isAlertPopupError=true;
-                this.alertMessage=this.connect_err;
+                this.alertMessage=errorMessage;
                 this.isStartLoader=false;
               },()=>{
                 this.pageItems.forEach(item=>{
@@ -691,9 +723,10 @@ autoComplete=[];
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
       },(err) => {
+        var errorMessage= this.errorservice.logError(err);
         this.isAlertPopupError=true;
         this.isStartLoader = false;
-        this.alertMessage=this.connect_err;
+        this.alertMessage=errorMessage;
       }, () => {
         this.isStartLoader = false;
       })
@@ -712,25 +745,30 @@ autoComplete=[];
         });
       
     }
+      deleteSuccessPopup=false;
     deleteAlertPopup(){
+              this.isDeleteAlertPopup=false;
               this.isCheckBoxChecked=false;
               this.isStartLoader = true;
+               this.selectedPhoneNumbers=[];
               this.leadsService.deleteLeads(this.ids).subscribe(res => {
                 const responseObj = JSON.parse(res);
-                this.isDeleteAlertPopup=false;
+                
                 this.isStartLoader = false;
-                this.alertMessage = responseObj.info;
-                this.setPage(this.page);
+                this.alertMessage = "Lead(s) Deleted Successfully.";
+                this.deleteSuccessPopup=true;
+                //this.setPage(this.page);
                 // this.leadsService.getLeadsListServiceByLimit(this.limitstart,this.limit,this.leadFilterForm).subscribe(
                 //   (leadsResponse: any) => {
                 //     this.pageItems=leadsResponse.description;
                 //   });
               },(err) => {
+                var errorMessage= this.errorservice.logError(err);
                 this.isStartLoader=false;
                 this.isDeleteAlertPopup=false;
                 this.isAlertPopupError=true;
                 this.isCheckBoxChecked = true;
-                this.alertMessage=this.connect_err;
+                this.alertMessage=errorMessage;
             }, () => {
               this.isStartLoader = false;
             });
@@ -862,6 +900,7 @@ autoComplete=[];
     }
     addGroupsToSeceltedLeads()
     {
+          this.selectedPhoneNumbers=[];
           this.isStartLoader=true;    
           var finalids="",filaltags="";
           for(let tag of this.leadtagsForFilter){
@@ -884,10 +923,11 @@ autoComplete=[];
                   this.isAlertPopup = true;
                   this.alertMessage = "Groups Added Successfully To Selected Leads.";
           },(err) => {
+            var errorMessage= this.errorservice.logError(err);
               this.isStartLoader=false;
               this.isAlertPopupError=true;
               this.selectedLeadUsingId;
-              this.alertMessage=this.connect_err;
+              this.alertMessage=errorMessage;
           }, () => {
             this.isStartLoader = false;
           })
@@ -929,7 +969,6 @@ clickedOnDottedLine(indx) {
 }
 firstnameError=false;
 firstnameChange(value){
-  console.log(value);
   if(value==''|| value.length<3)
     {
       this.firstnameError=true;
@@ -937,6 +976,11 @@ firstnameChange(value){
     else{
       this.firstnameError=false;
     }
+}
+omit_special_char(event) {
+  var k;  
+  k = event.charCode; 
+  return(k!=35);
 }
  windowBottom:number;
            @HostListener("window:scroll", [])

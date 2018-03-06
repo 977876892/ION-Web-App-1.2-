@@ -11,8 +11,19 @@
       <div class="panel">
           <div class="loader" *ngIf="isStartLoader"></div>
         <div class="visits_main"> 
-          <div class="search-filter">
-            <div class="filter-items">
+          <div class="search-filter" >
+              <div class="filter-add filters-inline" style="position: relative;float:left !important;padding: 0px 10px 10px 0px !important;">
+              <a href="http://dashboard.getion.in/index.php/appointment-settings" target="_blank"><button class="button add-review" >Settings</button></a>              
+              
+                  <button class="button add-review" (click)="$event.stopPropagation();isReviewLinkPopup = !isReviewLinkPopup">Review Link</button>
+                  <button class="button add-review" (click)="addVisitPopup();isBlockCalPopup = !isBlockCalPopup">Block</button>
+                </div>
+              <div class="filter-add filters-inline" style="position: relative;">
+                <button class="button add-icon" (click)="addVisitPopup(); isAddVisit = !isAddVisit">Add Visit</button>
+                <a class="downloads" (click)="downloadVisits()" style="cursor: pointer;"><img src="assets/css/images/download-icon-2.png" width="33" height="30"></a>
+                <a style="cursor: pointer;" (click)="printOptionsClick('printSectionId');" class="print"><img src="assets/css/images/print-icon.png" width="33" height="31"></a>
+                </div>
+            <div class="filter-items" >
               <div class="filters filters-inline" >
               <label class="labels">Sort By:</label>
               <select class="drp-down filters-inline-sel" [(ngModel)]="orderVal">
@@ -42,15 +53,9 @@
             </div>
             
                         
-            <div class="filter-add filters-inline" style="position: relative;">
-        <!-- <button class="button add-review" (click)="$event.stopPropagation();isReviewLinkPopup = !isReviewLinkPopup">Review Link</button> -->
-        <button class="button add-review" (click)="addVisitPopup();isBlockCalPopup = !isBlockCalPopup">Block</button>
-      <button class="button add-icon" (click)="addVisitPopup(); isAddVisit = !isAddVisit">Add Visit</button>
-      <a class="downloads" (click)="downloadVisits()"><img src="assets/css/images/download-icon-2.png" width="33" height="30"></a>
-			<a style="cursor: pointer;" (click)="printOptionsClick('printSectionId');" class="print"><img src="assets/css/images/print-icon.png" width="33" height="31"></a>
-      </div>
+            
        <!-- Review link popup-->
-      <div class="user__status_pop_transferq review_pop" *ngIf="isReviewLinkPopup"  #filtercontainers>
+      <!-- <div class="user__status_pop_transferq review_pop" *ngIf="isReviewLinkPopup"  #filtercontainers>
           <div class="user__status_popbody bx-shadow brd-radius-15 transfer_pop" style="z-index:10; width: 450px;border-radius: 20px !important;">
               <div class="title" style="text-align:center;">Send  Appointment</div>
               <div class="review_content_notification">
@@ -60,15 +65,12 @@
                           <li>
                               <span class="labels">Please enter patient mail id</span>
                               <input type="text" autofocus class="input xs-fill-wt" tabindex="1" pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{1,63}$" [formControl]="reviewForm.controls['patientMailId']" required>
-                              <!-- <span class="booking_error" *ngIf="reviewForm.controls['patientMailId'].hasError('required') && reviewForm.controls['patientMailId'].touched">Email is required</span> -->
                               <span class="booking_error" *ngIf="reviewForm.controls['patientMailId'].hasError('pattern') && reviewForm.controls['patientMailId'].touched">Invalid email</span>
                             </li>
                           <br>
                           <li>
                               <span class="labels">Please enter mobile number</span>
-                              <input type="number" (input)="onTypeNumValid($event.target.value)" minlength="10" maxlength="12" required class="input xs-fill-wt" tabindex="2"  onkeyup="if(!this.checkValidity()){this.value='e';alert('Please enter a number');};" pattern="\S.*\S" [formControl]="reviewForm.controls['patientMobileNumber']">
-                              <!-- <span class="booking_error" *ngIf="reviewForm.controls['patientMobileNumber'].hasError('required') && reviewForm.controls['patientMobileNumber'].touched">Phone Number is Required</span> -->
-                              <!-- <span style="color:red" *ngIf="phoneEmpty"> Phone Number is Required</span> -->
+                              <input type="number" (input)="onTypeNumValid($event.target.value)" minlength="10" maxlength="12" required class="input xs-fill-wt" tabindex="2"  onkeyup="if(!this.checkValidity()){};" onkeydown="javascript: return event.keyCode == 69 ? false : true" pattern="\S.*\S" [formControl]="reviewForm.controls['patientMobileNumber']">
                               <span class="booking_error" *ngIf="phoneMinlength"> Phone Number Should Be 10 Numbers.</span>
                               <span class="booking_error" *ngIf="phoneZeroComm"> Invalid Number.</span>
                             </li>
@@ -82,7 +84,9 @@
                   </form>
               </div>
           </div>
-      </div> 
+      </div>  -->
+
+   
 
    </div> <!-- Visits search Ends -->
 
@@ -120,15 +124,15 @@
               <tr  *ngFor="let eachdata of booking[1] | orderBy: orderVal; let j = index">
                <td (click)="patientDetails(eachdata.id);" *ngIf="eachdata.image!=''"><img src="{{eachdata.image}}" style="width: 34px;height: 34px;border-radius: 50%;cursor:pointer;"></td>
                 <td (click)="patientDetails(eachdata.id);" *ngIf="eachdata.image==''" style="cursor:pointer;"><span class="avatar avatar-r">{{ eachdata.nametag }}</span></td>
-                <td (click)="patientDetails(eachdata.id);" title="{{ eachdata.name }}">{{ eachdata.name }}</td>
-                <td>{{ eachdata.mobile }}</td>
-                <td>{{ eachdata.resname }}</td>
-                <td>{{ eachdata.display_starttime }}</td>
+                <td (click)="patientDetails(eachdata.id);" title="{{ eachdata.name }}" style="cursor:pointer;">{{ eachdata.name }}</td>
+                <td title="{{ eachdata.mobile }}">{{ eachdata.mobile }}</td>
+                <td title="{{ eachdata.resname }}">{{ eachdata.resname }}</td>
+                <td title="{{ eachdata.display_starttime }}">{{ eachdata.display_starttime }}</td>
                 <td  *ngIf="eachdata.request_status == 'new'" ><span class="new_full">{{ eachdata.request_status }}</span></td>
                 <td  class="status" *ngIf= "eachdata.request_status == 'Canceled'||eachdata.request_status == 'canceled'" ><a class="reject">Cancelled</a></td>
                 <td  class="status" *ngIf="eachdata.request_status == 'accepted'" ><a class="accept">{{ eachdata.request_status }}</a></td>
                 <td  *ngIf="eachdata.request_status == 'Review'" ><span class="review_full">{{ eachdata.request_status }}</span></td>
-                <td>Rs.{{eachdata.booking_deposit }}</td>
+                <td title="Rs.{{ eachdata.booking_deposit }}">Rs.{{eachdata.booking_deposit }}</td>
                 <td class="v-edit" (click)="visitEdit(eachdata.id);"><a style="cursor: pointer;" class="edit">edit</a></td>
                 <td class="v-delete" (click)="showDeleteAlert(eachdata.id);"><a style="cursor: pointer;" class="edit">edit</a></td>
               </tr>
@@ -191,15 +195,28 @@
     <div class="form-section">
         <div class="form-section-top visit_chan">
         <ul>
-        <li>
+        <li *ngIf="visitCategeoryData.length!=0">
         <label class="labels">SELECT SPECIALITY</label>
         <select class="drp-down xs-fill-wt" (change)="getDoctors(categeryID.value)" [formControl]="visitForm.controls['category']" #categeryID required tabindex="1" autofocus>
           <option [selected]="true" value="">Select a speciality</option>
           <option *ngFor="let eachcategeory of visitCategeoryData" [value]="eachcategeory.id_categories">
-                {{eachcategeory.name}} 
+                {{eachcategeory.name}}
             </option>
+       
         </select>
           <span class="booking_error" *ngIf="categoryRequiredError&&visitForm.controls['category'].hasError('required') && visitForm.controls['category'].touched">Please Select Category</span>
+        </li>
+         <li *ngIf="visitCategeoryData.length==0">
+        <label class="labels">SELECT SPECIALITY</label>
+        <select class="drp-down xs-fill-wt" required tabindex="1" autofocus>
+          <option [selected]="true" value="">Select a speciality</option>
+        <!--          
+          <option *ngFor="let eachcategeory of visitCategeoryData" [value]="eachcategeory.id_categories">
+                {{eachcategeory.name}} 
+            </option> -->
+       
+        </select>
+           <span class="booking_error" *ngIf="categoryRequiredError">Please Select Category</span> 
         </li>
         <li>
          <label class="labels">SELECT DATE</label>
@@ -255,7 +272,7 @@
 				        {{eachtimeslot.startendtime}}
             </option>
         </select>
-           <span class="booking_error" *ngIf="visitForm.controls['starttime'].hasError('required') && visitForm.controls['starttime'].touched">Please Select Timeslot</span>
+           <span class="booking_error" *ngIf="visitForm.controls['starttime'].hasError('required') && visitForm.controls['starttime'].touched">Please Select Time slot</span>
             <!-- <span style="color:red" *ngIf="visitForm.controls['starttime'].touched && timeChange && isEditVisit">Please Select Timeslots</span> -->
         </li>
            <!-- <li *ngIf="!isAddVisit">
@@ -281,7 +298,7 @@
         </li> -->
         <li>
         <label class="labels">AMOUNT PAID</label>
-          <input type="number" class="input xs-fill-wt visits-bk-apmt-ip" [formControl]="visitForm.controls['booking_deposit']" required tabindex="6" onkeyup="if(!this.checkValidity()){this.value='e';alert('Please enter a number');};">
+          <input type="number" class="input xs-fill-wt visits-bk-apmt-ip" [formControl]="visitForm.controls['booking_deposit']" required tabindex="6" onkeyup="if(!this.checkValidity()){};" onkeydown="javascript: return event.keyCode == 69 ? false : true">
           <span class="booking_error" *ngIf="visitForm.controls['booking_deposit'].hasError('required') && visitForm.controls['booking_deposit'].touched">Amount Is Required</span>
 
         </li>
@@ -314,7 +331,7 @@
           </li>
             <li>
                 <label class="labels">PHONE</label>
-                <input type="number" (input)="onTypeNumValid($event.target.value)" class="input xs-fill-wt visits-bk-apmt-ip"  minlength="10" maxlength="12" [formControl]="visitForm.controls['phone']" required onkeyup="if(!this.checkValidity()){this.value='e';alert('Please enter a number');};" tabindex="12">
+                <input type="number" (input)="onTypeNumValid($event.target.value)" class="input xs-fill-wt visits-bk-apmt-ip"  minlength="10" maxlength="12" [formControl]="visitForm.controls['phone']" required onkeyup="if(!this.checkValidity()){};" onkeydown="javascript: return event.keyCode == 69 ? false : true" tabindex="12">
                 <span class="booking_error" *ngIf="visitForm.controls['phone'].hasError('required') && visitForm.controls['phone'].touched">Phone Number is Required</span>
                 <!-- <span style="color:red" *ngIf="phoneEmpty"> Phone Number is Required</span> -->
                 <span class="booking_error" *ngIf="phoneMinlength"> Phone Number Should Be 10 Numbers.</span>
@@ -379,7 +396,7 @@
         <ul>
         <li>
         <label class="labels">ADD REMARKS</label>
-        <input type="text" class="input xs-fill-wt visits-bk-apmt-ip" maxlength="120" [formControl]="visitForm.controls['comments']"  tabindex="14">
+        <input type="text" class="input xs-fill-wt visits-bk-apmt-ip" maxlength="120" [formControl]="visitForm.controls['comments']" (keypress)="omit_special_char($event)" tabindex="14">
         </li>
         </ul>
         </div>
@@ -396,7 +413,7 @@
               <div class="form-section-btm" *ngIf="isAddVisit">
                   <ul>
                   <li>
-                    <tag-input [formControl]="visitForm.controls['tags']"   tabindex="15">
+                    <tag-input [formControl]="visitForm.controls['tags']"   tabindex="15" (keypress)="omit_special_char($event)" secondaryPlaceholder="Enter the Group." addOnBlur=true>
                       <tag-input-dropdown [autocompleteItems]="autoComplete">
                       </tag-input-dropdown>
                     </tag-input>
@@ -406,7 +423,7 @@
 
   
         <div class="actions" *ngIf="!isEditVisit">
-        <button class="button profile-action ripple btn" type="submit" (click)="addVisit()"  tabindex="16">ADD APPOINTMENT</button> &#160;&#160;
+        <button class="button profile-action ripple btn" type="submit" (click)="addVisit()"  tabindex="16" [disabled]="buttonsDisabled">ADD APPOINTMENT</button> &#160;&#160;
         <button class="button cancel-action" (click)="isAddVisit = false;closeAddAndEditVisit();categoryRequiredError=false;" style="margin-top: 1px;"  tabindex="17">cancel</button>
         </div>
 
@@ -415,7 +432,7 @@
         <div class="form-section" *ngIf="isEditVisit">
           <div class="form-section-top">
               <div class="actions">
-                  <button class="button profile-action ripple btn" type="submit" (click)="visitUpdate()">Update</button>&#160;&#160;
+                  <button class="button profile-action ripple btn" type="submit" (click)="visitUpdate()" [disabled]="buttonsDisabled">Update</button>&#160;&#160;
                   <button class="button cancel-action" (click)="isEditVisit=false;closeAddAndEditVisit();categoryRequiredError=false;" style="margin-top: 1px;">cancel</button>
             </div>
           </div>
@@ -746,17 +763,27 @@
         <div class="heading vis--down-pop__heading12" style="top: -37px !important;font-weight: 600">BLOCK CALENDER</div>
         <form [formGroup]="blockCalenderForm" novalidate="novalidate">
         <div class="form-section">
-            <div class="form-section-top visit_chan block_cal">
+            <div class="form-section-top visit_chan block_cal" style="height: 262px;">
             <ul>
-                <li>
+                <li *ngIf="visitCategeoryData.length!=0"> 
                     <label class="labels">SELECT SPECIALITY</label>
-                    <select class="drp-down xs-fill-wt" (change)="getDoctors(categeryID.value)" [formControl]="blockCalenderForm.controls['category']"  #categeryID required autofocus  tabindex="1">
+                    <select class="drp-down xs-fill-wt" (change)="getDoctors(categeryID.value)" [formControl]="blockCalenderForm.controls['category']"  #categeryID required tabindex="1">
                       <option [selected]="true" value="">Select a speciality</option>
                       <option *ngFor="let eachcategeory of visitCategeoryData" [value]="eachcategeory.id_categories">
                             {{eachcategeory.name}} 
                         </option>
                     </select>
-                    <span class="booking_error" *ngIf="blockCalenderForm.controls['category'].hasError('required') && blockCalenderForm.controls['category'].touched">Please Select Category</span>
+                      <span class="booking_error" *ngIf="blockCalenderForm.controls['category'].hasError('required') && blockCalenderForm.controls['category'].touched">Please Select Category</span>
+                    <!-- <span class="booking_error" *ngIf="blockCalenderForm.controls['category'].hasError('required') && blockCalenderForm.controls['category'].touched">Please Select Category</span> -->
+                </li>
+                   <li *ngIf="visitCategeoryData.length==0">
+                    <label class="labels">SELECT SPECIALITY</label>
+                    <select class="drp-down xs-fill-wt" [formControl]="blockCalenderForm.controls['category']"  #categeryID tabindex="1">
+                      <option [selected]="true" value="">Select a speciality</option>
+                      
+                    </select>
+                      <!-- <span class="booking_error" *ngIf="categoryRequiredError&&blockCalenderForm.controls['category'].hasError('required') && blockCalenderForm.controls['category'].touched">Please Select Category</span> -->
+                    <!-- <span class="booking_error" *ngIf="blockCalenderForm.controls['category'].hasError('required') && blockCalenderForm.controls['category'].touched">Please Select Category</span> -->
                 </li>
                 <li>
                     <label class="labels">BLOCK FROM</label>
@@ -771,6 +798,7 @@
                       <div style="margin-left: 60%;"><ui-switch size="small" color="#33cccc" (change)="block_allday($event)" tabindex="5"></ui-switch></div>
                       
                     </div>
+                    <p style="color:red;font-size:13px;" *ngIf="blockAllDay==='Yes'">*We will ignore the timings on selected dates.</p>
                 </li>
             </ul>
             <ul>
@@ -807,18 +835,7 @@
 
 
 
-   <!-- iserrorpopup -->
-   <div class="model model-alerts" *ngIf="isAlertPopupError" style="margin-top: 275px;box-shadow: 0 0 5px #777;">
-    <!-- <a class="close" href="javascript:void(0);">Close</a> -->
-
-    <div class="model-content">
-     <p>{{ alertMessage }}</p>
-    <div class="btn_actions">
-      <div class="button btn-ok" (click)="isAlertPopupError = false;" >ok</div>
-
-      </div>
-     </div>
-    </div>
+  
 
       <!-- Popup end -->
       <!-- alert -->
@@ -858,8 +875,55 @@
       </div>
      </div>
     </div> -->
-     
- 
+
+
+<!-- Review link popup-->
+    <div class="model model-add_leads bx-shadow model-popup" *ngIf="isReviewLinkPopup" style="width:550px !important;margin-left: -245px !important;top:20% !important;">
+      <a class="close" href="javascript:void(0);" (click)="isReviewLinkPopup=false;closeAddAndEditVisit();">Close</a>
+      <div class="loader" *ngIf="isAddLinkLoader"></div>
+        <div class="model-content">
+        <div class="appointment-block bx-border-stl-2" style="margin: 20px !important;">
+            <div class="heading vis--down-pop__heading12" style="top: -37px !important;font-weight: 600">Send  Appointment</div>
+            <form [formGroup]="reviewForm" novalidate="novalidate">
+            <div class="form-section">
+                <div class="form-section-top visit_chan block_cal" style="height: 168px;">
+                <ul style="width:100%;">
+                    <li>
+                        <label class="labels">Please enter patient mail id</label>
+                        <input type="text" autofocus class="input xs-fill-wt" tabindex="1" [formControl]="reviewForm.controls['patientMailId']" (ngModelChange)="reviewlinkFormValid=false;" >
+                    </li>
+                    <li>
+                        <label class="labels">Please enter mobile number</label>
+                        <input type="text"  class="input xs-fill-wt" tabindex="2"  (keypress)="allow_only_numbers($event)" (ngModelChange)="reviewlinkFormValid=false;"  [formControl]="reviewForm.controls['patientMobileNumber']">
+                       <p style='color: #7D7D7D;'>Use (,) for multiple email or numbers.</p>
+                    </li>
+                    <span class="booking_error" *ngIf="reviewlinkFormValid"> At Least Email Id Or Phone Number Is Required .</span>
+                    
+                </ul>
+                </div>
+                <div class="actions" style="margin-top: 13px;">
+                    <button class="button profile-action ripple btn" type="submit" style="width:45%;float: left;" (click)="reviewlink('appointment')">Send  Appointment</button> &#160;&#160;
+                    <button class="button profile-action ripple btn" type="submit"  style="width:45%;" (click)="reviewlink('reviewlink')">Send  Review Link</button>
+               </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+
+     <!-- iserrorpopup -->
+   <div class="model model-alerts" *ngIf="isAlertPopupError" style="margin-top: 275px;box-shadow: 0 0 5px #777;">
+      <!-- <a class="close" href="javascript:void(0);">Close</a> -->
+  
+      <div class="model-content">
+       <p>{{ alertMessage }}</p>
+      <div class="btn_actions">
+        <div class="button btn-ok" (click)="isAlertPopupError = false;" >ok</div>
+  
+        </div>
+       </div>
+      </div>
 </div>
 <!-- Container ends -->
-<div class="overlay" *ngIf="isAddVisit || isPrinting || isPrintClicked || imageUploadAlert || isEditVisit || isShowPatientDetails || isStartLoader || isAlertPopup || isAddVisitLoader||isDeleteAlert || isAlertPopupError || isBlockCalPopup"></div>
+<div class="overlay" *ngIf="isAddVisit || isPrinting || isPrintClicked || imageUploadAlert || isEditVisit || isShowPatientDetails || isStartLoader || isAlertPopup || isAddVisitLoader||isDeleteAlert || isAlertPopupError || isBlockCalPopup || isReviewLinkPopup"></div>

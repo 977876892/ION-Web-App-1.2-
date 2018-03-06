@@ -3,12 +3,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DatepickerOptions } from 'ng2-datepicker';
 import * as enLocale from 'date-fns/locale/en';
 import { DashboardService } from '../shared/services/dashboard/dashboard.service';
+declare var require: any;
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  providers:[DashboardService],
-  styleUrls: ['./dashboard.component.css']
+  providers:[DashboardService]
 })
 export class DashboardComponent implements OnInit {
   isSowSubTab: boolean;
@@ -39,8 +39,10 @@ export class DashboardComponent implements OnInit {
   settingsType:string='profile';
   publishType: string = 'publish';
   selectedDateValue: Date;
+  
   isShowDashboard=false;
   isLoadMore: boolean = true;
+  
   currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
   constructor(private router: Router, private dashboardService: DashboardService) {
     this.selectedDateValue = new Date();
@@ -109,15 +111,17 @@ export class DashboardComponent implements OnInit {
           } else {
             this.promotionTaType = 'designposters';
           }
-          this.calMonth=this.monthNames[this.selectedDateValue.getMonth()];
-         this.calDate=this.selectedDateValue.getDate();
-         var dd;
-              if(this.selectedDateValue.getDate()<10){
-                dd='0'+this.selectedDateValue.getDate();
-              } else{
-                dd=this.selectedDateValue.getDate();
-              }
-         this.calDate=dd;
+          var format = require('date-fns/format');
+          this.calDate=format(this.selectedDateValue, ['Do MMM']);
+        //   this.calMonth=this.monthNames[this.selectedDateValue.getMonth()];
+        //  this.calDate=this.selectedDateValue.getDate();
+        //  var dd;
+        //       if(this.selectedDateValue.getDate()<10){
+        //         dd='0'+this.selectedDateValue.getDate();
+        //       } else{
+        //         dd=this.selectedDateValue.getDate();
+        //       }
+        //  this.calDate=dd;
         
     }
     
@@ -165,10 +169,12 @@ settingsClick(type) {
   if(type == 'profile') {
     this.router.navigate(['settings']);
   } else if(type == 'contactus') {
+    window.scroll(0,0);
     this.router.navigate(['settings/contactus']);
   } else if(type == 'subscription'){
     this.router.navigate(['settings/subscription']);
   }else{
+    window.scroll(0,0);
     this.router.navigate(['settings/users']);
   }
  // this.changeAmount();
@@ -211,17 +217,8 @@ analyticTypeClick(atype) {
 selectedVisitDate(selectedDateValue) {
   this.selectedDateValue=selectedDateValue;
   this.changeAmount();
- 
-var dd;
-if(this.selectedDateValue.getDate()<10){
-  dd='0'+this.selectedDateValue.getDate();
-} else{
-  dd=this.selectedDateValue.getDate();
-}
-
-this.calMonth=this.monthNames[this.selectedDateValue.getMonth()];
-this.calDay=this.weekday[this.selectedDateValue.getDay()];
-this.calDate=dd;
+  var format = require('date-fns/format');
+  this.calDate=format(selectedDateValue, ['Do MMM']);
 }
 helpWindow(event){
 window.open('http://getion.in', '_blank');

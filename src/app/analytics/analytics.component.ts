@@ -18,11 +18,11 @@ import * as _ from 'underscore';
 import * as xml2js from 'xml2js';
 import { AnalyticsService } from '../shared/services/analytics/analytics.service';
 import { IonServer } from '../shared/globals/global';
+import { ErrorService } from '../shared/services/error/error.service';
 @Component({
   selector: 'app-analytics',
   templateUrl: './analytics.component.html',
-  styleUrls: ['./analytics.component.css'],
-  providers: [AnalyticsService],
+  providers: [AnalyticsService,ErrorService]
 })
 export class AnalyticsComponent implements OnInit {
 
@@ -32,7 +32,7 @@ export class AnalyticsComponent implements OnInit {
   // }
   currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
      
-  constructor(private router: Router, private route: ActivatedRoute,private analyticsService: AnalyticsService) {
+  constructor(private router: Router, private route: ActivatedRoute,private analyticsService: AnalyticsService,private errorservice:ErrorService) {
   
   }
     //public estimated:string='0';
@@ -44,7 +44,6 @@ export class AnalyticsComponent implements OnInit {
   showPublishAnalytics:boolean=false;
   showVisitAnalytics:boolean=false;
   isAlertPopup:boolean=false;
-  connect_err=IonServer.nointernet_connection_err;
   showQueryAnalytics:boolean=false;
   isStartLoader: boolean = false;
   curentYear;
@@ -60,6 +59,7 @@ export class AnalyticsComponent implements OnInit {
           this.getAnalytics();
           this.estimated=0;
           if (this.router.url == '/analytics') {
+              window.scroll(0,0);
               this.showQueryAnalytics=false;
               this.showVisitAnalytics=false;
               this.showPublishAnalytics=false;
@@ -133,9 +133,10 @@ export class AnalyticsComponent implements OnInit {
                 this.websiteTraffic();
                 this.lastMonthUserEngagementonWebsite();
             }, (err) => {
+              var errorMessage= this.errorservice.logError(err);
                 this.isStartLoader=false;
                 this.isAlertPopup=true;
-                this.alertMessage=this.connect_err;
+                this.alertMessage=errorMessage;
         }, () => {
           this.isStartLoader = false;
       });
@@ -274,9 +275,10 @@ export class AnalyticsComponent implements OnInit {
                               }
                               this.showDailyLine=true;
                           }, (err) => {
+                            var errorMessage= this.errorservice.logError(err);
                             this.isAlertPopup=true;
                             this.isStartLoader=false;
-                            this.alertMessage=this.connect_err;
+                            this.alertMessage=errorMessage;
                         }, () => {
                           this.isStartLoader = false;
                       });
@@ -310,10 +312,11 @@ export class AnalyticsComponent implements OnInit {
                                           }
                                           this.showMonthly=true;
                                   }, (err) => {
+                                    var errorMessage= this.errorservice.logError(err);
                                     this.isAlertPopup=true;
                                     this.isStartLoader=false;
                                     this.showMonthly=false;
-                                    this.alertMessage=this.connect_err;
+                                    this.alertMessage=errorMessage;
                                   }, () => {
                                     this.isStartLoader = false;
                     });
@@ -339,7 +342,8 @@ export class AnalyticsComponent implements OnInit {
                             }, (err) => {
                               this.isAlertPopup=true;
                               this.isStartLoader=false;
-                              this.alertMessage=this.connect_err;
+                              var errorMessage= this.errorservice.logError(err);
+                              this.alertMessage=errorMessage;
                             }, () => {
                               this.isStartLoader = false;
                             });
@@ -353,7 +357,8 @@ export class AnalyticsComponent implements OnInit {
                               }, (err) => {
                                       this.isAlertPopup=true;
                                       this.isStartLoader=false;
-                                      this.alertMessage=this.connect_err;
+                                      var errorMessage= this.errorservice.logError(err);
+                                      this.alertMessage=errorMessage;
                               }, () => {
                                 this.isStartLoader = false;
                               });
@@ -410,7 +415,8 @@ export class AnalyticsComponent implements OnInit {
                             }, (err) => {
                               this.isAlertPopup=true;
                               this.isStartLoader=false;
-                              this.alertMessage=this.connect_err;
+                              var errorMessage= this.errorservice.logError(err);
+                              this.alertMessage=errorMessage;
                             }, () => {
                               this.isStartLoader = false;
                         });
@@ -424,7 +430,8 @@ export class AnalyticsComponent implements OnInit {
                               }, (err) => {
                                 this.isAlertPopup=true;
                                 this.isStartLoader=false;
-                                this.alertMessage=this.connect_err;
+                                var errorMessage= this.errorservice.logError(err);
+                                this.alertMessage=errorMessage;
                               }, () => {
                                 this.isStartLoader = false;
                         });
@@ -466,7 +473,8 @@ export class AnalyticsComponent implements OnInit {
                                 }, (err) => {
                                   this.isAlertPopup=true;
                                   this.isStartLoader=false;
-                                  this.alertMessage=this.connect_err;
+                                  var errorMessage= this.errorservice.logError(err);
+                                  this.alertMessage=errorMessage;
                                 }, () => {
                                   this.isStartLoader = false;
                                 });
@@ -480,7 +488,8 @@ export class AnalyticsComponent implements OnInit {
                                 }, (err) => {
                                   this.isAlertPopup=true;
                                   this.isStartLoader=false;
-                                  this.alertMessage=this.connect_err;
+                                  var errorMessage= this.errorservice.logError(err);
+                                  this.alertMessage=errorMessage;
                                 }, () => {
                                   this.isStartLoader = false;
                       });
@@ -519,7 +528,8 @@ export class AnalyticsComponent implements OnInit {
                             }, (err) => {
                               this.isAlertPopup=true;
                               this.isStartLoader=false;
-                              this.alertMessage=this.connect_err;
+                              var errorMessage= this.errorservice.logError(err);
+                              this.alertMessage=errorMessage;
                             }, () => {
                               this.isStartLoader = false;
                       });
@@ -533,7 +543,8 @@ export class AnalyticsComponent implements OnInit {
                               }, (err) => {
                                 this.isAlertPopup=true;
                                 this.isStartLoader=false;
-                                this.alertMessage=this.connect_err;
+                                var errorMessage= this.errorservice.logError(err);
+                                this.alertMessage=errorMessage;
                               }, () => {
                                 this.isStartLoader = false;
                       });
@@ -590,7 +601,8 @@ export class AnalyticsComponent implements OnInit {
                             }, (err) => {
                               this.isAlertPopup=true;
                               this.isStartLoader=false;
-                              this.alertMessage=this.connect_err;
+                              var errorMessage= this.errorservice.logError(err);
+                              this.alertMessage=errorMessage;
                             }, () => {
                     });
                 }
@@ -621,17 +633,20 @@ export class AnalyticsComponent implements OnInit {
                                             },(err)=>{
                                               this.isAlertPopup=true;
                                               this.isStartLoader=false;
-                                              this.alertMessage=this.connect_err;
+                                              var errorMessage= this.errorservice.logError(err);
+                                              this.alertMessage=errorMessage;
                                             })
                                 },(err)=>{
                                   this.isAlertPopup=true;
                                   this.isStartLoader=false;
-                                  this.alertMessage=this.connect_err;
+                                  var errorMessage= this.errorservice.logError(err);
+                                  this.alertMessage=errorMessage;
                                 })
                       },(err)=>{
                         this.isStartLoader=false;
                         this.isAlertPopup=true;
-                        this.alertMessage=this.connect_err;
+                        var errorMessage= this.errorservice.logError(err);
+                        this.alertMessage=errorMessage;
                       })
                       this.showUserEngagementLM=true;
                 }
@@ -682,17 +697,20 @@ export class AnalyticsComponent implements OnInit {
                                               },(err)=>{
                                                 this.isAlertPopup=true;
                                                 this.isStartLoader=false;
-                                                this.alertMessage=this.connect_err;
+                                                var errorMessage= this.errorservice.logError(err);
+                                                this.alertMessage=errorMessage;
                                               })
                                   },(err)=>{
                                     this.isAlertPopup=true;
                                     this.isStartLoader=false;
-                                    this.alertMessage=this.connect_err;
+                                    var errorMessage= this.errorservice.logError(err);
+                                    this.alertMessage=errorMessage;
                                   })
                         },(err)=>{
                           this.isAlertPopup=true;
                           this.isStartLoader=false;
-                          this.alertMessage=this.connect_err;
+                          var errorMessage= this.errorservice.logError(err);
+                          this.alertMessage=errorMessage;
                         })
                         this.showUserEngagementLS=true;
                 }
@@ -726,7 +744,8 @@ export class AnalyticsComponent implements OnInit {
                             },(err)=>{
                               this.isStartLoader=false;
                               this.isAlertPopup=true;
-                              this.alertMessage=this.connect_err;
+                              var errorMessage= this.errorservice.logError(err);
+                              this.alertMessage=errorMessage;
                             })
                   }
   //web site rank
@@ -764,7 +783,8 @@ export class AnalyticsComponent implements OnInit {
             },(err)=>{
               this.isAlertPopup=true;
               this.isStartLoader=false;
-              this.alertMessage=this.connect_err;
+              var errorMessage= this.errorservice.logError(err);
+              this.alertMessage=errorMessage;
             })
           }
           public publishedBlogsTable:Array<any>=[];
@@ -782,7 +802,8 @@ export class AnalyticsComponent implements OnInit {
             },(err)=>{
               this.isAlertPopup=true;
               this.isStartLoader=false;
-              this.alertMessage=this.connect_err;
+              var errorMessage= this.errorservice.logError(err);
+              this.alertMessage=errorMessage;
             })
           
           }
@@ -817,7 +838,8 @@ export class AnalyticsComponent implements OnInit {
             },(err)=>{
               this.isAlertPopup=true;
               this.isStartLoader=false;
-              this.alertMessage=this.connect_err;
+              var errorMessage= this.errorservice.logError(err);
+              this.alertMessage=errorMessage;
             })
           
           }
@@ -847,7 +869,8 @@ export class AnalyticsComponent implements OnInit {
             },(err)=>{
               this.isAlertPopup=true;
               this.isStartLoader=false;
-              this.alertMessage=this.connect_err;
+              var errorMessage= this.errorservice.logError(err);
+              this.alertMessage=errorMessage;
             })
           }
           public yearlyQuestions:Array<any>=[];
@@ -872,7 +895,8 @@ export class AnalyticsComponent implements OnInit {
             },(err)=>{
               this.isAlertPopup=true;
               this.isStartLoader=false;
-              this.alertMessage=this.connect_err;
+              var errorMessage= this.errorservice.logError(err);
+              this.alertMessage=errorMessage;
             })
 
           }
@@ -950,7 +974,8 @@ export class AnalyticsComponent implements OnInit {
                           }, (err) => {
                             this.isAlertPopup=true;
                             this.isStartLoader=false;
-                            this.alertMessage=this.connect_err;
+                            var errorMessage= this.errorservice.logError(err);
+                            this.alertMessage=errorMessage;
                         }, () => {
                       });
           }
@@ -1024,7 +1049,8 @@ export class AnalyticsComponent implements OnInit {
                         },(err)=>{
                           this.isAlertPopup=true;
                           this.isStartLoader=false;
-                          this.alertMessage=this.connect_err;
+                          var errorMessage= this.errorservice.logError(err);
+                          this.alertMessage=errorMessage;
                         })
                     }
   //visit analytics day wise
@@ -1113,7 +1139,8 @@ export class AnalyticsComponent implements OnInit {
                 },(err)=>{
                   this.isAlertPopup=true;
                   this.isStartLoader=false;
-                  this.alertMessage=this.connect_err;
+                  var errorMessage= this.errorservice.logError(err);
+                  this.alertMessage=errorMessage;
                 })
           }
           public visitsMonthlyBarChartLabels:string[] = [];
@@ -1172,7 +1199,8 @@ export class AnalyticsComponent implements OnInit {
                 },(err)=>{
                   this.isAlertPopup=true;
                   this.isStartLoader=false;
-                  this.alertMessage=this.connect_err;
+                  var errorMessage= this.errorservice.logError(err);
+                  this.alertMessage=errorMessage;
                 })
           }
           
@@ -1254,7 +1282,8 @@ export class AnalyticsComponent implements OnInit {
                             }, (err) => {
                               this.isAlertPopup=true;
                               this.isStartLoader=false;
-                              this.alertMessage=this.connect_err;
+                              var errorMessage= this.errorservice.logError(err);
+                              this.alertMessage=errorMessage;
                           }, () => {
                         });
             }
@@ -1376,7 +1405,8 @@ export class AnalyticsComponent implements OnInit {
                     },(err)=>{
                       this.isAlertPopup=true;
                       this.isStartLoader=false;
-                      this.alertMessage=this.connect_err;
+                      var errorMessage= this.errorservice.logError(err);
+                      this.alertMessage=errorMessage;
                     })
               }
               public doctorWiseVisitsLabels:string[] = [];
@@ -1412,7 +1442,8 @@ export class AnalyticsComponent implements OnInit {
                     },(err)=>{
                       this.isAlertPopup=true;
                       this.isStartLoader=false;
-                      this.alertMessage=this.connect_err;
+                      var errorMessage= this.errorservice.logError(err);
+                      this.alertMessage=errorMessage;
                     })
               }
           //doctor wise revenue and visits chart

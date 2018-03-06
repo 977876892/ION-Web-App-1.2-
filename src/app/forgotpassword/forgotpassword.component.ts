@@ -6,8 +6,7 @@ import { AuthserviceService } from '../shared/services/login/authservice.service
 @Component({
   selector: 'app-forgotpassword',
   providers: [ AuthserviceService],
-  templateUrl: './forgotpassword.component.html',
-  styleUrls: ['./forgotpassword.component.css']
+  templateUrl: './forgotpassword.component.html'
 })
 export class ForgotpasswordComponent implements OnInit {
   isStartLoader:boolean=false;

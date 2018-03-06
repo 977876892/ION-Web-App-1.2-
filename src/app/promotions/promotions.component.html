@@ -1,23 +1,77 @@
 <div class="container">
-  <div class="panel">
+  <div class="panel"> 
     <app-dashboard (eventType)="onEventChanged($event)"></app-dashboard>
     <!-- Panel Left ends -->
-    <div class="loader" *ngIf="isStartLoader"></div>
+    <div class="loader" *ngIf="isStartLoader" [style.margin-top.px]="windowBottom"></div>
     <div class="panel-rt panel-rt__extend xs-fill-styl2" *ngIf="!isPromotionDemo && !isSMSPromotion">
       <app-header></app-header>
       <div class="panel panel_promotions" *ngIf="!isPromotionFullView">
         <div class="panel_promotions__top" *ngIf="promotionsData">
           <h1>Select your promotion <span>({{ promotionsData[0]?.title }})</span></h1>
-          <div class="panel_promotions__list"> 
-            <ul>
+          <div> 
+            <ul class="docTypeList">
+              <span *ngFor="let eachpromotion of promotionsData[0]?.child; let i = index" (click)="promotionDemo(eachpromotion);">
+                  <li class="docTypeItem docTypeItemBasic" *ngIf="eachpromotion.id == 90"  title="{{eachpromotion.title}}">
+                    <a class="docTypeItemLink">
+                        <figure class="docTypeItemFigure">
+                            <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail" width="160" height="61">
+                            <figcaption class="docTypeItemCaption">
+                                <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                            </figcaption>
+                      </figure>
+                    </a>
+                  </li>
+                  <li class="docTypeItem docTypeItemBasic" *ngIf="eachpromotion.id == 91" title="{{eachpromotion.title}}">
+                      <a class="docTypeItemLink">
+                          <figure class="docTypeItemFigure">
+                              <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail" width="160" height="59">
+                              <figcaption class="docTypeItemCaption">
+                                  <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                              </figcaption>
+                        </figure>
+                      </a>
+                    </li>
+                    <li class="docTypeItem docTypeItemBasic" *ngIf="eachpromotion.id == 101" title="{{eachpromotion.title}}">
+                        <a class="docTypeItemLink">
+                            <figure class="docTypeItemFigure">
+                                <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail" width="160" height="90">
+                                <figcaption class="docTypeItemCaption">
+                                    <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                </figcaption>
+                          </figure>
+                        </a>
+                      </li>
+                      <li class="docTypeItem docTypeItemBasic" *ngIf="eachpromotion.id == 102" title="{{eachpromotion.title}}">
+                          <a class="docTypeItemLink">
+                              <figure class="docTypeItemFigure">
+                                  <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail" width="160" height="90">
+                                  <figcaption class="docTypeItemCaption">
+                                      <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                  </figcaption>
+                            </figure>
+                          </a>
+                        </li>
+                  </span>
+                <li class="docTypeItem docTypeItemBasic">
+                    <a class="docTypeItemLink docTypeMoreButton" (click)="promotionFull(eachpromotion);">
+                        <figure class="docTypeItemFigure">
+                            <div class="docTypeMoreThumbnail docTypeItemThumbnail"></div>
+                            <figcaption class="docTypeItemCaption">
+                                <p class="docTypeItemName">more...</p>
+                              </figcaption>
+                        </figure>
+                    </a>
+                  </li>
+            </ul>
+            <!-- <ul>
               <li *ngFor="let eachpromotion of promotionsData[0]?.child; let i = index" (click)="promotionDemo(eachpromotion);">
-                <div class="promo-block"> <img src="{{eachpromotion.avatar}}"></div>
+                <div class="promo-block" style="cursor: pointer;"> <img src="{{eachpromotion.avatar}}"></div>
                 <div class="promo-title"><a style="cursor: pointer;">{{ eachpromotion.title }}</a></div>
               </li>
               <li class="promo_add_icon"> <a (click)="promotionFull(eachpromotion);">
-                <div class="add_icon"><img src="assets/images/add.svg" width="45" height="45" /></div>
-                <span>more..</span> </a> </li>
-            </ul>
+                <div class="add_icon" style="cursor: pointer;"><img src="assets/images/add.svg" width="45" height="45" /></div>
+                <span style="cursor: pointer;">more..</span> </a> </li>
+            </ul> -->
           </div>
           <!-- Promotinal list ends -->
          </div>
@@ -60,18 +114,216 @@
       <!-- Promotions main end -->
       <!-- Promotions full view -->
       <div class="panel panel_promotions" *ngIf="isPromotionFullView">
-          <div class="loader" *ngIf="isStartLoader"></div>
+          <div class="loader" *ngIf="isStartLoader" [style.margin-top.px]="windowBottom"></div>
         <div class="panel_promotions__top">
           <h1>Select your promotion</h1>
           <div *ngFor="let eachpromo of promotionsData; let i = index" class="panel-promotion-type">
           <h2 class="post_type_title promotions-sup-head">{{ eachpromo.title }}</h2>
-          <div class="panel_promotions__list">
+          <!-- <div class="panel_promotions__list">
             <ul *ngFor="let eachpromotion of eachpromo.child; let j = index">
               <li (click)="promotionDemo(eachpromotion);" class="promotion-cards">
-                <div class="promo-block xs-hgt-medium"><img src="{{eachpromotion.avatar}}"> </div>
+                <div class="promo-block xs-hgt-medium"  style="cursor: pointer;"><img src="{{eachpromotion.avatar}}"> </div>
                 <div class="promo-title"><a style="cursor: pointer;">{{ eachpromotion.title }}</a></div>
               </li>
             </ul>
+          </div> -->
+          <div>
+              <ul class="docTypeList">
+                  <span *ngFor="let eachpromotion of eachpromo.child; let j = index" (click)="promotionDemo(eachpromotion);">
+                      <li class="docTypeItem " *ngIf="eachpromotion.id == 90"  title="{{eachpromotion.title}}">
+                        <a class="docTypeItemLink">
+                            <figure class="docTypeItemFigure">
+                                <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail" width="160" height="61">
+                                <figcaption class="docTypeItemCaption">
+                                    <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                </figcaption>
+                          </figure>
+                        </a>
+                      </li>
+                      <li class="docTypeItem " *ngIf="eachpromotion.id == 91" title="{{eachpromotion.title}}">
+                          <a class="docTypeItemLink">
+                              <figure class="docTypeItemFigure">
+                                  <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail" width="160" height="59">
+                                  <figcaption class="docTypeItemCaption">
+                                      <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                  </figcaption>
+                            </figure>
+                          </a>
+                        </li>
+                        <li class="docTypeItem " *ngIf="eachpromotion.id == 101" title="{{eachpromotion.title}}">
+                            <a class="docTypeItemLink">
+                                <figure class="docTypeItemFigure">
+                                    <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail" width="160" height="90">
+                                    <figcaption class="docTypeItemCaption">
+                                        <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                    </figcaption>
+                              </figure>
+                            </a>
+                          </li>
+                          <li class="docTypeItem " *ngIf="eachpromotion.id == 102" title="{{eachpromotion.title}}">
+                              <a class="docTypeItemLink">
+                                  <figure class="docTypeItemFigure">
+                                      <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail" width="160" height="90">
+                                      <figcaption class="docTypeItemCaption">
+                                          <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                      </figcaption>
+                                </figure>
+                              </a>
+                            </li>
+                            <li class="docTypeItem" *ngIf="eachpromotion.id == 92" title="{{eachpromotion.title}}">
+                                <a class="docTypeItemLink">
+                                    <figure class="docTypeItemFigure">
+                                        <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail" width="120" height="70">
+                                        <figcaption class="docTypeItemCaption">
+                                            <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                        </figcaption>
+                                  </figure>
+                                </a>
+                              </li>
+                              <li class="docTypeItem" *ngIf="eachpromotion.id == 96" title="{{eachpromotion.title}}">
+                                  <a class="docTypeItemLink">
+                                      <figure class="docTypeItemFigure">
+                                          <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail"  width="120" height="80">
+                                          <figcaption class="docTypeItemCaption">
+                                              <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                          </figcaption>
+                                    </figure>
+                                  </a>
+                              </li>
+                              <li class="docTypeItem" *ngIf="eachpromotion.id == 97" title="{{eachpromotion.title}}">
+                                  <a class="docTypeItemLink">
+                                      <figure class="docTypeItemFigure">
+                                          <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail"  width="85" height="120">
+                                          <figcaption class="docTypeItemCaption">
+                                              <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                          </figcaption>
+                                    </figure>
+                                  </a>
+                              </li>
+                              <li class="docTypeItem" *ngIf="eachpromotion.id == 98" title="{{eachpromotion.title}}">
+                                  <a class="docTypeItemLink">
+                                      <figure class="docTypeItemFigure">
+                                          <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail"  width="70" height="135">
+                                          <figcaption class="docTypeItemCaption">
+                                              <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                          </figcaption>
+                                    </figure>
+                                  </a>
+                              </li>
+                              <li class="docTypeItem" *ngIf="eachpromotion.id == 99" title="{{eachpromotion.title}}">
+                                  <a class="docTypeItemLink">
+                                      <figure class="docTypeItemFigure">
+                                          <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail"  width="130" height="130">
+                                          <figcaption class="docTypeItemCaption">
+                                              <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                          </figcaption>
+                                    </figure>
+                                  </a>
+                              </li>
+                              <li class="docTypeItem" *ngIf="eachpromotion.id == 100" title="{{eachpromotion.title}}">
+                                  <a class="docTypeItemLink">
+                                      <figure class="docTypeItemFigure">
+                                          <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail"  width="120" height="70" style="image-rendering: pixelated;">
+                                          <figcaption class="docTypeItemCaption">
+                                              <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                          </figcaption>
+                                    </figure>
+                                  </a>
+                              </li>
+                              <li class="docTypeItem" *ngIf="eachpromotion.id == 104" title="{{eachpromotion.title}}">
+                                  <a class="docTypeItemLink">
+                                      <figure class="docTypeItemFigure">
+                                          <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail"  width="120" height="80">
+                                          <figcaption class="docTypeItemCaption">
+                                              <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                          </figcaption>
+                                    </figure>
+                                  </a>
+                              </li>
+                              <li class="docTypeItem" *ngIf="eachpromotion.id == 105" title="{{eachpromotion.title}}">
+                                  <a class="docTypeItemLink">
+                                      <figure class="docTypeItemFigure">
+                                          <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail"  width="150" height="100">
+                                          <figcaption class="docTypeItemCaption">
+                                              <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                          </figcaption>
+                                    </figure>
+                                  </a>
+                              </li>
+                              <li class="docTypeItem" *ngIf="eachpromotion.id == 106" title="{{eachpromotion.title}}">
+                                  <a class="docTypeItemLink">
+                                      <figure class="docTypeItemFigure">
+                                          <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail"  width="200" height="90">
+                                          <figcaption class="docTypeItemCaption">
+                                              <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                          </figcaption>
+                                    </figure>
+                                  </a>
+                              </li>
+                              <li class="docTypeItem" *ngIf="eachpromotion.id == 107" title="{{eachpromotion.title}}">
+                                  <a class="docTypeItemLink">
+                                      <figure class="docTypeItemFigure">
+                                          <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail"  width="120" height="80">
+                                          <figcaption class="docTypeItemCaption">
+                                              <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                          </figcaption>
+                                    </figure>
+                                  </a>
+                              </li>
+                              <li class="docTypeItem" *ngIf="eachpromotion.id == 108" title="{{eachpromotion.title}}">
+                                  <a class="docTypeItemLink">
+                                      <figure class="docTypeItemFigure">
+                                          <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail"  width="80" height="110" style="image-rendering: pixelated;">
+                                          <figcaption class="docTypeItemCaption">
+                                              <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                          </figcaption>
+                                    </figure>
+                                  </a>
+                              </li>
+
+
+                              <li class="docTypeItem" *ngIf="eachpromotion.id == 109" title="{{eachpromotion.title}}">
+                                  <a class="docTypeItemLink">
+                                      <figure class="docTypeItemFigure">
+                                          <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail"  width="115" height="90">
+                                          <figcaption class="docTypeItemCaption">
+                                              <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                          </figcaption>
+                                    </figure>
+                                  </a>
+                              </li>
+                              <li class="docTypeItem" *ngIf="eachpromotion.id == 110" title="{{eachpromotion.title}}">
+                                  <a class="docTypeItemLink">
+                                      <figure class="docTypeItemFigure">
+                                          <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail"  width="150"  >
+                                          <figcaption class="docTypeItemCaption">
+                                              <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                          </figcaption>
+                                    </figure>
+                                  </a>
+                              </li>
+                              <li class="docTypeItem" *ngIf="eachpromotion.id == 111" title="{{eachpromotion.title}}">
+                                  <a class="docTypeItemLink">
+                                      <figure class="docTypeItemFigure">
+                                          <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail"  width="130" height="130" >
+                                          <figcaption class="docTypeItemCaption">
+                                              <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                          </figcaption>
+                                    </figure>
+                                  </a>
+                              </li>
+                              <li class="docTypeItem" *ngIf="eachpromotion.id == 112" title="{{eachpromotion.title}}">
+                                  <a class="docTypeItemLink">
+                                      <figure class="docTypeItemFigure">
+                                          <img src="{{eachpromotion.avatar}}" class="docTypeItemThumbnail"  width="150" height="100" >
+                                          <figcaption class="docTypeItemCaption">
+                                              <p class="docTypeItemName">{{eachpromotion.title}}</p>
+                                          </figcaption>
+                                    </figure>
+                                  </a>
+                              </li>
+                      </span>
+                </ul>
           </div>
         </div>
         </div>
@@ -91,7 +343,27 @@
 
           <label class="labels"><b>{{promotionTitle}}</b></label>
           <!-- <textarea class="textarea brd-radius-15"></textarea> -->
-          <img src="{{promotionImage}}">
+          <span class="docTypeItem">
+               <img src="{{promotionImage}}" *ngIf="promotionId == 90" width="185" height="80">
+               <img src="{{promotionImage}}" *ngIf="promotionId == 91" width="185" height="80">
+               <img src="{{promotionImage}}" *ngIf="promotionId == 101" width="175" height="95">
+               <img src="{{promotionImage}}" *ngIf="promotionId == 102" width="175" height="95">
+               <img src="{{promotionImage}}" *ngIf="promotionId == 92" width="160" height="160">
+               <img src="{{promotionImage}}" *ngIf="promotionId == 96" width="230" height="160">
+               <img src="{{promotionImage}}" *ngIf="promotionId == 97" width="180" height="248">
+               <img src="{{promotionImage}}" *ngIf="promotionId == 98" width="140" height="271">
+               <img src="{{promotionImage}}" *ngIf="promotionId == 99" width="170" height="170">
+               <img src="{{promotionImage}}" *ngIf="promotionId == 100" width="230" height="140">
+               <img src="{{promotionImage}}" *ngIf="promotionId == 104"  width="229" height="160">
+               <img src="{{promotionImage}}" *ngIf="promotionId == 105"   width="230" height="160">
+               <img src="{{promotionImage}}" *ngIf="promotionId == 106" width="549" height="180">
+               <img src="{{promotionImage}}" *ngIf="promotionId == 107">
+               <img src="{{promotionImage}}" *ngIf="promotionId == 108" width="170" height="223">
+               <img src="{{promotionImage}}" *ngIf="promotionId == 109">
+               <img src="{{promotionImage}}" *ngIf="promotionId == 110" width="212" >
+               <img src="{{promotionImage}}" *ngIf="promotionId == 111" width="212">
+               <img src="{{promotionImage}}" *ngIf="promotionId == 112" width="230" height="160">
+          </span>
 
 
           <!-- Promotinal list ends -->
@@ -129,8 +401,9 @@
             <div class="profile-img-title" *ngIf="coverImages.length!=0">cover image</div>
           </div>                  -->
                  <a style="cursor: pointer;" *ngFor="let image of imageSrc"><div class="add_photo"  *ngIf="image!=''"><div class="profile-img-item "><span class="item-close" (click)="removeImage(i)"></span><img src="{{image}}" width="100" height="100"></div></div> </a>
-                <a style="cursor: pointer;"><div class="add_icon"><label for="file-upload"><img src="assets/images/add-icon-2.png" width="36" height="37"></label></div>
+                <a style="cursor: pointer;"><div class="add_icon"><label for="file-upload" style="cursor: pointer;"><img src="assets/images/add-icon-2.png" width="36" height="37"></label></div>
                 <input type="file" id="file-upload" #fileInput placeholder="Upload image..." (change)="upload()" accept="image/*" multiple/></a>
+                <p style="color:red;font-size:12px;" *ngFor="let bigImg of bigSizeImg">{{bigImg}} </p>
                 <br/>  <span style="color:red" *ngIf="showError">For Your promotion At least One Image Required</span>
     
             </div>         
@@ -157,7 +430,7 @@
           <h1 class="txt-center"><b>Create your promotional SMS</b></h1>
           <div class="promotions_input">
 
-            <textarea (keypress)="omit_special_char($event)" placeholder="Write your text here.." [(ngModel)]="smsText" class="textarea brd-radius-5" (ngModelChange)="showErrorForSmsContent=false;smsTextChange(smsText)" data-gramm_editor="false"></textarea>
+            <textarea (keypress)="omit_special_char($event)" maxlength="240" placeholder="Write your text here.." [(ngModel)]="smsText" class="textarea brd-radius-5" (ngModelChange)="showErrorForSmsContent=false;smsTextChange(smsText)" data-gramm_editor="false"></textarea>
             <div class="txt-hint"> {{smsText.length}} / {{noOfMessages}}</div>
           </div>
 
@@ -180,8 +453,10 @@
             <div class="info_details">
                 <div class="info_titles">
                     <h2 class="info_titles_label"><b>Enter Patient Numbers</b></h2>
-                    <textarea [(ngModel)]="phoneNumbers" class="textarea brd-radius-5 info_details_nums" (ngModelChange)="showErrorForSms=false;" style="background-color: inherit !important;border: 1px solid #d4d4d4;"></textarea>
+                    <textarea [(ngModel)]="phoneNumbers" class="textarea brd-radius-5 info_details_nums" (ngModelChange)="showErrorForSms=false;" style="background-color: inherit !important;border: 1px solid #d4d4d4;" (keypress)="allow_only_numbers($event)"></textarea>
                 </div>
+                <p style='margin-left: 120px;color: #7D7D7D;'>Use (,) for multiple numbers.</p>
+                
                 <!-- <div class="groups x-xlose-btn x-padding bx-border-stl-3 brd-radius-5"><a style="cursor: pointer;">Hyderabad</a><a style="cursor: pointer;">Dr. Gurunatham</a><a style="cursor: pointer;">Dr. Gurunatham</a><a style="cursor: pointer;">Cardiology</a></div> -->
             </div>
           </div>
@@ -246,7 +521,7 @@
 
 
        <!-- Popup -->
-  <div class="model model-promotions model-promotions-ticket request_taken" *ngIf="showRequestIsTaken">
+  <div class="model model-promotions model-promotions-ticket request_taken" *ngIf="showRequestIsTaken" [style.margin-top.px]="windowBottom">
   <a class="close" (click)="closeRequestTakenPopUp()">Close</a>
 
   <div class="model-content model-bg xs-bg-white no-padding">
@@ -264,14 +539,14 @@
 
     <li>
     <span>Created By</span>
-    <p><b>Dr. {{doctorName}}</b></p>
+    <p><b>{{doctorName}}</b></p>
     </li>
 
     <li>
-    <span>Credits</span>
+    <span>Credits Used</span>
     <br>
     <p style="float: left;"><b>{{creadisCount}}</b></p>
-    <p style="border-radius: 5px;border: 2px Solid grey;padding: 1px;float: left;font-size: 11px;margin-top: 10px;margin-left: 17px;">USED</p>
+    <!-- <p style="border-radius: 5px;border: 2px Solid grey;padding: 1px;float: left;font-size: 11px;margin-top: 10px;margin-left: 17px;">USED</p> -->
     </li>
 
     </ul>
@@ -302,8 +577,21 @@
   </div>
 
     <!-- Popup -->
+      <!-- alert -->
+    <div class="model model-alerts" *ngIf="isAlertForCredits" [style.margin-top.px]="windowBottom">
+                <!-- <a class="close" href="#">Close</a> -->
+
+                <div class="model-content">
+                 <p>{{ alertMessage }}</p>
+                <div class="btn_actions">
+                  <div class="button btn-ok" (click)="isAlertForCredits = false;closeRequestTakenPopUp();">ok</div>
+                  <!-- <div class="button btn-dismiss" (click)="isAlertPopup = false;">cancel</div> -->
+
+                  </div>
+                 </div>
+     </div>
        <!-- alert -->
-    <div class="model model-alerts" *ngIf="isAlertPopup" style="margin-top:200px;">
+    <div class="model model-alerts" *ngIf="isAlertPopup" [style.margin-top.px]="windowBottom">
                 <!-- <a class="close" href="#">Close</a> -->
 
                 <div class="model-content">
@@ -316,7 +604,7 @@
                  </div>
      </div>
                   <!-- alert -->
-    <div class="model model-alerts" *ngIf="isSendSmspopup" style="margin-top:200px;">
+    <div class="model model-alerts" *ngIf="isSendSmspopup" [style.margin-top.px]="windowBottom">
                 <!-- <a class="close" href="#">Close</a> -->
                 <div class="model-content">
                  <p>Total Recipients:{{messagesCount}}</p>
@@ -335,12 +623,12 @@
       <div class="model-titlebar xs-fill-style2" style="background-color:#33cccc !important;">
         {{ionizedPromotionTitle}}
       </div>
-         <div class="model-content">
-           <p>{{promotionLink}}</p>
+         <div class="model-content" style="overflow: auto;height: 319px;">
+           <p [innerHtml]="promotionLink"></p>
        </div>
  </div>
 
-      <div class="model model-alerts" *ngIf="imageUploadAlert" style="border-radius: 10px;box-shadow: 0 0 5px #777;">
+      <div class="model model-alerts" *ngIf="imageUploadAlert" style="border-radius: 10px;box-shadow: 0 0 5px #777;" [style.margin-top.px]="windowBottom">
           <!-- <a class="close" href="#">Close</a> -->
           <div class="model-content">
            <p>The file size can not exceed 8MB.</p>
@@ -351,4 +639,4 @@
           </div>
 </div>
 <!-- Container ends -->
-<div class="overlay" *ngIf="isPatientGroups || imageUploadAlert || isStartLoader || showRequestIsTaken || isAlertPopup || isSendSmspopup || isOpenEditor"></div>
+<div class="overlay" *ngIf="isPatientGroups || imageUploadAlert || isStartLoader || showRequestIsTaken || isAlertPopup || isSendSmspopup || isOpenEditor||isAlertForCredits"></div>

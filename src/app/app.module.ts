@@ -15,6 +15,7 @@ import { AppComponent } from './app.component';
 import { LoginComponent, } from './login/login.component';
 import { HomeComponent } from './home/home.component';
 import { PublishComponent } from './publish/publish.component';
+import { YoutubeComponent } from './publish/youtube.component';
 import { VisitsComponent } from './visits/visits.component';
 import { QueriesComponent,QuerySearchPipe } from './queries/queries.component';
 import { AnalyticsComponent } from './analytics/analytics.component';
@@ -34,7 +35,8 @@ import { DateTimePickerModule } from 'ng-pick-datetime';
 import { AutofocusModule } from 'angular-autofocus-fix';
 //import {  } from 'ng-pick-datetime';
 import { UiSwitchModule } from 'ngx-toggle-switch/src'
-
+/*copy*/
+import { ClipboardModule } from 'ngx-clipboard';
 
 @NgModule({
   declarations: [
@@ -52,7 +54,8 @@ import { UiSwitchModule } from 'ngx-toggle-switch/src'
     DashboardComponent,
     HeaderComponent,
     LeadsComponent,
-    QuerySearchPipe
+    QuerySearchPipe,
+    YoutubeComponent
   ],
   imports: [
     BrowserModule,
@@ -71,7 +74,7 @@ import { UiSwitchModule } from 'ngx-toggle-switch/src'
     FroalaEditorModule.forRoot(), FroalaViewModule.forRoot(),
     DateTimePickerModule,
     NgxCarouselModule,
-    AutofocusModule,UiSwitchModule
+    AutofocusModule,UiSwitchModule,ClipboardModule
   ],
   providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}],
   bootstrap: [AppComponent]
