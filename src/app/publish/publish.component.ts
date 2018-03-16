@@ -89,7 +89,7 @@ export class PublishComponent implements OnInit {
   publishIsA: string = 'blog';
   isIonizeNow: boolean = false;
   imageUploadAlert: boolean = false;
-  imgerror="Choose Only Image.";
+  imgerror="Choose Only Images.";
   imgsize="The file size can not exceed 8MB.";
   currentLoginUser="";
    @ViewChild('filePublishInput') filePublishInput;
@@ -151,6 +151,7 @@ export class PublishComponent implements OnInit {
         PublishComponent.showDraft=false;
         PublishComponent.showIonize=false;
         PublishComponent.showPublished=false;
+        PublishComponent.showScheduled=false;
         PublishComponent.showIonized=false;
       }
     }
@@ -373,16 +374,16 @@ this.editorImageoptions = {
                 // Additional delete params.
                 imageManagerDeleteParams: {param: ''},
                 videoUploadToS3: {
-                        bucket: 'sairamtest',
-                        // Your bucket region.
-                        region: 's3',
-                        keyStart: '',
-                        params: {
-                          acl: 'public-read', // ACL according to Amazon Documentation.
-                          AWSAccessKeyId: 'AKIAJCPS7FEJDBMXTWOQ', // Access Key from Amazon.
-                          policy: policy, // Policy string computed in the backend.
-                          signature: base64, // Signature computed in the backend.
-                        }
+                        // bucket: 'sairamtest',
+                        // // Your bucket region.
+                        // region: 's3',
+                        // keyStart: '',
+                        // params: {
+                        //   acl: 'public-read', // ACL according to Amazon Documentation.
+                        //   AWSAccessKeyId: 'AKIAJCPS7FEJDBMXTWOQ', // Access Key from Amazon.
+                        //   policy: policy, // Policy string computed in the backend.
+                        //   signature: base64, // Signature computed in the backend.
+                        // }
                       },
                       
 
@@ -495,6 +496,7 @@ this.editorImageoptions = {
   // upload image
   buttonsDisabled=false;
   imageerrorcoverAlert:boolean=false;
+  coverImageUpload=false;
 uploadCoverImage() {
   this.bigSizecoverImg=[];
   var bigsizeImgcontinue=false;
@@ -546,33 +548,33 @@ uploadCoverImage() {
     fd.append('encode', 'true');
     fd.append('auth_key', currentuser.auth);
     this.fileInput.nativeElement.value = '';
+    this.coverImageUpload=true;
     if(bigsizeImgcontinue){
     this.authService.uploadImageService(fd).subscribe(res => {
-      console.log(res);
-      if(res.errors.fileerror!==undefined)
-      {
-          this.isStartLoader=false;
-          this.buttonsDisabled=false;
-          this.imageerrorcoverAlert=true;
-      }
-     // do stuff w/my uploaded file
-      else if(res.description==undefined){
+   
+    //  //do stuff w/my uploaded file
+    //  else 
+      if(res.description==undefined){
+        this.coverImageUpload=false;
         this.isStartLoader=false;
         this.buttonsDisabled=false;
-        //this.imageerrorAlert=true;
+        //this.imageerrorcoverAlert=true;
+
       }else{
-        //console.log(res.description);
-        //console.log(res.description.reverse());
         res.description.reverse();
-        if(this.coverImages.length==0)
+        if(this.coverImageUpload)
           {
-              this.createAndUpdateTheBlogForm.patchValue({
-                image:res.description[0].url
-              })
+               if(this.coverImages.length==0)
+                {
+                    this.createAndUpdateTheBlogForm.patchValue({
+                      image:res.description[0].url
+                    })
+                }
+                res.description.forEach(image=>{
+                  this.coverImages.push(image.url);
+                })
           }
-        res.description.forEach(image=>{
-          this.coverImages.push(image.url);
-        })
+       
         //this.coverImages.push(res.description[0].url);
         if(this.isOpenEditor && this.coverImages.length>1)
           {
@@ -582,10 +584,20 @@ uploadCoverImage() {
         
         this.buttonsDisabled=false;
         this.isStartLoader = false;
+        this.coverImageUpload=false;
       }
+          if(res.errors.fileerror!==undefined)
+            {
+                this.coverImageUpload=false;
+                this.isStartLoader=false;
+                this.buttonsDisabled=false;
+                this.imageerrorcoverAlert=true;
+            }
     },(err) => {
+          this.coverImageUpload=false;
           console.log(err);
      }, () => {
+      this.coverImageUpload=false;
       this.fileInput.nativeElement.value = '';
       this.isStartLoader = false;
     });}else{
@@ -612,6 +624,7 @@ getPublishedBlogs(startfrom, limitto) {
       if(this.publishedData.length==0)
         {
           this.showNoBlogsAvailable=true;
+          this.scrollForBlogs=false;
         }
         if((this.publishedData.length%20)!=0)
         {
@@ -620,11 +633,11 @@ getPublishedBlogs(startfrom, limitto) {
 
     }, (err) => {
       var errorMessage= this.errorservice.logError(err);
+      this.alertMessage=errorMessage;
       this.isScrolled = false;
       this.isNoRecords = true;
       this.isPageStartLoader = false;
       this.isAlertPopuperror=true;
-      this.alertMessage=errorMessage;
     }, () => {
       this.isScrolled = false;
       this.isPageStartLoader = false;
@@ -714,6 +727,7 @@ getBlogDetailView(bid, viewType) {
       this.isAlertPopuperror=true;
       PublishComponent.showIonize=false;
       PublishComponent.showPublished=false;
+      PublishComponent.showScheduled=false;
         this.alertMessage=errorMessage;
     }, () => {
         this.isStartLoader=false;
@@ -721,6 +735,7 @@ getBlogDetailView(bid, viewType) {
         PublishComponent.showDraft=false;
         PublishComponent.showIonize=false;
         PublishComponent.showPublished=false;
+        PublishComponent.showScheduled=false;
         PublishComponent.showIonized=false;
         this.getBlogComments(bid);
     });
@@ -815,6 +830,7 @@ prevMonth(){
    PublishComponent.showDraft=false;
   PublishComponent.showIonize=false;
   PublishComponent.showPublished=false;
+  PublishComponent.showScheduled=false;
   PublishComponent.showIonized=false;
    var str_month=''
   this.dateStore.setMonth(this.dateStore.getMonth() - 1);
@@ -842,6 +858,7 @@ nextMonth(){
   PublishComponent.showDraft=false;
   PublishComponent.showIonize=false;
   PublishComponent.showPublished=false;
+  PublishComponent.showScheduled=false;
   PublishComponent.showIonized=false;
   this.dateStore.setMonth(this.dateStore.getMonth() + 1);
   var pssed_year=this.format(this.dateStore,['MM/YYYY']);
@@ -874,6 +891,7 @@ getCalendarEventsByMonth(month,defaultdate) {
   PublishComponent.showDraft=false;
   PublishComponent.showIonize=false;
   PublishComponent.showPublished=false;
+  PublishComponent.showScheduled=false;
   PublishComponent.showIonized=false;
   this.showCalendar=false;
   this.isStartLoader = true;
@@ -894,8 +912,7 @@ getCalendarEventsByMonth(month,defaultdate) {
       
       calendarResponse.forEach((resdata) => {
       var time=this.format(resdata.publish_up,['hh:mm A']);
-      var tempObj = {"4":"publish_cale_status publish_s_ionizing","3":"publish_cale_status publish_s_draft","2":"publish_cale_status publish_s_Online","1":"publish_cale_status publish_s_Online","0":"publish_cale_status publish_s_ionized"};
-       
+      var tempObj = {"4":"publish_cale_status publish_s_ionizing","3":"publish_cale_status publish_s_draft","2":"publish_cale_status publish_s_scheduled","1":"publish_cale_status publish_s_Online","0":"publish_cale_status publish_s_ionized"};
           this.calendarEventsData.push({postid: resdata.postid, title: resdata.title, start: resdata.publish_up,className:tempObj[resdata.published],state:resdata.published,author:resdata.author,category:resdata.category,time:time,userid:resdata.created_by});
      });
     //  this.calendarOptions = {
@@ -943,6 +960,7 @@ static showDraft=false;
 static showIonize=false;
 static showPublished=false;
 static showIonized=false;
+static showScheduled=false;
 static offsetTop = "";
 static offsetLeft = "";
 static viewData={};
@@ -955,7 +973,7 @@ static calenderOverEvent(view) {
   PublishComponent.showIonize=false;
   PublishComponent.showPublished=false;
   PublishComponent.showIonized=false;
-
+  PublishComponent.showScheduled=false;
   PublishComponent.viewData=view;
 
   if(view.state==3)
@@ -966,9 +984,13 @@ static calenderOverEvent(view) {
       {
         PublishComponent.showIonize=true;
       }
-      else if(view.state==1 ||view.state==2)
+      else if(view.state==1)
         {
           PublishComponent.showPublished=true;
+        }
+        else if(view.state==2)
+        {
+          PublishComponent.showScheduled=true;
         }
         else {
          PublishComponent.showIonized=true;
@@ -989,6 +1011,9 @@ get staticShowDraft() {
   }
   get staticShowPublished() {
     return PublishComponent.showPublished;
+  }
+   get staticShowScheduled() {
+    return PublishComponent.showScheduled;
   }
   get staticId() {
     return PublishComponent.id;
@@ -1044,6 +1069,7 @@ addNewTopicsCall() {
   PublishComponent.showDraft=false;
   PublishComponent.showIonize=false;
   PublishComponent.showPublished=false;
+  PublishComponent.showScheduled=false;
   PublishComponent.showIonized=false;
   this.isAddNewTopic = true;
   this.getTrendingTopicsByMonth(this.currentMonthForTrendingtopics);
@@ -1214,6 +1240,7 @@ addToCalendar(){
           }
     }
               if(!this.showSelectedTrendingError && !this.showSelectedTopicDateError){
+                this.buttonsDisabled=true;
                 this.isPageStartLoader=true;
                   this.publishService.addTopicToCalendar(idAndDate).subscribe(
                     data =>{
@@ -1222,6 +1249,7 @@ addToCalendar(){
                         this.isAddNewTopicButton=true;
                         this.totalTopicselect=0;
                         this.selectedTrendTopics=[];
+                        this.buttonsDisabled=false;
                         this.blogCalendarCall();
                   },
                   err =>{
@@ -1246,6 +1274,7 @@ addNewTrendingTopic() {
   const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
   if(this.newTrendTopicForm.valid)
     {
+      this.buttonsDisabled=true;
       const resData = 
       {
         'created_by' : currentuser.teamid,
@@ -1255,7 +1284,9 @@ addNewTrendingTopic() {
     this.isPageStartLoader=true;
     this.publishService.createTrendingTopic(resData,this.currentMonthForTrendingtopics).subscribe(
       data=>{
+        this.buttonsDisabled=false;
         this.isAddNewTopicButton=true;
+        this.totalTopicselect=0;
         //this.getAllTrendingTopicsCall();
         this.getTrendingTopicsByMonth(this.currentMonthForTrendingtopics);
       },
@@ -1388,7 +1419,6 @@ createTheBlog(blogStatus){
           this.publishService.createTheBlogService(this.createAndUpdateTheBlogForm.value,tags)
             .subscribe(
             (cteateBlogResponse: any) => {
-              console.log(cteateBlogResponse);
               if(cteateBlogResponse.code==404)
                 {
                   this.isLoaderForEditor=false;
@@ -1423,7 +1453,6 @@ createTheBlog(blogStatus){
                   // var diff_date = differenceInCalendarDays(
                   //       new Date(this.createAndUpdateTheBlogForm.value.createdDate),      
                   //       new Date());
-                     // console.log(result);
                   // var start_date:any = new Date();
                   // var end_date:any = new Date(this.createAndUpdateTheBlogForm.value.createdDate);
                   // var diff_date = Math.round((end_date - start_date)/days);
@@ -1755,7 +1784,6 @@ updateTheBlogDirectly(blogStatus) {
            this.publishService.updateBlogService(this.createAndUpdateTheBlogForm.value,tags)
             .subscribe(
             (updateblogResponse: any) => {
-              console.log(updateblogResponse);
                if(updateblogResponse.code==404)
                 {
                   this.isLoaderForUpdateBlog=false;
@@ -1958,6 +1986,7 @@ editBlogCall(eachData,type) {
     PublishComponent.showIonize=false;
     PublishComponent.showPublished=false;
     PublishComponent.showIonized=false;
+    PublishComponent.showScheduled=false;
   })
 
   
@@ -1970,6 +1999,7 @@ getBlogView(eachData,type) {
     PublishComponent.showIonize=false;
     PublishComponent.showPublished=false;
     PublishComponent.showIonized=false;
+    PublishComponent.showScheduled=false;
 
     this.blogTags=[];
     this.getBlogComments(eachData.postid);
@@ -2188,6 +2218,7 @@ blogTopicClick(key) {
   //   });
   // }
   // upload publish comment image
+  uploadCommentsImage=false;
   uploadPublishImage() {
     this.bigSizeImg=[];
     var bigimgcontinue=false;
@@ -2233,37 +2264,47 @@ blogTopicClick(key) {
       fd.append('password', currentuser.pwd);
       fd.append('encode', 'true');
       fd.append('auth_key', currentuser.auth);
+      this.uploadCommentsImage=true;
      if(bigimgcontinue){ 
       this.authService.uploadImageService(fd).subscribe(res => {
-      //   if(res.errors.fileerror!==undefined)
-      // {
-      //     this.isLoaderForUpdateBlog=false;
-      //     this.buttonsDisabled=false;
-      //     this.imageerrorAlert=true;
-      // }
-      // else 
-        if(res.description==undefined)
+       
+      // else
+         if(res.description==undefined)
         {
               this.isLoaderForUpdateBlog=false;
               this.buttonsDisabled=false;
               this.imageUploadAlert = false;
               //this.imageerrorAlert=true;
         }else{
-              res.description.forEach(image=>{
-              this.imageSrc.push(image.url);
-            })
+          if(this.uploadCommentsImage)
+            {
+                 res.description.forEach(image=>{
+                  this.imageSrc.push(image.url);
+                })
+            }
+             
           //this.imageSrc.push(res.description[0].url);
           //this.isStartLoader = false; 
-        }         
+        }
+         if(res.errors.fileerror!==undefined)
+          {
+              this.isLoaderForUpdateBlog=false;
+              this.uploadCommentsImage=false;          
+              this.buttonsDisabled=false;
+              this.imageerrorAlert=true;
+          }
+        this.uploadCommentsImage=false;       
         this.buttonsDisabled=false;
       },(err) => {
         this.buttonsDisabled=false;
+        this.uploadCommentsImage=false;
         var errorMessage= this.errorservice.logError(err);
         this.isLoaderForUpdateBlog=false;
         this.isAlertPopuperror=true;
         this.alertMessage=errorMessage;
         //this.isStartLoader = false;
        }, () => {
+         this.uploadCommentsImage=false;
          this.buttonsDisabled=false;
          this.filePublishInput.nativeElement.value = '';
          this.isLoaderForUpdateBlog=false;
@@ -2304,6 +2345,7 @@ blogTopicClick(key) {
     PublishComponent.showDraft=false;
     PublishComponent.showIonize=false;
     PublishComponent.showPublished=false;
+    PublishComponent.showScheduled=false;
     PublishComponent.showIonized=false;
       //   this.blogTypes.forEach(category=>{
       //   if(category.id==blogResponse.category.categoryid)
@@ -2375,6 +2417,7 @@ blogTopicClick(key) {
     PublishComponent.showDraft=false;
     PublishComponent.showIonize=false;
     PublishComponent.showPublished=false;
+    PublishComponent.showScheduled=false;
     PublishComponent.showIonized=false;
     }, (err) => {
       var errorMessage= this.errorservice.logError(err);
@@ -2431,7 +2474,12 @@ blogTopicClick(key) {
     this.clearTheForm();
   }
   clearTheForm(){
+    this.imageerrorcoverAlert=false;
+    this.coverImageUpload=false;
     this.creditsError=false;
+    this.isStartLoader=false;
+    this.uploadCommentsImage=false;
+    this.isLoaderForUpdateBlog=false;
     this.blogtypeSelected=true;
     this.bigSizeImg=[];
     this.bigSizecoverImg=[];
@@ -2533,6 +2581,8 @@ blogTopicClick(key) {
       closeConfirmation(){
         if(this.createAndUpdateTheBlogForm.value.title == '' && this.createAndUpdateTheBlogForm.value.content==''){
           this.isOpenEditor=false;
+          this.isEditorForEditTheDraft=false;
+          this.isEditorForEditThePublish=false;
           this.clearTheForm();
         }
         else{
@@ -2540,6 +2590,7 @@ blogTopicClick(key) {
             this.clearTheForm();
             this.isOpenEditor=false;
             this.isEditorForEditTheDraft = false;
+            this.isEditorForEditThePublish=false;
           }
           
         }
@@ -2561,7 +2612,6 @@ blogTopicClick(key) {
         today_date.setHours(0,0,0,0);
         if(format.test(createdDate)){
           createdDate=new Date(createdDate.replace(/-/g, "/"));
-          } else {
           }
         createdDate.setHours(0,0,0,0);
         if(createdDate==''||createdDate==null)

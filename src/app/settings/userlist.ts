@@ -8,9 +8,9 @@ export class Users {
       public mobile: string;
       public aboutme: string;
       public profile_pic:string;
-      public oldpwd:string;
-      public newpwd:string;
-      public conpwd:string;
+      public oldpwd:string="";
+      public newpwd:string="";
+      public conpwd:string="";
 
 
 }

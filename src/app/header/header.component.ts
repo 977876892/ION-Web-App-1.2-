@@ -106,13 +106,29 @@ export class HeaderComponent implements OnInit {
   //       }
   //     }
   //   }
-    
+    isStartLoaderForLogout=false;
   logout() {
-    localStorage.setItem('user', '');
-    localStorage.setItem('blogs','');
-    localStorage.setItem('queries', '');
-    this.router.navigate(['login']);
+    this.isStartLoaderForLogout = true;
+    this.dashboardService.logout().subscribe(
+      (success:any)=>{
+          localStorage.setItem('user', '');
+          localStorage.setItem('blogs','');
+          localStorage.setItem('queries', '');
+           this.isStartLoaderForLogout=false;
+          this.router.navigate(['login']);
+    },
+    (error)=>{
+          localStorage.setItem('user', '');
+          localStorage.setItem('blogs','');
+          localStorage.setItem('queries', '');
+           this.isStartLoaderForLogout=false;
+          this.router.navigate(['login']);
+    })
 
+          // localStorage.setItem('user', '');
+          // localStorage.setItem('blogs','');
+          // localStorage.setItem('queries', '');
+          // this.router.navigate(['login']);
   }
  
   get user(): any {
@@ -254,8 +270,11 @@ buttonsDisabled=false;
 }
 clearForm() {
   this.imageSrc='';
+  this.isStartLoader=false;
   this.leadForm.reset();
   this.isShowImgDeleteButt=false;
+  this.imageUploadAlert=false;
+  this.imageerrorAlert=false;
   this.gender[0].checked=true;
   this.gender[1].checked=false;
   this.leadForm.patchValue({
@@ -273,6 +292,8 @@ clearForm() {
     ctags:'',
     age:''
   });
+  this.firstnameError=false;
+  
 }
 // add lead call
 
@@ -318,7 +339,10 @@ calculateAge(dateOfBirth, dateToCalculate) {
       }
   }
 addLeads() {
- 
+  if(this.leadForm.value.firstname=='')
+  {
+    this.firstnameError=true;
+  }
  if(this.numLength!=10 && this.numLength!=0)
         {
            this.phoneMinlength=true;
@@ -383,6 +407,7 @@ addLeads() {
 
       }
   }
+  
   validateAllFormFields(formGroup: FormGroup) {         //{1}
   Object.keys(formGroup.controls).forEach(field => {  //{2}
     const control = formGroup.get(field);             //{3}
@@ -400,9 +425,24 @@ addNew(){
   PublishComponent.showPublished=false;
   PublishComponent.showIonized=false;
 }
+firstnameError=false;
+firstnameChange(value){
+  if(value==''|| value.length<3)
+    {
+      this.firstnameError=true;
+    }
+    else{
+      this.firstnameError=false;
+    }
+}
 omit_special_char(event) {
   var k;  
   k = event.charCode; 
-  return(k!=35);
+  return(k!=35 && k!=39);
 }
+  omit_special_char_on_name(event) {
+    var k;  
+    k = event.charCode;
+    return(k!=35  && k!=39 && k!=34);
+  }
 }

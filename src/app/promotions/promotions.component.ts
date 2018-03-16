@@ -5,6 +5,7 @@ import { AuthserviceService } from '../shared/services/login/authservice.service
 import { LeadsService ,DataService} from '../shared/services/leads/leads.service';
 import { IonServer } from '../shared/globals/global';
 import { ErrorService } from '../shared/services/error/error.service';
+import {DomSanitizer} from '@angular/platform-browser';
 @Component({
   selector: 'app-promotions',
   templateUrl: './promotions.component.html',
@@ -43,7 +44,7 @@ export class PromotionsComponent implements OnInit {
    showtextareaError:boolean=false;
 
   constructor(private router: Router, private promotionService: PromotionsService, 
-    private route: ActivatedRoute,private authService:AuthserviceService, private leadsService: LeadsService,private errorservice:ErrorService) { }
+    private route: ActivatedRoute,private authService:AuthserviceService, private leadsService: LeadsService,private errorservice:ErrorService,private santizer:DomSanitizer) { }
 
   ngOnInit() {
     if (localStorage.getItem('user') == '' || localStorage.getItem('user')==null) {
@@ -490,12 +491,12 @@ notselectTags:boolean=false;
       this.router.navigate(['promotions']);
       this.showRequestIsTaken=!this.showRequestIsTaken;
     }
-    promotionLink='';
+    promotionLink:any;
     promotionfullviewimg(promotion){
       this.promotionService.getPromotionFullView(promotion.postid).subscribe(res=>{
       this.isOpenEditor=true;
      this.ionizedPromotionTitle=res.title;
-     this.promotionLink=res.text;
+     this.promotionLink=this.santizer.bypassSecurityTrustHtml(res.text);
       })
      
     }
@@ -511,7 +512,7 @@ notselectTags:boolean=false;
     noOfMessages=0;
     smsTextChange(text){
       if(text.length>120)
-          this. noOfMessages=Math.ceil(text.length/120);
+          this. noOfMessages=Math.ceil(text.length/160);
       else if(text.length>0){
           this.noOfMessages=1;
         }

@@ -69,7 +69,7 @@
         <div class="panel-rt panel-rt__extend panel_bg__sty_3" *ngIf="showProfile">
                 <app-header></app-header>
             <!-- edit profile -->
-            <div class="loader" *ngIf="isStartLoader"></div>
+            <div class="loader" *ngIf="isStartLoader" [style.margin-top.px]="windowBottom"></div>
             <div class="panel">
                     <div class="panel_box panel_box_contact xs-box-padding panel_shadow">
             <div class="setting_profile_table">
@@ -118,7 +118,7 @@
                             <tr>
                                 <td style="width:40%;">First Name:</td>
                                 <td style="width:60%;">
-                                    <input type="text" placeholder="First Name" minlength="3" maxlength="40" pattern="\S.*\S" [formControl]="profileForm.controls['firstname']" tabindex="1" required>
+                                    <input type="text" placeholder="First Name" minlength="3" maxlength="40" pattern="\S.*\S" [formControl]="profileForm.controls['firstname']" tabindex="1" required (keypress)="omit_special_char_on_name($event)">
                                     <span class="required_comments" *ngIf="profileForm.controls['firstname'].hasError('required') && profileForm.controls['firstname'].touched">{{f_name_req_comm}}</span>
                                     <span class="required_comments" *ngIf="profileForm.controls['firstname'].hasError('pattern') && profileForm.controls['firstname'].touched">{{spaceComment}}</span>
                                     <span class="required_comments" *ngIf="profileForm.controls['firstname'].hasError('minlength') && profileForm.controls['firstname'].touched">{{f_name_length_comm}}</span>
@@ -128,7 +128,7 @@
                             <tr>
                                 <td>Last Name:</td>
                                 <td>
-                                    <input type="text" placeholder="Last Name" [formControl]="profileForm.controls['surname']" pattern="\S*\S" tabindex="2" required>
+                                    <input type="text" placeholder="Last Name" [formControl]="profileForm.controls['surname']" pattern="\S*\S" tabindex="2" required (keypress)="omit_special_char_on_name($event)">
                                     <span class="required_comments" *ngIf="profileForm.controls['surname'].hasError('required') && profileForm.controls['surname'].touched">{{l_name_required_comm}}</span>
                                     <span class="required_comments" *ngIf="profileForm.controls['surname'].hasError('pattern') && profileForm.controls['surname'].touched">{{spaceComment}}</span>
                                 </td>
@@ -205,7 +205,7 @@
                                 New Password
                             </td>
                             <td>
-                                <input type="password" [(ngModel)]="pwditem.newpwd" placeholder="New Password" />
+                                <input type="password" [(ngModel)]="pwditem.newpwd" placeholder="New Password"/>
                             </td>
                         </tr>
                         <tr>
@@ -218,7 +218,8 @@
                         </tr>
                         <tr>
                             <td></td>
-                            <td>
+                            <td>  
+                                <span *ngIf="showPasswordError" style="font-size: 12px;color: red;">{{passwordError}}</span>
                                 <input type="submit" value="Submit" (click)="changepassword(pwditem)" style="padding:10px;" class="btn">
                             </td>
                         </tr>
@@ -409,7 +410,7 @@
                             </li> -->
                         </ul></div>
                         <div class="align-center m-b-20" *ngIf="subscriptionDetails.ionstatus!='live' && subscriptionDetails.ionstatus!=undefined">
-                            <a class="btn btn-black btn-regular brd-radius-10  align-center" style="cursor:pointer;" href="http://dashboard.getion.in/index.php/ion-subscription" target="_blank">
+                            <a class="btn btn-black btn-regular brd-radius-10  align-center" style="cursor:pointer;" href="http://staging.getion.in/index.php/ion-subscription" target="_blank">
                                 RENEW SUBSCRIPTION
                             </a>
                         </div> 
@@ -448,7 +449,7 @@
                     <div class="setting_user">
                          <ul>
                              <li style="float:left;">
-                                 <img src="assets/css/images/profile_no_img.png" *ngIf="user.avatar == 'http://staging.getion.in/'" id="default-user-list-img" class="img-responsive" alt="">
+                                 <img src="assets/css/images/profile_no_img.png" *ngIf="user.avatar == 'http://staging.getion.in/' || user.avatar == ''" id="default-user-list-img" class="img-responsive" alt="">
                                  <img src="{{user.avatar}}" id="all-user-list-img" *ngIf="user.avatar != 'http://staging.getion.in/'" class="img-responsive" alt="">
                              </li>
                              <li class="setting_user_40">
@@ -577,8 +578,8 @@
                         <!-- <a class="upload">UPLOAD Image</a> -->
                     </span></div>
       </div>
-    </div> <p style="color:red;" *ngIf="imageerrorAlert">{{imgerror}}</p>
-                     <!-- <img src="https://www.doctoralliance.com/images/doctor_face2.jpg" style="width:90px;height:90px;border-radius:100%;display:table;margin:0 auto;position: relative;top: 10px;" class="img-responsive" alt="">  -->
+    </div>  <p style="color:red;" *ngIf="imageerrorAlert">{{imgerror}}</p>
+            <p style="color:red;" *ngIf="imageUploadAlert">{{imgsize}}</p>
               </div>
               <div class="setting_user_popup">
                  <a class="close" style="cursor: pointer;" (click)="isShowUserPopup = false;closeUserPopUp();">Close</a>
@@ -587,7 +588,7 @@
                             <td>
                                  FIRST NAME
                                  <br>
-                                <input type="text" placeholder="First Name"  style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['firstname']" pattern="\S.*\S" required>  <br>
+                                <input type="text" placeholder="First Name"  style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['firstname']" pattern="\S.*\S" required (keypress)="omit_special_char_on_name($event)">  <br>
                                 <span style="color:red" *ngIf="userDetailsForm.controls['firstname'].hasError('required') && userDetailsForm.controls['firstname'].touched"> Please Enter The First Name. </span>
                                 <!-- <span style="color:red" *ngIf="userDetailsForm.controls['firstname'].hasError('minlength') && userDetailsForm.controls['firstname'].touched"> Please Enter The Firstname. </span> -->
                                 <span style="color:red" *ngIf="userDetailsForm.controls['firstname'].hasError('pattern') && userDetailsForm.controls['firstname'].touched">{{spaceComment}}</span>
@@ -595,7 +596,7 @@
                             <td>
                                 LAST NAME
                                 <br>
-                                <input type="text" placeholder="Last Name" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['surname']" pattern="\S.*\S" required>  <br>
+                                <input type="text" placeholder="Last Name" style="width:90%;height: 37px;border-radius: 50px;" [formControl]="userDetailsForm.controls['surname']" pattern="\S*\S" required (keypress)="omit_special_char_on_name($event)">  <br>
                                 <span style="color:red" *ngIf="userDetailsForm.controls['surname'].hasError('required') && userDetailsForm.controls['surname'].touched"> Please Enter The Last Name. </span>
                                 <span style="color:red" *ngIf="userDetailsForm.controls['surname'].hasError('pattern') && userDetailsForm.controls['surname'].touched">{{spaceComment}}</span>
                               
@@ -736,7 +737,7 @@
                                     <button style="width:90%;height:37px;background-color:#33cccc;cursor: pointer;border-radius:50px;color:white;" (click)="updateUser()" *ngIf="!isAddUser" class="btn" [disabled]="buttonsDisabled"><b>UPDATE</b></button>
                                 </td>
                                 <td>
-                                    <button style="width:90%;height:37px;background-color:#555;cursor: pointer;border-radius:50px;color:white;" (click)="closeUserPopUp()" class="btn"><b>CANCEL</b></button>
+                                    <button style="width:90%;height:37px;background-color:#555;cursor: pointer;border-radius:50px;color:white;" (click)="closeUserPopUp()" class="btn" [disabled]="buttonsDisabled"><b>CANCEL</b></button>
                                 </td>
                             </tr>
                     </table>

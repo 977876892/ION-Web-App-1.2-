@@ -164,7 +164,9 @@
                         <li class="others" *ngIf="eachdata.user_id == '0'">
                             <div class="chat_name" style="width: 270px;">{{ eachdata.poster_name }}</div>
                             <div class="chat_time" >{{eachdata.display_date}}&nbsp;&nbsp; {{ eachdata.display_time }}</div>
-                            <span class="chat_content" >{{ eachdata.content }}
+                            <span class="chat_content" >
+                              <!-- {{ eachdata.content }} -->
+                                 <p [innerHtml]="eachdata.content"></p>
                                 <div class="chat_post_gallery" *ngIf="eachdata.attachments?.length > 0 && eachdata.attachments != ''">
                                     <div class="chat_post_img" *ngFor="let eachImage of eachdata.attachments">
                                       <img class="chat_post_img" src="{{ eachImage.title }}"/>
@@ -178,7 +180,9 @@
                         <li class="user" *ngIf="eachdata.user_id != 0 ">
                             <span class="chat_name">{{ eachdata.poster_name }}</span>
                             <span class="chat_time" >{{eachdata.display_date}}&nbsp;&nbsp;{{ eachdata.display_time }}</span>
-                            <span class="chat_content">{{ eachdata.content }}
+                            <span class="chat_content">
+                              <!-- {{ eachdata.content }} -->
+                               <p [innerHtml]="eachdata.content"></p>
                                 <div class="chat_post_gallery" *ngIf="eachdata.attachments?.length > 0 && eachdata.attachments != ''">
                                     <div class="chat_post_img" *ngFor="let eachImage of eachdata.attachments">
                                       <img class="chat_post_img" src="{{ eachImage.title }}"/>

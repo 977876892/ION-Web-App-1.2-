@@ -126,16 +126,13 @@ constructor(private router: Router,private leadsService: LeadsService,private au
         }
       }]);
       // OneSignal.push(function () {
-      //   console.log('Register For Push');
 
       //   OneSignal.push(["registerForPushNotifications"])
       // });
       OneSignal.push(function () {
         // Occurs when the user's subscription changes to a new value.
         OneSignal.on('subscriptionChange', function (isSubscribed) {
-          // console.log("The user's subscription state is now:", isSubscribed);
           OneSignal.getUserId().then(function (userId) {
-            // console.log("User ID is", userId);
           });
         });
       });
@@ -212,6 +209,16 @@ constructor(private router: Router,private leadsService: LeadsService,private au
  
 get user(): any {
   return JSON.parse(localStorage.getItem('user'));
+}
+firstnameError=false;
+firstnameChange(value){
+  if(value==''|| value.length<3)
+    {
+      this.firstnameError=true;
+    }
+    else{
+      this.firstnameError=false;
+    }
 }
   getDashboardStatistics() {
     this.isStartLoader = true;
@@ -419,8 +426,12 @@ upload() {
         this.imageUploadAlert = false;
         this.imageerrorAlert=true;
       }else{
-        this.imageSrc = res.description[0].url;
-         this.isShowImgDeleteButt=true;
+        if(this.isStartLoader)
+          {
+              this.imageSrc = res.description[0].url;
+              this.isShowImgDeleteButt=true;
+          }
+        
       }
       this.buttonsDisbled=false;
     
@@ -448,6 +459,8 @@ clearForm() {
   this.imageSrc='';
   this.imgsize='';
   this.isReplyEmpty=false;
+  this.homeimageSrc=[];
+  this.isStartLoader=false;
   this.isAddtoQuickReply=false;
   this.imgerror='';
   this.homeimageSrc=[];
@@ -470,6 +483,7 @@ clearForm() {
     ctags:'',
     age:''
   });
+  this.firstnameError=false;
 }
 // calculate age function
 dobSelected(dob){
@@ -515,6 +529,10 @@ calculateAge(dateOfBirth, dateToCalculate) {
 // add lead call
 
 addLeads() {
+  if(this.leadForm.value.firstname=='')
+  {
+    this.firstnameError=true;
+  }
   if(this.numLength!=10 && this.numLength!=0)
          {
             this.phoneMinlength=true;
@@ -667,8 +685,13 @@ uploadImage() {
   }
   omit_special_char(event) {
     var k;  
-    k = event.charCode; 
-    return(k!=35);
+    k = event.charCode;
+    return(k!=35  && k!=39);
+  }
+   omit_special_char_on_name(event) {
+    var k;  
+    k = event.charCode;
+    return(k!=35  && k!=39 && k!=34);
   }
   answerAQuerie(replyData, qId){
 

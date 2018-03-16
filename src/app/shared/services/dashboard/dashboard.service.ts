@@ -74,5 +74,14 @@ export class DashboardService {
       },
     );
   }
+  logout(){
+      return this.http.get(API.LOGOUT()).map(
+      (responseData) => {
+        const key = '_body';
+        return JSON.parse(responseData[key]);
+      },
+    );
+
+  }
 
 }

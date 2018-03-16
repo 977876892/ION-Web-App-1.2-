@@ -13,7 +13,7 @@
         <div class="visits_main"> 
           <div class="search-filter" >
               <div class="filter-add filters-inline" style="position: relative;float:left !important;padding: 0px 10px 10px 0px !important;">
-              <a href="http://dashboard.getion.in/index.php/appointment-settings" target="_blank"><button class="button add-review" >Settings</button></a>              
+              <a href="http://staging.getion.in/index.php/appointment-settings" target="_blank" *ngIf="loginUserGroupId==17"><button class="button add-review" >Settings</button></a>              
               
                   <button class="button add-review" (click)="$event.stopPropagation();isReviewLinkPopup = !isReviewLinkPopup">Review Link</button>
                   <button class="button add-review" (click)="addVisitPopup();isBlockCalPopup = !isBlockCalPopup">Block</button>
@@ -242,9 +242,9 @@
                        {{status.value}}
                    </option>-->
                    <option value="new">New</option>
-                   <option value="accepted">Accepted</option>
-                   <option value="canceled" *ngIf="isEditVisit">Cancelled</option>
-                   <option value="Review" *ngIf="isEditVisit">Review</option>
+                   <option value="accepted">Accept</option>
+                   <option value="canceled" *ngIf="isEditVisit">Cancel</option>
+                   <!-- <option value="Review" *ngIf="isEditVisit">Review</option> -->
                </select>
                   <span class="booking_error" *ngIf="visitForm.controls['request_status'].hasError('required') && visitForm.controls['request_status'].touched">Please Select Status</span>
                </li>
@@ -314,7 +314,7 @@
         <ul>
         <li>
         <label class="labels">FIRST NAME</label>
-          <input type="text" class="input xs-fill-wt visits-bk-apmt-ip" minlength="3" maxlength="40" pattern="\S.*\S" [formControl]="visitForm.controls['firstname']" required tabindex="7">
+          <input type="text" class="input xs-fill-wt visits-bk-apmt-ip" minlength="3" maxlength="40" pattern="\S.*\S" [formControl]="visitForm.controls['firstname']" required tabindex="7" (keypress)="omit_special_char_on_name($event)">
           <span class="booking_error" *ngIf="visitForm.controls['firstname'].hasError('required') && visitForm.controls['firstname'].touched">Firstname Required</span>
           <span class="booking_error" *ngIf="visitForm.controls['firstname'].hasError('minlength') && visitForm.controls['firstname'].touched"> Firstname be at least three characters in length.</span>
           <span class="booking_error" *ngIf="visitForm.controls['firstname'].hasError('pattern') && visitForm.controls['firstname'].touched">{{spaceComment}}</span>
@@ -358,7 +358,7 @@
         <ul>
         <li>
         <label class="labels">LAST NAME</label>
-        <input type="text" class="input xs-fill-wt visits-bk-apmt-ip" [formControl]="visitForm.controls['lastname']" pattern="\S*\S"  required tabindex="8">
+        <input type="text" class="input xs-fill-wt visits-bk-apmt-ip" [formControl]="visitForm.controls['lastname']" pattern="\S*\S"  required tabindex="8" (keypress)="omit_special_char_on_name($event)">
         <span class="booking_error" *ngIf="visitForm.controls['lastname'].hasError('required') && visitForm.controls['lastname'].touched">Lastname Required</span>
         <!-- <span style="color:red" *ngIf="visitForm.controls['lastname'].hasError('minlength') && visitForm.controls['lastname'].touched"> Lastname be at least three characters in length.</span> -->
         <span class="booking_error" *ngIf="visitForm.controls['lastname'].hasError('pattern') &&  visitForm.controls['lastname'].touched">{{spaceComment}}</span>
@@ -424,7 +424,7 @@
   
         <div class="actions" *ngIf="!isEditVisit">
         <button class="button profile-action ripple btn" type="submit" (click)="addVisit()"  tabindex="16" [disabled]="buttonsDisabled">ADD APPOINTMENT</button> &#160;&#160;
-        <button class="button cancel-action" (click)="isAddVisit = false;closeAddAndEditVisit();categoryRequiredError=false;" style="margin-top: 1px;"  tabindex="17">cancel</button>
+        <button class="button cancel-action" (click)="isAddVisit = false;closeAddAndEditVisit();categoryRequiredError=false;" style="margin-top: 1px;"  tabindex="17" [disabled]="buttonsDisabled">cancel</button>
         </div>
 
 
@@ -433,7 +433,7 @@
           <div class="form-section-top">
               <div class="actions">
                   <button class="button profile-action ripple btn" type="submit" (click)="visitUpdate()" [disabled]="buttonsDisabled">Update</button>&#160;&#160;
-                  <button class="button cancel-action" (click)="isEditVisit=false;closeAddAndEditVisit();categoryRequiredError=false;" style="margin-top: 1px;">cancel</button>
+                  <button class="button cancel-action" (click)="isEditVisit=false;closeAddAndEditVisit();categoryRequiredError=false;" style="margin-top: 1px;" [disabled]="buttonsDisabled">cancel</button>
             </div>
           </div>
           <div style="color:red;font-size:12px;text-align: center;margin-top: 10px;" *ngIf="isModifyData">Please Modify The Data.</div>
@@ -787,7 +787,7 @@
                 </li>
                 <li>
                     <label class="labels">BLOCK FROM</label>
-                     <owl-date-time  hideClearButton="true" dateFormat=" DD MMM, YYYY hh:mm A" placeHolder="dd-mm-yyyy" [formControl]="blockCalenderForm.controls['block_from']" required #dt  tabindex="3"></owl-date-time>
+                     <owl-date-time  hideClearButton="true" dateFormat=" DD MMM, YYYY hh:mm A" placeHolder="dd-mm-yyyy" [formControl]="blockCalenderForm.controls['block_from']" required #dt  tabindex="3"  min="{{stopDates}}" (onSelect)="disableTheBlockToDates(blockCalenderForm.controls['block_from'])"></owl-date-time>
                      <span class="booking_error" *ngIf="blockCalenderForm.controls['block_from'].hasError('required') && blockCalenderForm.controls['block_from'].touched">Date Is Required</span>
                      <span class="booking_error" *ngIf="blockCalenderForm.controls['block_from'].hasError('minlength') && blockCalenderForm.controls['block_from'].touched"> Please Select Date.</span>
                 </li>
@@ -814,7 +814,7 @@
                 </li>
                 <li>
                     <label class="labels">BLOCK TILL</label>
-                    <owl-date-time  hideClearButton="true" dateFormat=" DD MMM, YYYY hh:mm A" [formControl]="blockCalenderForm.controls['block_till']" placeHolder="dd-mm-yyyy" required #dt tabindex="4"></owl-date-time>
+                    <owl-date-time  hideClearButton="true" dateFormat=" DD MMM, YYYY hh:mm A" [formControl]="blockCalenderForm.controls['block_till']" placeHolder="dd-mm-yyyy" required #dt tabindex="4" min="{{block_to_from}}" [disabled]="block_from_empty"></owl-date-time>
                     <span class="booking_error" *ngIf="blockCalenderForm.controls['block_till'].hasError('required') && blockCalenderForm.controls['block_till'].touched">Date Is Required</span>
                     <span class="booking_error" *ngIf="blockCalenderForm.controls['block_till'].hasError('minlength') && blockCalenderForm.controls['block_till'].touched"> Please Select Date.</span>
                   </li>
@@ -883,7 +883,7 @@
       <div class="loader" *ngIf="isAddLinkLoader"></div>
         <div class="model-content">
         <div class="appointment-block bx-border-stl-2" style="margin: 20px !important;">
-            <div class="heading vis--down-pop__heading12" style="top: -37px !important;font-weight: 600">Send  Appointment</div>
+            <div class="heading vis--down-pop__heading12" style="top: -37px !important;font-weight: 600">Send Appointment</div>
             <form [formGroup]="reviewForm" novalidate="novalidate">
             <div class="form-section">
                 <div class="form-section-top visit_chan block_cal" style="height: 168px;">
@@ -902,8 +902,8 @@
                 </ul>
                 </div>
                 <div class="actions" style="margin-top: 13px;">
-                    <button class="button profile-action ripple btn" type="submit" style="width:45%;float: left;" (click)="reviewlink('appointment')">Send  Appointment</button> &#160;&#160;
-                    <button class="button profile-action ripple btn" type="submit"  style="width:45%;" (click)="reviewlink('reviewlink')">Send  Review Link</button>
+                    <button class="button profile-action ripple btn" type="submit" style="width:45%;float: left;" (click)="reviewlink('appointment')" [disabled]="buttonsDisabled">Send Appointment</button> &#160;&#160;
+                    <button class="button profile-action ripple btn" type="submit"  style="width:45%;" (click)="reviewlink('reviewlink')" [disabled]="buttonsDisabled">Send  Review Link</button>
                </div>
             </div>
           </form>

@@ -170,6 +170,7 @@
                                 </figure>
                               </a>
                             </li>
+                            
                             <li class="docTypeItem" *ngIf="eachpromotion.id == 92" title="{{eachpromotion.title}}">
                                 <a class="docTypeItemLink">
                                     <figure class="docTypeItemFigure">
@@ -430,7 +431,7 @@
           <h1 class="txt-center"><b>Create your promotional SMS</b></h1>
           <div class="promotions_input">
 
-            <textarea (keypress)="omit_special_char($event)" maxlength="240" placeholder="Write your text here.." [(ngModel)]="smsText" class="textarea brd-radius-5" (ngModelChange)="showErrorForSmsContent=false;smsTextChange(smsText)" data-gramm_editor="false"></textarea>
+            <textarea (keypress)="omit_special_char($event)" maxlength="320" placeholder="Write your text here.." [(ngModel)]="smsText" class="textarea brd-radius-5" (ngModelChange)="showErrorForSmsContent=false;smsTextChange(smsText)" data-gramm_editor="false"></textarea>
             <div class="txt-hint"> {{smsText.length}} / {{noOfMessages}}</div>
           </div>
 

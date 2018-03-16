@@ -2,6 +2,7 @@
     <label class="username"><span class="name">Hello,</span><span class="honorific"></span>{{ user.name }}</label>
     <div class="rt-header__rt__block">
       <!-- notification popup-->
+       <div class="loader" *ngIf="isStartLoaderForLogout"></div>
  <div class="user__status_pop_transferq" *ngIf="isFeedsNotification" style="right: 396px;top:13px;" #filtercontainer>
     <div class="user__status_popbody bx-shadow brd-radius-15 transfer_pop" style="z-index:10; width: 450px;border-radius: 20px !important;">
         <div class="title"></div>
@@ -89,7 +90,7 @@
     </div>
 </div> 
       <a style="cursor: pointer;" class="no-margin" (click)="feedsNotification();$event.stopPropagation(); ">
-          <img src="assets/css/images/Notifications.png" width="29" height="31" style="vertical-align: middle;">
+          <img src="assets/css/images/Notifications.png"  width="29" height="31" style="vertical-align: middle;">
         </a>
         <a style="cursor: pointer;" class="calender" [routerLink]="['/publish/calendar']"><div class="cal-date">{{todayDate}}</div></a>
         <a class="add_new" (click)="isPromoPopupOpen = true;addNew()" style="margin-right: 0px !important;cursor: pointer;">
@@ -389,20 +390,20 @@
     </div>
     <div class="rt-div" style="width: 67%;">
       <div class="form-section"> 
-    <form [formGroup]="leadForm" (ngSubmit)="addLeads()">
+    <form [formGroup]="leadForm">
       <div class="form-section-top">        
       <ul>
       <li> 
       
       <label class="labels">First name</label>
-      <input type="text" class="input" minlength="3" maxlength="40" pattern="\S.*\S" [formControl]="leadForm.controls['firstname']" required>
-      <span class="required_comments" *ngIf="leadForm.controls['firstname'].hasError('required') && leadForm.controls['firstname'].touched">{{f_name_req_comm}}</span>
-      <span class="required_comments" *ngIf="leadForm.controls['firstname'].hasError('pattern') && leadForm.controls['firstname'].touched">{{spaceComment}}</span>
-      <span class="required_comments" *ngIf="leadForm.controls['firstname'].hasError('minlength') && leadForm.controls['firstname'].touched">{{f_name_length_comm}}</span>
+      <input type="text" class="input" autofocus  tabindex="1" minlength="3" maxlength="40" pattern="\S.*\S" [formControl]="leadForm.controls['firstname']" (ngModelChange)="firstnameChange(firstname.value)" #firstname required (keypress)="omit_special_char_on_name($event)">
+      <span class="required_comments" *ngIf="firstnameError && leadForm.controls['firstname'].hasError('required') && leadForm.controls['firstname'].touched">{{f_name_req_comm}}</span>
+      <span class="required_comments" *ngIf="firstnameError && leadForm.controls['firstname'].hasError('pattern') && leadForm.controls['firstname'].touched">{{spaceComment}}</span>
+      <span class="required_comments" *ngIf="firstnameError && leadForm.controls['firstname'].hasError('minlength') && leadForm.controls['firstname'].touched">{{f_name_length_comm}}</span>
       </li>
       <li>
       <label class="labels">Email</label> 
-      <input type="email" class="input" maxlength="40" pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{1,63}$" [formControl]="leadForm.controls['email']" required>
+      <input type="email" tabindex="3" class="input" maxlength="40" pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{1,63}$" [formControl]="leadForm.controls['email']" required>
       <span class="required_comments" *ngIf="leadForm.controls['email'].hasError('required') && leadForm.controls['email'].touched">{{email_required_comm}}</span>
       <span class="required_comments" *ngIf="leadForm.controls['email'].hasError('pattern') && leadForm.controls['email'].touched">{{invalid_email_comm}}</span>
       </li>
@@ -416,7 +417,7 @@
       <label class="labels">Gender</label>
       <span class="gender">
        
-            <input [checked]="gender[0].checked" [formControl]="leadForm.controls['sex']" [value]="'Male'" name="rdblGender" id="rdblGender_0" type="radio">
+            <input [checked]="gender[0].checked" tabindex="5" [formControl]="leadForm.controls['sex']" [value]="'Male'" name="rdblGender" id="rdblGender_0" type="radio">
             <label for="rdblGender_0" > Male</label>
              <input [value]="'Female'" [checked]="gender[1].checked" [formControl]="leadForm.controls['sex']" name="rdblGender" id="rdblGender_4" type="radio">
             <label for="rdblGender_4"> Female</label>
@@ -424,7 +425,7 @@
           </li> 
       <li>
       <label class="labels">City</label>
-      <input type="text" class="input" [formControl]="leadForm.controls['city']" (keypress)="omit_special_char($event)">
+      <input type="text" class="input" tabindex="8" [formControl]="leadForm.controls['city']" (keypress)="omit_special_char($event)">
       <!-- <span style="color:red" *ngIf="leadForm.controls['city'].hasError('required') && leadForm.controls['city'].touched">Invalid city</span>
       <span style="color:red" *ngIf="leadForm.controls['city'].hasError('minlength') && leadForm.controls['city'].touched"> City be at least three characters in length.</span> -->
       </li>
@@ -433,14 +434,14 @@
       <ul>
       <li>
       <label class="labels">Last name</label>
-      <input type="text" class="input" [formControl]="leadForm.controls['surname']" pattern="\S*\S" required>
+      <input type="text" class="input" tabindex="2" [formControl]="leadForm.controls['surname']" pattern="\S*\S" required (keypress)="omit_special_char_on_name($event)">
       <span class="required_comments" *ngIf="leadForm.controls['surname'].hasError('required') && leadForm.controls['surname'].touched">{{l_name_required_comm}}</span>
       <span class="required_comments" *ngIf="leadForm.controls['surname'].hasError('pattern') && leadForm.controls['surname'].touched">{{spaceComment}}</span>
       <!-- <span style="color:red" *ngIf="leadForm.controls['surname'].hasError('minlength') && leadForm.controls['surname'].touched"> lastname be at least three characters in length.</span> -->
       </li>
       <li>
       <label class="labels">Phone</label>
-      <input type="number" (input)="onTypeNumValid($event.target.value)" class="input" maxlength="12" [formControl]="leadForm.controls['phone']" onkeydown="javascript: return event.keyCode == 69 ? false : true" required>
+      <input type="number" tabindex="4" (input)="onTypeNumValid($event.target.value)" class="input" maxlength="12" [formControl]="leadForm.controls['phone']" onkeydown="javascript: return event.keyCode == 69 ? false : true" required>
       <span class="required_comments" *ngIf="leadForm.controls['phone'].hasError('required') && leadForm.controls['phone'].touched">{{num_required_comm}}</span>
       <!-- <span style="color:red" *ngIf="leadForm.controls['phone'].hasError('minlength')"> Phone Number Minimum 10 characters Required.</span>
       <span style="color:red" *ngIf="leadForm.controls['phone'].hasError('maxlength')">Phone Number Maximum 12 characters Only.</span> -->
@@ -455,7 +456,7 @@
       <li>
       <label class="labels">Date of Birth</label>
       <div class="leads_date_cal">
-      <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" [formControl]="leadForm.controls['dob']" autoClose="true" placeHolder="dd-mm-yyyy" max="{{stopDates}}"></owl-date-time>
+      <owl-date-time hideClearButton="true" tabindex="7" type="calendar" dateFormat="DD-MM-YYYY" [formControl]="leadForm.controls['dob']" autoClose="true" placeHolder="dd-mm-yyyy" max="{{stopDates}}"></owl-date-time>
     </div>
       <!-- <input type="date" class="input" [formControl]="leadForm.controls['dob']"> -->
       <span style="color:red" *ngIf="leadForm.controls['dob'].hasError('required') && leadForm.controls['dob'].touched">Enter date of Birth</span>
@@ -463,7 +464,7 @@
       </li>
       <li>
       <label class="labels">Area Locality</label>
-      <input type="text" class="input" [formControl]="leadForm.controls['area']" (keypress)="omit_special_char($event)">
+      <input type="text" class="input" tabindex="9" [formControl]="leadForm.controls['area']" (keypress)="omit_special_char($event)">
       <!-- <span style="color:red" *ngIf="leadForm.controls['doctor'].hasError('required') && leadForm.controls['doctor'].touched">Invalid doctor</span>
       <span style="color:red" *ngIf="leadForm.controls['doctor'].hasError('minlength') && leadForm.controls['doctor'].touched"> doctor be at least three characters in length.</span> -->
       </li>
@@ -475,10 +476,10 @@
       <ul>
       <li>
       <label class="labels">Add Remarks</label>
-      <input type="text" class="input" maxlength="120" [formControl]="leadForm.controls['remarks']" (keypress)="omit_special_char($event)">
+      <input type="text" class="input" maxlength="120" tabindex="10" [formControl]="leadForm.controls['remarks']" (keypress)="omit_special_char($event)">
       </li>
       <li>
-          <tag-input [formControl]="leadForm.controls['ctags']" [(ngModel)]="leadtags" (keypress)="omit_special_char($event)">
+          <tag-input [formControl]="leadForm.controls['ctags']" tabindex="11" [(ngModel)]="leadtags" (keypress)="omit_special_char($event)">
             <tag-input-dropdown [autocompleteItems]="autoComplete"></tag-input-dropdown>
           </tag-input>
       </li>
@@ -488,8 +489,8 @@
         <br>
       
       <div class="actions">
-      <button class="button profile-action ripple btn" type="submit" [disabled]="buttonsDisabled">Submit</button>
-      <button class="button cancel-action" (click)="isSelectAddLeads = false;clearForm()" style="margin-top: 1px;margin-left: 10px;">cancel</button>
+      <button class="button profile-action ripple btn" type="submit" tabindex="12" [disabled]="buttonsDisabled" (click)="addLeads()">Submit</button>
+      <button class="button cancel-action" (click)="isSelectAddLeads = false;clearForm()" tabindex="13" style="margin-top: 1px;margin-left: 10px;" [disabled]="buttonsDisabled">cancel</button>
       </div>
     </form>
       
@@ -512,4 +513,4 @@
         </div>
        </div>
     </div>
-  <div class="overlay" *ngIf="isSearchPopup || isStartLoader || isPromoPopupOpen || isSelectAddLeads || isAlertPopup || isSelectPromo || isPromoSelected || isSelectBlog"></div>
+  <div class="overlay" *ngIf="isSearchPopup || isStartLoader || isPromoPopupOpen || isSelectAddLeads || isAlertPopup || isSelectPromo || isPromoSelected || isSelectBlog || isStartLoaderForLogout"></div>

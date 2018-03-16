@@ -41,16 +41,19 @@
                     </div>
                   </div>
                   <!--Title for ionizing blog-->
-                  <div class="title" style="cursor: pointer;" (click)="getBlogDetailView(eachpublish.postid, 'publish'); " *ngIf="eachpublish.published==4">{{ eachpublish.title }}</div>
+                  <div class="title" style="cursor: pointer;" (click)="getBlogDetailView(eachpublish.postid, 'publish'); " *ngIf="eachpublish.published==4" title="{{ eachpublish.title }}">{{ eachpublish.title }}</div>
                   <!--Title for ionizing blog-->
                   <!--Title for ionized blog-->
-                  <div class="title" style="cursor: pointer;" (click)="editBlogCall(eachpublish, 'publish');" *ngIf="eachpublish.published==0 && (loginUserGroupId==17 || eachpublish.userid==loginUser)">{{ eachpublish.title }}</div>
-                   <div class="title" style="cursor: pointer;" (click)="getBlogView(eachpublish, 'publish');" *ngIf="eachpublish.published==0 && (eachpublish.userid!=loginUser &&  loginUserGroupId!=17)">{{ eachpublish.title }}</div>
+                  <div class="title" style="cursor: pointer;" (click)="editBlogCall(eachpublish, 'publish');" *ngIf="eachpublish.published==0 && (loginUserGroupId==17 || eachpublish.userid==loginUser)" title="{{ eachpublish.title }}">{{ eachpublish.title }}</div>
+                   <div class="title" style="cursor: pointer;" (click)="getBlogView(eachpublish, 'publish');" *ngIf="eachpublish.published==0 && (eachpublish.userid!=loginUser &&  loginUserGroupId!=17)" title="{{ eachpublish.title }}">{{ eachpublish.title }}</div>
                    <!-- <button class="button btn-add" (click)="editBlogCall(eachpublish, 'publish');" *ngIf="eachpublish.published==0 && (loginUserGroupId==17 || eachpublish.userid==loginUser)">Review</button>
                      <button class="button btn-add" (click)="getBlogView(eachpublish, 'publish');" *ngIf="eachpublish.published==0 && (eachpublish.userid!=loginUser &&  loginUserGroupId!=17)">Review</button> -->
                   <!--Title for ionized blog-->
 
-                  <div class="sub_title">By {{ eachpublish.author.name }}|{{eachpublish.category.title}}</div>
+                  <div class="sub_title">
+                      <span style="float:left;max-width: 50%;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;margin-bottom: 5px;" title="{{ eachpublish.author.name }}">By {{ eachpublish.author.name }}</span><span style="float:left;max-width: 50%;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;margin-bottom: 5px;float:left;" title="{{ eachpublish.category.title }}">|{{eachpublish.category.title}}</span>                      
+                    <!-- By {{ eachpublish.author.name }}|{{eachpublish.category.title}} -->
+                  </div>
                   <!--Full view for ionizing blog-->
                   <div class="img_div" style="cursor: pointer;" *ngIf="eachpublish.published==4" (click)="getBlogDetailView(eachpublish.postid, 'publish');">
                     <img *ngIf="eachpublish.image.url" class="img" src="{{ eachpublish.image.url }}">
@@ -382,8 +385,13 @@
                     <!-- <a style="cursor: pointer;" class="edit">Edit</a> -->
                   </div>
 
-                  <div class="title" style="cursor: pointer;" (click)="getBlogDetailView(eachpublish.postid, 'online'); ">{{ eachpublish.title }}</div>
-                  <div class="sub_title">By {{ eachpublish.author.name }}|{{eachpublish.category.title}}</div>
+                  <div class="title" style="cursor: pointer;" title="{{ eachpublish.title }}" (click)="getBlogDetailView(eachpublish.postid, 'online'); ">{{ eachpublish.title }}</div>
+                  <div class="sub_title">
+                    <span style="float:left;max-width: 50%;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;margin-bottom: 5px;" title="{{ eachpublish.author.name }}">By {{ eachpublish.author.name }}</span><span style="float:left;max-width: 50%;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;margin-bottom: 5px;float:left;" title="{{ eachpublish.category.title }}">|{{eachpublish.category.title}}</span>   
+                      <!-- <span style="float:left;max-width: 76%;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;margin-bottom: 5px;" title="{{ eachpublish.author.name }}">By {{ eachpublish.author.name }}</span><span style="float:left;">|{{eachpublish.category.title}}</span> -->
+                    <!-- By {{ eachpublish.author.name }}
+                    |{{eachpublish.category.title}} -->
+                  </div>
                   <div class="img_div" style="cursor: pointer;" (click)="getBlogDetailView(eachpublish.postid, 'online'); ">
                     <img *ngIf="eachpublish.image.url" class="img" src="{{ eachpublish.image.url }}">
                     <img *ngIf="eachpublish.image.url == null || eachpublish.image.url == ''" class="img" src="assets/images/dummy_img1.png">
@@ -462,9 +470,12 @@
                     </div>
                   </div>
 
-                  <div class="title" style="cursor: pointer;" (click)="editBlogCall(eachpublish, 'draft');"  *ngIf="(loginUserGroupId==17 || eachpublish.userid==loginUser)">{{ eachpublish.title }}</div>
-                  <div class="title" style="cursor: pointer;" (click)="getBlogView(eachpublish, 'draft');"  *ngIf="(eachpublish.userid!=loginUser &&  loginUserGroupId!=17)">{{ eachpublish.title }}</div>
-                  <div class="sub_title">By {{ eachpublish.author.name }}|{{eachpublish.category.title}}</div>
+                  <div class="title" style="cursor: pointer;" (click)="editBlogCall(eachpublish, 'draft');"  *ngIf="(loginUserGroupId==17 || eachpublish.userid==loginUser)" title="{{ eachpublish.title }}">{{ eachpublish.title }}</div>
+                  <div class="title" style="cursor: pointer;" (click)="getBlogView(eachpublish, 'draft');"  *ngIf="(eachpublish.userid!=loginUser &&  loginUserGroupId!=17)" title="{{ eachpublish.title }}">{{ eachpublish.title }}</div>
+                  <div class="sub_title">
+                    <span style="float:left;max-width: 50%;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;margin-bottom: 5px;" title="{{ eachpublish.author.name }}">By {{ eachpublish.author.name }}</span><span style="float:left;max-width: 50%;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;margin-bottom: 5px;float:left;" title="{{ eachpublish.category.title }}">|{{eachpublish.category.title}}</span>   
+                    <!-- <span style="float:left;max-width: 76%;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;margin-bottom: 5px;" title="{{ eachpublish.author.name }}">By {{ eachpublish.author.name }}</span><span style="float:left;">|{{eachpublish.category.title}}</span> -->
+                  </div>
                    <div class="img_div" style="cursor: pointer;" (click)="editBlogCall(eachpublish, 'draft');" *ngIf="(loginUserGroupId==17 || eachpublish.userid==loginUser)"> 
                   <!-- <div class="img_div" style="cursor: pointer;" (click)="getBlogView(eachpublish, 'draft');" *ngIf="(eachpublish.userid!=loginUser &&  loginUserGroupId!=17)">  -->
                     
@@ -706,9 +717,14 @@
                     <div class="label-count c-ionized"><span>{{blogsCount.Ionized}}</span></div>
                   </li>
                   <li>
+                    <div class="label">Scheduled</div>
+                    <div class="label-count c-scheduled"><span>{{blogsCount.Scheduled}}</span></div>
+                  </li>
+                  <li>
                     <div class="label">Online</div>
                     <div class="label-count c-online"><span>{{blogsCount.Publish}}</span></div>
                   </li>
+                  
                   <li>
                     <button class="button ripple" (click)="blogCalendarCall()">This Month</button>
                   </li>
@@ -774,6 +790,19 @@
                      Publish
                      {{staticId}}
                    </div> -->
+                <div class="publish_status_pop scheduled" *ngIf="staticShowScheduled" [style.left.px]="staticViewData.offsetLeft" [style.top.px]="staticViewData.offsetTop+23" style="position:absolute !important;z-index:5;" #calendarPopup>
+                  <div class="top" (click)="$event.stopPropagation();"><a class="scheduled">Scheduled</a><p class="calender_Dis_time">{{staticViewData.time}}</p></div>
+                  <div class="middle" (click)="$event.stopPropagation();">
+                    <p>{{staticViewData.title}}</p>
+                    <p class="sub-para">By {{staticViewData.author}} | {{staticViewData.category}}</p>
+                  </div>
+                  <div class="bottom">
+                     <div class="btn_actons txt-center">
+                      <button class="button" (click)="getBlogDetailView(staticViewData.postid, 'online')" style="width:100%;">VIEW</button>
+
+                    </div>
+                  </div>
+                </div>
                 <div class="publish_status_pop online" *ngIf="staticShowPublished" [style.left.px]="staticViewData.offsetLeft" [style.top.px]="staticViewData.offsetTop+23" style="position:absolute !important;z-index:5;" #calendarPopup>
                   <div class="top" (click)="$event.stopPropagation();"><a class="online">Online</a><p class="calender_Dis_time">{{staticViewData.time}}</p></div>
                   <div class="middle" (click)="$event.stopPropagation();">
@@ -1536,7 +1565,7 @@
               </div>
               <div class="input-group">
                 <!-- <input id="btn-input" class="chat_input" placeholder="Write a comment" type="text" [(ngModel)]="comment"> -->
-                <textarea id="btn-input" class="chat_input" placeholder="Write a comment" type="text" [(ngModel)]="comment" (ngModelChange)="showCommentError=false;"></textarea>
+                <textarea id="btn-input" class="chat_input" placeholder="Write a comment" type="text" [(ngModel)]="comment" (ngModelChange)="showCommentError=false;" style="height:39px !important;"></textarea>
                 <p style="color:red;" *ngIf="showCommentError">{{showCommentErrorMsg}}</p>
                 <!-- <span class="input-group-btn">
                               <button class="img-btn"><img src="assets/css/images/icon-smiley.png"></button>
@@ -2194,7 +2223,7 @@
                 </select>
                
                 </div>
-                <button class="button btn-add-new plan-cln--new-tpc_btn" type="button" (click)="addNewTrendingTopic();" style="display:inline-block;">Add</button>
+                <button class="button btn-add-new plan-cln--new-tpc_btn" type="button" (click)="addNewTrendingTopic();" style="display:inline-block;" [disabled]="buttonsDisabled">Add</button>
                 <br>
                 <div style="color: red;float: left;width: 60%;" *ngIf="newTrendTopicForm.controls['title'].hasError('required') && newTrendTopicForm.controls['title'].touched">Invalid title</div>                  
                 
@@ -2211,7 +2240,7 @@
       <div class="btn_actons_new txt-center">
         <!-- <button class="button btn-cancel btn-p" (click)="isAddNewTopic = false; isAddNewTopicButton = true;selectedTrendTopics=[];">Cancel</button> -->
         <button class="button btn-cancel btn-p" (click)="isAddNewTopic = false;totalTopicselect=0;isAddNewTopicButton=true;newTrendTopicForm.reset();selectedTrendTopics=[];showSelectedTrendingError=false;showSelectedTopicDateError=false;">Cancel</button>
-        <button class="button btn-add btn-p btn" (click)="addToCalendar()">Add to calender</button>
+        <button class="button btn-add btn-p btn" (click)="addToCalendar()" [disabled]="buttonsDisabled">Add to calender</button>
         <span style="color:red" *ngIf="showSelectedTrendingError"> Please Select At least One Topic With Date.</span>
         <span style="color:red" *ngIf="showSelectedTopicDateError"> Please Select {{selectTheDate}} Topic Date.</span>
       </div>

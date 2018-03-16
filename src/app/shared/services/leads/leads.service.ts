@@ -72,7 +72,7 @@ filterLeads(filterObj) {
 
   getLeadTags(){
       const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
-      return this.http.get(API.GET_LEAD_TAGS(currentuser.id)).map(
+      return this.http.get(API.GET_LEAD_TAGS(currentuser.teamid)).map(
         (responseData) => {
           const key = '_body';
           return JSON.parse(responseData[key]);

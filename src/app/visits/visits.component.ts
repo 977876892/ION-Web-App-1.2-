@@ -44,6 +44,8 @@ export class VisitsComponent implements OnInit {
   visitDoctorsData: any = [];
   doctorsListForFilter=[];
   timeSlotsData: any = [];
+  currentuser=localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+  loginUserGroupId=this.currentuser.userGroup;
   spaceComment=IonServer.Space_Not_required;  
   imgerror="Choose Only Image.";
   imgsize="The file size can not exceed 8MB.";
@@ -276,6 +278,7 @@ not_select_date_error_msg(){
     this.fromDateEmpty=false;
 }
 
+
 // add a visit call
 categoryRequiredError:boolean=false;
 addVisit() {
@@ -386,11 +389,11 @@ addVisit() {
 }
 // patient details func
 patientDetails(pid) {
-  this.isShowPatientDetails = true;
+  
    for (const eachentry of this.visitsTempData) {
      for (const eachdata of eachentry[1]) {
       if(eachdata.id === pid) {
-        if(eachdata.birthday!='0000-00-00' && eachdata.birthday!='')
+        if(eachdata.birthday!='0000-00-00' && eachdata.birthday!='' && eachdata.birthday!='Invalid Date')
           {
               eachdata.birthdayshow=this.format(eachdata.birthday, ['DD/MM/YYYY']);
           }
@@ -398,13 +401,13 @@ patientDetails(pid) {
             eachdata.birthdayshow='';
           }
         this.patientDetailsData = eachdata;
+        this.isShowPatientDetails = true;
       }}}
   //this.patientEditDetails(pid);
 }
 reviewlinkFormValid:boolean;
 isAddLinkLoader:boolean;
 reviewlink(value){
-  console.log(this.reviewForm.value)
   if(this.reviewForm.value.patientMailId == '' && this.reviewForm.value.patientMobileNumber == ''){
     this.reviewlinkFormValid=true;
   }else if(this.reviewForm.value.patientMailId == null && this.reviewForm.value.patientMobileNumber == null){
@@ -415,6 +418,7 @@ reviewlink(value){
     this.reviewlinkFormValid=true;
   }
   if(!this.reviewlinkFormValid){
+        this.buttonsDisabled=true;
         if(value == 'appointment'){
               if(this.reviewForm.value.patientMailId == null){
                 this.reviewForm.patchValue({
@@ -429,10 +433,12 @@ reviewlink(value){
             this.visitsService.sendAppointLink(this.reviewForm.value).subscribe((appoinmentRes:any)=>{
               this.isReviewLinkPopup=false;
               this.closeAddAndEditVisit();
+              this.buttonsDisabled=false;
                this.isAlertPopupError=true;
                this.alertMessage="Appointment link has been sent successfully ";
             },(err)=>{
               this.isAddLinkLoader=false;
+              this.buttonsDisabled=false;
               var errorMessage= this.errorservice.logError(err);
               this.isAlertPopupError=true;
               this.alertMessage=errorMessage;
@@ -453,11 +459,13 @@ reviewlink(value){
                   }
           this.visitsService.sendReviewLink(this.reviewForm.value).subscribe((appoinmentRes:any)=>{
             this.isReviewLinkPopup=false;
+            this.buttonsDisabled=false;
             this.closeAddAndEditVisit();
             this.isAlertPopupError=true;
             this.alertMessage="Reviewlink has been sent successfully ";
           },(err)=>{
             this.isAddLinkLoader=false;
+            this.buttonsDisabled=false;
             var errorMessage= this.errorservice.logError(err);
             this.isAlertPopupError=true;
             this.alertMessage=errorMessage;
@@ -477,7 +485,6 @@ getCategeories() {
   this.isAddVisitLoader = true;
   this.visitsService.getCategeoriesService().subscribe(
     (categeoryResponse: any) => {
-      console.log(categeoryResponse.data.length);
       this.categorieslength=categeoryResponse.data.length;
       this.visitCategeoryData = categeoryResponse.data;
       this.getDoctors('');
@@ -689,11 +696,13 @@ getDoctorTimeSlots(resId, tsDate) {
  
 }
 // upload image
+uploadVisitPatientImage=false;
 upload() {
   
   const fileBrowser = this.fileInput.nativeElement;
+  this.uploadVisitPatientImage=true;
   // if (fileBrowser.files && fileBrowser.files[0]) {
-   if(fileBrowser.files[0])
+   if(fileBrowser.files && fileBrowser.files[0])
     {
      
       if(fileBrowser.files[0].size/1024/1024 > 9) {
@@ -722,11 +731,15 @@ upload() {
                 this.imageUploadAlert = false;
                 this.imageerrorAlert=true;
           }else{
-              this.visitForm.patchValue({
-                image:res.description[0].url
-              });
-              this.isStartLoader = false;
-              this.isShowImgDeleteButt=true;
+            if(this.uploadVisitPatientImage)
+              {
+                  this.visitForm.patchValue({
+                    image:res.description[0].url
+                  });
+                  this.isStartLoader = false;
+                  this.isShowImgDeleteButt=true;
+              }
+              
           }
           this.buttonsDisabled=false;
         },(err) => {
@@ -964,7 +977,7 @@ visitUpdate() {
     if(this.visitForm.value.request_status!="" && this.visitForm.value.starttime.toString().includes(":") && this.visitForm.value.res_id!='' && !this.categoryRequiredError  && !this.phoneMinlength && !this.phoneZeroComm &&this.visitForm.valid && !this.isModifyData) {
         var strUDFs="";
         strUDFs += 2 + ';' + this.visitForm.value.sex + '~';
-        if(this.visitForm.value.dob !== '') {
+        if(this.visitForm.value.dob !== '' && this.visitForm.value.dob!='Invalid Date') {
           strUDFs += 3 + ';' + this.visitForm.value.dob + '~';
           strUDFs += 4 + ';' + this.visitForm.value.age + '~';
         }
@@ -1011,8 +1024,8 @@ timechange(){
 }
 // to clear from fields
 clearForm() {
+  this.uploadVisitPatientImage=false;
   this.visitForm.reset();
-  this.categoryRequiredError=false;
   this.phoneMinlength=false;
   this.visitForm.patchValue({
     firstname: '',
@@ -1031,6 +1044,7 @@ clearForm() {
     image:'',
     age:''
   });
+  this.categoryRequiredError=false;
 }
 
  printToCart(){ 
@@ -1227,20 +1241,28 @@ dobSelected(dob){
                })
         }
   closeAddAndEditVisit(){
+    this.clearForm();
     this.categoryRequiredError=false;
     if(this.router.url == '/visits/addvisit')
     {
       this.router.navigate(['/visits']);
     }
-    this.visitDoctorsData=[];
+    if(this.visitCategeoryData.length!=0)
+        this.visitDoctorsData=[];
+    this.isAddVisitLoader=false;
+    this.uploadVisitPatientImage=false;
     this.timeSlotsData=[];
     this.visitForm.reset();
+    this.imageUploadAlert=false;
+    this.imageerrorAlert=false;
     this.blockAllDay='No';
     this.blockCalenderForm.reset();
     this.reviewForm.reset();
     this.reviewlinkFormValid=false;
     this.isAddLinkLoader=false;
     this.phoneMinlength=false;
+    this.block_to_from="";
+    this.block_from_empty=true;
     this.blockCalenderForm.patchValue({
         res_id: '',
         category:'',
@@ -1251,6 +1273,7 @@ dobSelected(dob){
         blockAllDay:'',
         block_detail:''
   });
+    
     this.isShowImgDeleteButt=false;
     this.phoneZeroComm=false;
     this.isModifyData=false;
@@ -1353,7 +1376,6 @@ dobSelected(dob){
 
 blockAllDay='No';
 block_allday(event){
-  console.log(event)
   if(event == true){
     this.blockAllDay='Yes';
   }
@@ -1414,12 +1436,24 @@ if(this.blockCalenderForm.valid){
 omit_special_char(event) {
   var k;  
   k = event.charCode;
-  return(k!=35);
+  return(k!=35 && k!=39);
 }
+omit_special_char_on_name(event) {
+    var k;  
+    k = event.charCode;
+    return(k!=35  && k!=39 && k!=34);
+  }
 allow_only_numbers(event) {
   var k;  
   k = event.charCode; // k = event.keyCode;  (Both can be used)   
   return(k>=48&&k<=57)||k===44 ||k===32;
+}
+block_to_from="";
+block_from_empty=true;
+disableTheBlockToDates(){
+    var fromdate=this.blockCalenderForm.value.block_from;
+    this.block_to_from=fromdate.getFullYear()+"-"+(fromdate.getMonth()+1)+"-"+fromdate.getDate();
+    this.block_from_empty=false;
 }
 
 }

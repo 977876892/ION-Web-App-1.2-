@@ -264,7 +264,6 @@ export class SettingsComponent implements OnInit {
         }
     }
   profile_sub() {
-    console.log(this.profileForm.value.phone)
    if(this.profileForm.value.phone == null){
       this.phoneMinlength=true;
       this.num_length="Phone number is required";
@@ -370,6 +369,7 @@ uploadprofilepic() {
     {
      
       if(fileBrowser.files[0].size/1024/1024 > 9) {
+        this.isStartLoader=false;
         this.imageUploadAlert = true;
         this.imageerrorAlert = false;
         this.fileInput.nativeElement.value = '';
@@ -400,8 +400,12 @@ uploadprofilepic() {
              this.profileForm.patchValue({
                profile_pic:res.description[0].url
              })
-              this.isStartLoader = false;
-              this.isShowImgDeleteButt=true;
+               setTimeout (() => {
+                    this.isStartLoader = false;
+                    this.isShowImgDeleteButt=true;
+                  }, 2000)
+              //this.isStartLoader = false;
+              
               
           }
         
@@ -431,26 +435,59 @@ uploadprofilepicDelete(){
   this.isStartLoader=false;
 
 }
+passwordError="";
+showPasswordError=false;
   changepassword(pwditem){
+    this.showPasswordError=false;
     this.isStartLoader=true;
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
-    if (currentuser.pwd == btoa(pwditem.oldpwd)) {
-            if (pwditem.newpwd == pwditem.conpwd){
-                  this.settingsService.changePwdListService(pwditem.newpwd)
-                  .subscribe(data => {
-                      this.isStartLoader=false;
-                      this.isAlertPopup=true;
-                      this.alertMessage="Password Changed Successfully.";
-              },(err)=>{
-                var errorMessage= this.errorservice.logError(err);
-                this.isAlertPopupForError=true;
-                this.alertMessage=errorMessage;
-                this.isStartLoader=false;
-              });
-            }else{
-            }
-    }else {
-    }
+    if(pwditem.oldpwd=='' ||pwditem.oldpwd==null)
+      {
+          this.isStartLoader=false;
+          this.showPasswordError=true;
+          this.passwordError="Current Password Shouldn't Empty.";
+      }
+      else{
+          if (currentuser.pwd == btoa(pwditem.oldpwd)) {
+                if(pwditem.newpwd != '' && pwditem.newpwd != null && pwditem.conpwd !=''  && pwditem.conpwd!=null)
+                  {
+                    if (pwditem.newpwd == pwditem.conpwd){
+                            this.settingsService.changePwdListService(btoa(pwditem.newpwd))
+                            .subscribe(data => {
+                                  const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+                                  currentuser.pwd=btoa(pwditem.newpwd);
+                                  localStorage.setItem("user",JSON.stringify(currentuser));
+                                  this.pwditem.oldpwd='';
+                                  this.pwditem.newpwd='';
+                                  this.pwditem.conpwd='';
+                                  this.isStartLoader=false;
+                                  this.isAlertPopup=true;
+                                  this.alertMessage="Password Changed Successfully.";
+                        },(err)=>{
+                          var errorMessage= this.errorservice.logError(err);
+                          this.isAlertPopupForError=true;
+                          this.alertMessage=errorMessage;
+                          this.isStartLoader=false;
+                        });
+                      }else{
+                        this.isStartLoader=false;
+                        this.showPasswordError=true;
+                        this.passwordError="New And Confirm Passwords Are Not Matched";
+                        
+                      }
+                  }
+                  else{
+                          this.isStartLoader=false;
+                          this.showPasswordError=true;
+                          this.passwordError="New And Confirm Passwords Sholdn't Empty.";
+                  }
+                }else {
+                          this.isStartLoader=false;
+                          this.showPasswordError=true;
+                          this.passwordError="Current Password No Matched with login Password";
+                }
+      }
+    
   }
 
  getUserData(){
@@ -500,11 +537,11 @@ uploadprofilepicDelete(){
         this.userGroups=[{name:"Doctor",value:10,checked:false},{name:"Frontdesk Team",value:15,checked:false},{name:"Junior Doctors",value:16,checked:false},{name:"Business Head",value:17,checked:false}];
         this.isAddUser=true;
     }else{
+      this.isShowImgDeleteButt=false;
        this.isStartLoaderForUserPopup=true;
       this.userid=userId;
       this.settingsService.getUserDetails(userId).subscribe(
         (userdataResponse: any) => {
-          console.log(userdataResponse);
              this.userGroups.forEach(group=>{
                if(parseInt(userdataResponse.groups)===group.value)
                 {
@@ -600,6 +637,7 @@ addNewUser(){
                       this.settingsService.addNewUserService(this.userDetailsForm.value)
                  .subscribe(
                         data => {
+                          //console.log(data);
                           //this.isStartLoader=true;
                           if(data.message=="The username is already taken, try another.")
                             {
@@ -680,7 +718,6 @@ addNewUser(){
                         //  if(currentuser.id===this.userid)
                         //   {
                         //     currentuser.username=this.userDetailsForm.value.username;
-                        //     //localStorage.getItem("user").username="";
                         //     localStorage.setItem("user",JSON.stringify(currentuser));
                         //   }
                          //this.getUserData();
@@ -688,7 +725,7 @@ addNewUser(){
                       err =>{
                         this.buttonsDisabled=false;
                         var errorMessage= this.errorservice.logError(err);
-                        this.isStartLoader=false;
+                        this.isStartLoaderForUserPopup=false;
                         this.isAlertPopupForError=true;
                         this.alertMessage=errorMessage;
                       }
@@ -725,11 +762,14 @@ selectedIds=[];
     closeUserPopUp()
     {
       this.isShowUserPopup = false;
+      this.imageUploadAlert=false;
+      this.imageerrorAlert=false;
       this.isShowImgDeleteButt=false;
       this.isAddUser=false;
       this.userDetailsForm.reset();
       this.isGroupsRequied=false;
       this.selectedItems=[];
+      this.isStartLoaderForUserPopup=false;
       
       this.userDetailsForm.patchValue({
           firstname:'',
@@ -781,11 +821,20 @@ selectedIds=[];
     }
 
     upload() {
-  this.isStartLoader = true;
-  this.isStartLoaderForUserPopup=true;
+  //this.isStartLoader = true;
+  
+   this.imageUploadAlert = false;
   this.imageerrorAlert=false;
   const fileBrowser = this.fileInput.nativeElement;
    if (fileBrowser.files && fileBrowser.files[0]) {
+     if(fileBrowser.files[0].size/1024/1024 > 9) {
+      // this.isStartLoader = false;
+        this.isStartLoaderForUserPopup=false;
+        this.imageUploadAlert = true;
+        this.imageerrorAlert = false;
+        this.fileInput.nativeElement.value = '';
+        return false;
+      }
     const fd = new FormData();
     const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
     fd.append('file', fileBrowser.files[0]);
@@ -794,6 +843,7 @@ selectedIds=[];
     fd.append('password', currentuser.pwd);
     fd.append('encode', 'true');
     fd.append('auth_key', currentuser.auth);
+    this.isStartLoaderForUserPopup=true;
     this.buttonsDisabled=true;
     this.authService.uploadImageService(fd).subscribe(res => {
       // do stuff w/my uploaded file
@@ -804,10 +854,14 @@ selectedIds=[];
         }else{
 
                 this.imageSrc = res.description[0].url;
-                this.isShowImgDeleteButt=true;
-                this.userDetailsForm.patchValue({
-                    image:res.description[0].url
-                })
+                if(this.isStartLoaderForUserPopup)
+                  {
+                    this.isShowImgDeleteButt=true;
+                    this.userDetailsForm.patchValue({
+                        image:res.description[0].url
+                    })
+                  }
+                
                   setTimeout (() => {
                     this.isStartLoader = false;
                   }, 2000)
@@ -840,6 +894,11 @@ selectedIds=[];
 passwordchanges(){
   this.pwdNotMatch=false;
 }
+omit_special_char_on_name(event) {
+    var k;  
+    k = event.charCode;
+    return(k!=35  && k!=39 && k!=34);
+  }
 isScrolled: boolean = false;
   isNoRecords: boolean = false;
   windowBottom:any="";

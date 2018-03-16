@@ -188,7 +188,7 @@
                 <button class="button ripple" (click)="sendSms()"><img src="assets/css/images/sms-icon.png"><span>Send SMS</span></button>
                 </div>
             <div class="filter-add">
-              <a class="button" href="http://dashboard.getion.in/index.php/import-bulk-leads" style="border: 2px #33CCCC solid !important;border-radius: 18px;margin-left: -150px;position: absolute;color: #33cccc;font-weight: bold;" target="_blank">Import Leads</a>
+              <a class="button" href="http://staging.getion.in/index.php/import-bulk-leads" style="border: 2px #33CCCC solid !important;border-radius: 18px;margin-left: -150px;position: absolute;color: #33cccc;font-weight: bold;" target="_blank">Import Leads</a>
               <button class="button add-icon" (click)="clearForm(); isAddLead = !isAddLead;" style="border: 2px #33CCCC solid !important;">Add Lead</button>
               <a class="downloads" (click)="downloadLeads()"><img src="assets/css/images/download-icon-2.png" width="33" height="30"></a>
               <!-- <a  class="print"><img src="assets/css/images/print-icon.png" width="33" height="31"></a> -->
@@ -238,14 +238,14 @@
     <td class="v-email " [class.seleted]="eachdata.isChecked">{{ eachdata.email }}</td>
     <td class="v-doctor " [class.seleted]="eachdata.isChecked">{{ eachdata.source}}</td>
     <td class="tags" [class.seleted]="eachdata.isChecked">
-      <a *ngFor="let eachtag of eachdata.tagArr | slice:0:3;">{{ eachtag }}</a> 
-      <a style="cursor: pointer;" *ngIf="eachdata.tagArr.length > 3" (click)="$event.stopPropagation();clickedOnDottedLine(i);">
+      <a *ngFor="let eachtag of eachdata.tagArr | slice:0:1;">{{ eachtag }}</a> 
+      <a style="cursor: pointer;" *ngIf="eachdata.tagArr.length > 1" (click)="$event.stopPropagation();clickedOnDottedLine(i);">
       <div class="dotted-line">
           <div></div><div></div><div></div>
       </div> 
        <div class="hover_actions" *ngIf="eachdata.isClickOnDottedLine" #editcontainer>
             <ul>
-              <li style="cursor: pointer;" *ngFor="let eachtag of eachdata.tagArr | slice:3;">{{ eachtag }}</li>
+              <li style="cursor: pointer;" *ngFor="let eachtag of eachdata.tagArr | slice:1;">{{ eachtag }}</li>
               <!-- <li style="cursor: pointer;"><a href="javascript:void(0);">Edit</a></li>
               <li style="cursor: pointer;"><a href="javascript:void(0);">Delete</a></li> -->
             </ul>                                        
@@ -357,7 +357,7 @@
       <li> 
       
       <label class="labels">First name</label>
-      <input type="text" autofocus class="input" minlength="3" maxlength="40" pattern="\S.*\S" [formControl]="leadForm.controls['firstname']" tabindex="1" required (ngModelChange)="firstnameChange(firstname.value)" #firstname>
+      <input type="text" autofocus class="input" minlength="3" maxlength="40" pattern="\S.*\S" [formControl]="leadForm.controls['firstname']" tabindex="1" required (ngModelChange)="firstnameChange(firstname.value)" #firstname (keypress)="omit_special_char_on_name($event)">
       <span class="required_comments" *ngIf="firstnameError && leadForm.controls['firstname'].hasError('required') && leadForm.controls['firstname'].touched">{{f_name_req_comm}}</span>
       <span class="required_comments" *ngIf="firstnameError && leadForm.controls['firstname'].hasError('pattern') && leadForm.controls['firstname'].touched">{{spaceComment}}</span>
       <span class="required_comments" *ngIf="firstnameError && leadForm.controls['firstname'].hasError('minlength') && leadForm.controls['firstname'].touched">{{f_name_length_comm}}</span>
@@ -395,7 +395,7 @@
       <ul>
       <li>
       <label class="labels">Last name</label>
-      <input type="text" class="input" [formControl]="leadForm.controls['surname']" pattern="\S*\S" tabindex="2" required>
+      <input type="text" class="input" [formControl]="leadForm.controls['surname']" pattern="\S*\S" tabindex="2" required (keypress)="omit_special_char_on_name($event)">
       <span class="required_comments" *ngIf="leadForm.controls['surname'].hasError('required') && leadForm.controls['surname'].touched">{{l_name_required_comm}}</span>
       <span class="required_comments" *ngIf="leadForm.controls['surname'].hasError('pattern') && leadForm.controls['surname'].touched">{{spaceComment}}</span>
       <!-- <span style="color:red" *ngIf="leadForm.controls['surname'].hasError('minlength') && leadForm.controls['surname'].touched"> lastname be at least three characters in length.</span> -->
@@ -453,7 +453,7 @@
       
       <div class="actions">
       <button class="button profile-action ripple btn" type="submit" tabindex="12" [disabled]="buttonsDisabled">Submit</button>
-      <button class="button cancel-action" (click)="isAddLead = false;isEditLead=false;clearForm();" tabindex="13" style="margin-top: 1px;margin-left: 10px;">cancel</button>
+      <button class="button cancel-action" (click)="isAddLead = false;isEditLead=false;clearForm();" tabindex="13" style="margin-top: 1px;margin-left: 10px;" [disabled]="buttonsDisabled">cancel</button>
       </div>
     </form>
       

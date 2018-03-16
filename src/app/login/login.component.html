@@ -14,7 +14,7 @@
         <h1 class="heading" >Hello!<br>
           <span style="font-weight: bold;">Enter Login Details</span></h1>
            <!-- <span class="form-error" *ngIf="errorMessage" style="color: #f00">{{errorMessage}}</span> -->
-           <span class="form-error" *ngIf="errorMessage" style="color: #f00">Your username or password is incorrect.</span>
+           <span class="form-error" *ngIf="errorMessage" style="color: #f00">{{errorMessage}}</span>
           <span class="form-error" *ngIf="errorMessageEmpty" style="color: #f00">{{errorMessageEmpty}}</span>
        
            <form [formGroup]="loginForm" (ngSubmit)="signIn()" novalidate="novalidate">

@@ -151,6 +151,7 @@ export class API {
   public static GET_DASHBOARD_FEEDS(userId) {
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?action=get&module=feeds&resource=getfeeds&userid=${userId}`);
   }
+
   // Get notifications api
   public static GET_DASHBOARD_NOTIFICATIONS(userId,auth_key) {
     return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_api&format=raw&app=easyblog&resource=latest&
@@ -450,10 +451,13 @@ public static GET_USER_DATA(id,key) {
 public static ADD_USER_PROFILE(){
   return this.removeWhiteSpaces(IonServer.ION_SERVER+"/index.php?option=com_api&app=users&resource=users&format=raw");
 }
-public static UPDATE_USER_PROFILE(userform,key,id){
-  console.log(`${IonServer.ION_SERVER}/index.php?option=com_api&app=users&resource=users&format=raw&username=${userform.username}&password=${userform.updatePassword}&password2=${userform.updateReTypePassword}&name=${userform.firstname}&lastname=${userform.surname}&email=${userform.email}&groups=${userform.groups}&category=${userform.categories}&key=${key}&userid=${id}&avatar=${userform.image}`);
-  return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_api&app=users&resource=users&format=raw&username=${userform.username}&password=${userform.updatePassword}&password2=${userform.updateReTypePassword}&name=${userform.firstname}&lastname=${userform.surname}&email=${userform.email}&groups=${userform.groups}&category=${userform.categories}&key=${key}&userid=${id}&avatar=${userform.image}`)
+public static UPDATE_USER_PROFILE(){
+  return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_api&app=users&resource=users&format=raw`);
 }
+// public static UPDATE_USER_PROFILE_PARAMETER(userform,key,id){
+//      return this.removeWhiteSpaces()
+// }
+
 // getting all searches
 public static GET_ALL_SEARCHES(userId, type) {
   return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request/searchall/contacts/contacts?user_id=${userId}&word=${type}`);
@@ -472,11 +476,13 @@ public static SEND_REVIEW_LINK(values,currentuser){
   return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=contacts&resource=contacts&action=review&user_id=${currentuser.id}&email=${values.patientMailId}&mobile=${values.patientMobileNumber}`);
 }
 public static SEND_APPOINTMENT_LINK(values,currentuser){
-  console.log(`${IonServer.ION_SERVER}/index.php/request?module=contacts&resource=contacts&action=send&user_id=${currentuser.id}&email=${values.patientMailId}&mobile=${values.patientMobileNumber}`)
   return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?module=contacts&resource=contacts&action=send&user_id=${currentuser.id}&email=${values.patientMailId}&mobile=${values.patientMobileNumber}`);
 }
 
 public static BLOCK_CALENDER(currentuser,visitForm){
   return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php?option=com_rsappt_pro3&controller=json_x&fileout=yes&format=raw&task=adm_save_bookoff&usr=${currentuser.username}&pwd=${currentuser.pwd}&encode=true&res_id=${visitForm.res_id}&bo_offdate=${visitForm.block_from}&bo_offdate2=${visitForm.block_till}&bo_starttime=${visitForm.block_from_time}&bo_endtime=${visitForm.block_to_time}&bo_pub=1&bo_fullday=${visitForm.blockAllDay}&description=${visitForm.block_detail}`);
 }
+  public static LOGOUT() {
+    return this.removeWhiteSpaces(`${IonServer.ION_SERVER}/index.php/request?action=get&module=user&resource=logout`);
+  }
 }

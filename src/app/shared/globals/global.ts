@@ -1,7 +1,7 @@
 
 export const IonServer = Object.freeze({
     ION_SERVER : 'http://staging.getion.in',
-    Space_Not_required:'Space Is Not Required',
+    Space_Not_required:'Space Not Allowed.',
     f_name_required:'Firstname is required',
     l_name_required:'Lastname is required',
     f_name_length:'Firstname be at least three characters in length.',

@@ -34,7 +34,7 @@ export class QueriesComponent implements OnInit {
   categoriesList:any=[];
   isQuerieEdit: boolean = false;
   imageSrc: any = [];
-  imgerror="Choose Only Image.";
+  imgerror="Choose Only Images.";
   imgsize="The file size can not exceed 8MB.";
   isEditClick: boolean = false
   editContent="";
@@ -284,6 +284,8 @@ answerAQuerie(replyData, qId) {
       this.isReplyEmpty=true;
     }
     else{
+      this.imageerrorAlert=false;
+       this.imageUploadAlert = false;
       var attachments="";
       if(this.imageSrc.length>0)
         {
@@ -707,16 +709,23 @@ uploadImage() {
     this.authService.uploadImageService(fd).subscribe(res => {
       // do stuff w/my uploaded file
         if(res.description==undefined)
-      {
-            this.isStartLoader = false;
-            this.imageUploadAlert = false;
-     }else{
-        res.description.forEach(image=>{
-          this.imageSrc.push(image.url);
-        })
-       // this.imageSrc.push(res.description[0].url);
-        this.isStartLoader = false;          
-      }
+        {
+              this.isStartLoader = false;
+              //this.imageUploadAlert = false;
+              this.imageUploadAlert=true;
+        } else{
+          res.description.forEach(image=>{
+            this.imageSrc.push(image.url);
+          })
+        // this.imageSrc.push(res.description[0].url);
+          this.isStartLoader = false;          
+        }
+        if(res.errors.fileerror!==undefined)
+            {
+              this.isStartLoader = false;
+              this.imageUploadAlert = false;
+              this.imageerrorAlert=true;
+            }
     },(err) => {
       var errorMessage= this.errorservice.logError(err);
       this.isStartLoader = false;

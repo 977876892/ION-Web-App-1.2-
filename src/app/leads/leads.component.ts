@@ -199,8 +199,6 @@ getLeads() {
 addLeadStatus="";
 zeroInput:boolean=false;
 addLeads() {
- console.log(this.leadForm.value.phone);
-  
   if(this.leadForm.value.firstname=='')
     {
       this.firstnameError=true;
@@ -375,8 +373,11 @@ upload() {
         this.imageUploadAlert = false;
         this.imageerrorAlert=true;
       }else{
-        this.imageSrc = res.description[0].url;
-         this.isShowImgDeleteButt=true;
+        if(this.isStartLoader)
+          {
+              this.imageSrc = res.description[0].url;
+              this.isShowImgDeleteButt=true;
+          }
       }
         this.buttonsDisabled=false;
     
@@ -400,7 +401,10 @@ uploadImgeDelete(){
 
 clearForm() {
   this.imageSrc='';
+  this.isStartLoader=false;
   this.firstnameError=false;
+  this.imageUploadAlert=false;
+  this.imageerrorAlert=false;
   this.leadForm.reset();
   this.isShowImgDeleteButt=false;
   this.zeroInput=false;
@@ -980,8 +984,13 @@ firstnameChange(value){
 omit_special_char(event) {
   var k;  
   k = event.charCode; 
-  return(k!=35);
+  return(k!=35 && k!=39);
 }
+ omit_special_char_on_name(event) {
+    var k;  
+    k = event.charCode;
+    return(k!=35  && k!=39 && k!=34);
+  }
  windowBottom:number;
            @HostListener("window:scroll", [])
             onWindowScroll()  {

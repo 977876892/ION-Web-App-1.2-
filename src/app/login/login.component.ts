@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { AuthserviceService } from '../shared/services/login/authservice.service';
+import { ErrorService } from '../shared/services/error/error.service';
 // import { Storage } from '../shared/storage/storage';
 
 @Component({
   selector: 'app-login',
-  providers: [ AuthserviceService],
+  providers: [ AuthserviceService,ErrorService],
   templateUrl: './login.component.html'
 })
 export class LoginComponent implements OnInit {
@@ -21,7 +22,8 @@ export class LoginComponent implements OnInit {
   isAlertPopup=false;
   constructor(private router: Router,
     private builder: FormBuilder,
-    private loginService: AuthserviceService) {}
+    private loginService: AuthserviceService,
+  private errorservice:ErrorService) {}
 
   ngOnInit() {
   }
@@ -38,7 +40,6 @@ export class LoginComponent implements OnInit {
            this.loginService.getCommonDetails(loginUserResponse.teamid).subscribe(
                 (commonDetails: any) => {
                   loginUserResponse.groups.split(",");
-                        // this.isStartLoader = false;
                         localStorage.setItem('user', JSON.stringify({
                         id: loginUserResponse.id,
                         teamid: loginUserResponse.teamid,
@@ -73,8 +74,9 @@ export class LoginComponent implements OnInit {
          }
           }, (err) => {
             this.isStartLoader = false;
+            this.errorMessage= this.errorservice.logErrorForLogin(err);
             this.errorMessageEmpty ="";
-            this.errorMessage = 'Username and password do not match or you do not have an account yet';
+            //this.errorMessage = 'Username and password do not match or you do not have an account yet';
           }, () => {
            // this.isStartLoader = false;
           });

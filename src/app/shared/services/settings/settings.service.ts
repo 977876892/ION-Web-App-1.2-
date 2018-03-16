@@ -53,8 +53,9 @@ getUserDetails(id){
 addNewUserService(userform){
  const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
    //let data = 
-    //    "username="+ userform.username+"&password=" +userform.password+"&password2=" +userform.reTypePassword+"&name="+userform.firstname +"&lastname="+userform.surname +
-    //    "&email="+userform.email+"&groups="+userform.groups+"&category="+userform.categories+"&key="+currentuser.auth+"&avatar="+userform.image;
+//    console.log("username="+ userform.username+"&password=" +userform.password+"&password2=" +userform.reTypePassword+"&name="+userform.firstname +"&lastname="+userform.surname +
+//        "&email="+userform.email+"&groups="+userform.groups+"&category="+userform.categories+"&key="+currentuser.auth+"&avatar="+userform.image);
+      
     let body = new FormData();
     body.append('username',userform.username);
     body.append('password',userform.password);
@@ -74,14 +75,19 @@ addNewUserService(userform){
     .map(res =>  res.json());
   }
   updateUserService(userform,id){
-
-      const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
+        userform.updatePassword=userform.updatePassword.replace(/&/g, "%26");
+        userform.updateReTypePassword=userform.updateReTypePassword.replace(/&/g, "%26");
+        const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
   //  let data =  'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
   //       "username="+ userform.username+"&password=" +userform.password+"&password2=" +userform.reTypePassword+"&name="+userform.firstname +" "+userform.surname +
   //       "&email="+userform.email+"&groups="+userform.groups+"&category="+userform.categories+"&key="+currentuser.auth+"&userid="+id;
     //   let headers =new Headers({'Access-Control-Allow-Methods': '*'});
     //   let options    = new RequestOptions({ headers: headers });
-      return this.http.put(API.UPDATE_USER_PROFILE(userform,currentuser.auth,id),'')
+    //   return this.http.put(API.UPDATE_USER_PROFILE(userform,currentuser.auth,id),'')
+    //     .map(res =>  res.json());
+        const headers = new Headers({'Content-Type' : 'application/X-www-form-urlencoded'});
+        let options = new RequestOptions({ headers });
+        return this.http.put(API.UPDATE_USER_PROFILE(),`username=${userform.username}&password=${userform.updatePassword}&password2=${userform.updateReTypePassword}&name=${userform.firstname}&lastname=${userform.surname}&email=${userform.email}&groups=${userform.groups}&category=${userform.categories}&key=${currentuser.auth}&userid=${id}&avatar=${userform.image}`,options)
         .map(res =>  res.json());
       }
 

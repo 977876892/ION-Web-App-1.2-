@@ -11,11 +11,10 @@ export class AuthserviceService {
   constructor(private http: Http) { }
 // Login user service
   loginUser(loginForm) {
-   // let headers;
     let resData;
     let options;
     const headers = new Headers({'Content-Type' : 'application/X-www-form-urlencoded'});
-    resData = 'username=' + loginForm.username + '&password=' + loginForm.password;
+    resData = 'username=' + loginForm.username + '&password=' + loginForm.password.replace(/&/g, "%26");
     options = new RequestOptions({ headers });
     return this.http.post(API.LOGIN_API(), resData, options).map(
       (responseData) => {
