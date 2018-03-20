@@ -20,6 +20,9 @@ export class ErrorService {
         else if(err.status  === 0){
             return "Please Try Again.";
         }
+        else{
+             return "Please Try After Some Time.";
+        }
   }
     logErrorForLogin(err){
          if(err.status  === 400){

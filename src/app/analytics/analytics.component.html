@@ -5,7 +5,7 @@
               <div class="panel-rt panel-rt__extend panel_bg__sty_3 ">
                     <app-header></app-header>
                     <div class="panel" id="analytics-body">
-                            <div class="loader" *ngIf="isStartLoader"></div>
+                            <div class="loader" *ngIf="isStartLoader" [style.margin-top.px]="windowBottom"></div>
                             <div class="visits_main">
               <div *ngIf="websiteAnalytics">
                   <div *ngIf="shownoWebSiteAnalytics">No Website Analytics</div>
@@ -152,10 +152,10 @@
                                 [chartType]="barChartType"></canvas>
                       </div>
                         <div class="analytics_headings">
-                      <h2 class="t-head txt-center m-b-30">Top  5 Pages</h2>
+                      <h2 class="t-head txt-center m-b-30">Top 5 Pages</h2>
                       <div class="txt-center m-b-20">
-                          <input [checked]="true" type="radio" class="radio-styled " value="0" name="toppages" (click)="topPagesLastMonth()" > <label for="LastMonth">Last 3 Months</label>
-                           <input type="radio" class="radio-styled " value="1" name="toppages" (click)="topPagesLastThreeMonths()"><label for="Last6Month"> Last 6 Months</label>
+                          <input [checked]="true" type="radio" class="radio-styled " value="0" name="toppages" (click)="topPagesLastMonth()" > <label for="LastMonth">Last Month</label>
+                           <input type="radio" class="radio-styled " value="1" name="toppages" (click)="topPagesLastThreeMonths()"><label for="Last6Month"> Last 3 Months</label>
                       </div>
                     </div>
                       <div class="table-responsive " *ngIf="showTopPages" style="overflow-x: scroll; overflow-y: hidden;margin-left: -102px;">
@@ -503,7 +503,7 @@
                         <br><br>
     </div>
      <!-- alert -->
-     <div class="model model-alerts" *ngIf="isAlertPopup"  style="margin-top: 275px;box-shadow: 0 0 5px #777;"> 
+     <div class="model model-alerts" *ngIf="isAlertPopup"  style="margin-top: 275px;box-shadow: 0 0 5px #777;" [style.margin-top.px]="windowBottom"> 
         <!-- <a class="close">Close</a> -->
         
         <div class="model-content">

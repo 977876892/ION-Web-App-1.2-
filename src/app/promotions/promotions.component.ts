@@ -524,7 +524,8 @@ notselectTags:boolean=false;
        this.isStartLoader=true;
         this.ionizedPromotionTitle=promotionblog.title;
         const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
-          this.promotionService.updateThePromotion(promotionblog.postid,promotionblog.image.url,promotionblog.title,promotionblog.category.categoryid).subscribe(res => {
+         this.promotionService.getPromotionFullView(promotionblog.postid).subscribe(res=>{
+             this.promotionService.updateThePromotion(promotionblog.postid,promotionblog.image.url,promotionblog.title,promotionblog.category.categoryid,res.text).subscribe(res => {
             this.promotionStatus=1;
             this.isStartLoader=false;
             this.alertMessage="Your Promotion Will publish soon..";
@@ -537,6 +538,14 @@ notselectTags:boolean=false;
               this.isStartLoader=false;
             }, () => {
             })
+      },(err) => {
+              var errorMessage= this.errorservice.logError(err);
+              this.isAlertPopup=true;
+              this.alertMessage=errorMessage;
+              this.isStartLoader=false;
+            }, () => {
+            })
+         
 
      }
           messagesCount=0;

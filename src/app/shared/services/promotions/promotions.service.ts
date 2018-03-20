@@ -117,7 +117,7 @@ addPromotionService(promotionid,content,image,promotionTitle) {
      },
    );
  }
-  updateThePromotion(promotionid,image,promotionTitle,categoryId) {
+  updateThePromotion(promotionid,image,promotionTitle,categoryId,content) {
   const currentuser = localStorage ? JSON.parse(localStorage.getItem('user')) : 0;
     let options;
     var newDate=new Date();
@@ -129,7 +129,8 @@ addPromotionService(promotionid,content,image,promotionTitle) {
     if(mm<10){
       mm='0'+mm;
     }
-    promotionTitle=promotionTitle.replace(/&/g, "%26") 
+    promotionTitle=promotionTitle.replace(/&/g, "%26");
+    content=content.replace(/&/g, "%26");
     let body = new FormData();
     var created=newDate.getFullYear()+"-"+mm+"-"+dd+" "+newDate.toString().split(" ")[4];
     //var newDate=new Date();
@@ -137,15 +138,15 @@ addPromotionService(promotionid,content,image,promotionTitle) {
     const headers = new Headers({'Content-Type' : 'application/X-www-form-urlencoded'});
      let resData = 'image=' +image +
       '&groupTags=' +
-      '&write_content_hidden=' +  encodeURIComponent(promotionTitle) +
+      '&write_content_hidden=' + content +
       '&publish_up=' + created +
       '&copyrights=' +
       '&send_notification_emails=1'  +
       '&created=' + created +
-      '&write_content=' + encodeURIComponent(promotionTitle) +
+      '&write_content=' + content +
       '&subscription=1' +
       '&title=' +promotionTitle +
-      '&content=' + encodeURIComponent(promotionTitle) +
+      '&content=' + content +
       '&tags=' +
       '&frontpage=' + 
       '&allowcomment=1' +

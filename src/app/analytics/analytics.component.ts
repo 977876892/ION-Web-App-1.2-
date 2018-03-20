@@ -12,7 +12,7 @@
 
 
 
-import { Component, Output, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, Output, OnInit, ElementRef, ViewChild,HostListener } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import * as _ from 'underscore';
 import * as xml2js from 'xml2js';
@@ -1446,6 +1446,11 @@ export class AnalyticsComponent implements OnInit {
                       this.alertMessage=errorMessage;
                     })
               }
+          windowBottom:number;
+           @HostListener("window:scroll", [])
+            onWindowScroll()  {
+                this.windowBottom= window.pageYOffset;
+          }
           //doctor wise revenue and visits chart
   //visit analytics
 
