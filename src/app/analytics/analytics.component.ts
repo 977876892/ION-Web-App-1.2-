@@ -34,7 +34,7 @@ export class AnalyticsComponent implements OnInit {
      
   constructor(private router: Router, private route: ActivatedRoute,private analyticsService: AnalyticsService,private errorservice:ErrorService) {
   
-  }
+  } 
     //public estimated:string='0';
   selectedDate:Date=new Date();
   allApiCalls:any[];

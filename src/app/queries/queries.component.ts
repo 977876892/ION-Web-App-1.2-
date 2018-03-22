@@ -922,10 +922,12 @@ deleteAndIonizeAlertPopup(){
                     this.isStartLoader = false;
         })
       }
+      //blocked by <>*() charecters.
       omit_special_char(event) {
                 var k;  
-                k = event.charCode; // k = event.keyCode;  (Both can be used)       
-                return(k!=60 &&k!=62);
+                k = event.charCode; // k = event.keyCode;  (Both can be used)   
+
+                return(k!=60 &&k!=62 && k!=42 && k!=40 && k!=41);
         }
 
       ionizeTheQuery(eachquerie){
@@ -983,6 +985,7 @@ deleteAndIonizeAlertPopup(){
               if(!this.isDeleteAlertPopup ||!this.isAlertPopup)
                 this.windowBottom= window.pageYOffset;
           }
+      
               
 }
 
@@ -996,8 +999,12 @@ export class QuerySearchPipe implements PipeTransform {
 
   constructor() { }
   public transform(value, keys: string, term: string) {
-    if (!term) return value;
-    return (value || []).filter((item) => keys.split(',').some(key => item.hasOwnProperty(key) && new RegExp(term, 'gi').test(item[key])));
 
+    if (!term) return value;
+    return (value || []).filter((item) => keys.split(',').some(key => item.hasOwnProperty(key) && new RegExp(this.escapeRegExp(term.toString().replace(/\bxx\b/g, "").replace(/xx/g, term)), 'g').test(item[key])));
+
+  }
+  escapeRegExp(str) {
+    return str.replace(/[\[\]\/{}()*+?.\\^$|-]/g, "\\$&");
   }
 }

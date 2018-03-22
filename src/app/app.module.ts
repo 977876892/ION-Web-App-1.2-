@@ -38,6 +38,7 @@ import { UiSwitchModule } from 'ngx-toggle-switch/src'
 /*copy*/
 import { ClipboardModule } from 'ngx-clipboard';
 
+
 @NgModule({
   declarations: [
     AppComponent,

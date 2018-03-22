@@ -27,6 +27,7 @@ export class LeadsComponent implements OnInit {
   leadId: number;
   phoneMinlength:boolean=false;
   numLength:number=0;
+  isShowPatientDetails:boolean=false;
   spaceComment=IonServer.Space_Not_required;  
   f_name_req_comm=IonServer.f_name_required;
   l_name_required_comm=IonServer.l_name_required;
@@ -72,7 +73,9 @@ export class LeadsComponent implements OnInit {
     ptype:new FormControl(''),
     age:new FormControl(''),
     id:new FormControl(''),
-    source:new FormControl('')
+    source:new FormControl(''),
+    img:new FormControl(''),
+    imgTag:new FormControl('')
   });
   buttonsDisabled=false;
   checkboxGroup: FormGroup;
@@ -157,6 +160,27 @@ export class LeadsComponent implements OnInit {
      eachData.isClickOnDottedLine = false;
    });
  }
+}
+PatientDetailsPopup(editLead){
+  console.log(editLead)
+  this.leadForm.patchValue({
+    firstname:editLead.firstname,
+    surname: editLead.surname,
+    email: editLead.email,
+    phone: editLead.mobile,
+    sex: editLead.sex,
+    dob: editLead.birthday,
+    city: editLead.city,
+    area: editLead.area,
+    remarks: editLead.remarks,
+    source:editLead.source,
+    id:editLead.id,
+    img:editLead.image,
+    imgTag:editLead.imgTag
+  })
+  this.isShowPatientDetails=true;
+  console.log(this.leadForm.value);
+
 }
    changeTagClick(tag) {
       // const tagsArray = <FormArray>this.leadFilterForm.controls.tags;

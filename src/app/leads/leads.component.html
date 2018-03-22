@@ -231,7 +231,7 @@
     </td>
     <td [class.seleted]="eachdata.isChecked" *ngIf="eachdata.image!=''&&eachdata.image!='undefined'"><img src="{{eachdata.image}}" style="width: 34px;height: 34px;border-radius: 50%;object-fit: cover;"></td>
     <td [class.seleted]="eachdata.isChecked"  *ngIf="eachdata.image==''||eachdata.image=='undefined'"><span class="avatar avatar-r" [style.background-color]="eachdata.color"   style="margin: inherit !important;">{{ eachdata.imgTag }}</span></td>
-    <td class="v-name" [class.seleted]="eachdata.isChecked" title="{{ eachdata.firstname }}">{{ eachdata.firstname }}</td>
+    <td class="v-name" [class.seleted]="eachdata.isChecked" title="{{ eachdata.firstname }}" (click)="PatientDetailsPopup(eachdata)">{{ eachdata.firstname }}</td>
     <td class="v-sex " [class.seleted]="eachdata.isChecked"><span *ngIf="eachdata.sex!='null'">{{ eachdata.sex }}</span></td>
     <td class="v-age " [class.seleted]="eachdata.isChecked">{{ eachdata.age }}</td>
     <td class="v-mobile " [class.seleted]="eachdata.isChecked">{{ eachdata.mobile }}</td>
@@ -418,9 +418,10 @@
       <li>
       <label class="labels">Date of Birth</label>
       <div class="leads_date_cal" style="position:relative;">
-      <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" [formControl]="leadForm.controls['dob']" autoClose="true" placeHolder="dd-mm-yyyy" max="{{stopDates}}" tabindex="7" ></owl-date-time>
-      <!-- <img src="assets/images/calender_icon.png" class="lead_calender_img"> -->
+      <owl-date-time  type="calendar" dateFormat="DD-MM-YYYY" [formControl]="leadForm.controls['dob']" autoClose="true" placeHolder="dd-mm-yyyy" max="{{stopDates}}" tabindex="7" ></owl-date-time>
+      <img src="assets/images/calender_icon.png" class="lead_calender_img" > 
     </div>
+    
       <!-- <input type="date" class="input" [formControl]="leadForm.controls['dob']"> -->
       <span style="color:red" *ngIf="leadForm.controls['dob'].hasError('required') && leadForm.controls['dob'].touched">Enter date of Birth</span>
       <!-- <span style="color:red" *ngIf="leadForm.controls['city'].hasError('minlength') && leadForm.controls['city'].touched"> City be at least three characters in length.</span> -->
@@ -532,7 +533,7 @@
                   </div>
                  </div>
      </div>
-
+ 
       <!-- delete yes or no popup -->
       <div class="model model-alerts" *ngIf="isDeleteAlertPopup" style="border-radius: 10px;box-shadow: 0 0 5px #777;" [style.margin-top.px]="windowBottom"> 
           <!-- <a class="close" href="#">Close</a> -->
@@ -561,6 +562,114 @@
 
 
 </div>
+<!-- Popup patient details-->
+<div class="model model-profile-view bx-shadow no-padding" *ngIf="isShowPatientDetails" [style.margin-top.px]="windowBottom">
+  <a class="close" style="cursor: pointer;" (click)="isShowPatientDetails = false;">Close</a>
+  <div class="model-titlebar" style="height: 62px;line-height: 62px;">
+  <span class="model-title"> PATIENT DETAILS</span>
+  </div>
+   <div class="model-content">
 
+   <div class="profile-view">
+
+<table class="profile-table" width="80%" cellpadding="0" cellspacing="0" style="margin-top: -19px;">
+<tbody>
+<tr>
+  <td class="profile-img" *ngIf="this.leadForm.value.img!=''&&this.leadForm.value.img!='undefined'"><img src="{{this.leadForm.value.img}}" style="width:120px;height: 120px; margin-top: 25px;border-radius: 100%;margin-right: 15px;"></td>
+<td class="profile-img" *ngIf="this.leadForm.value.img==''|| this.leadForm.value.img=='undefined'"><img src="assets/css/images/profile_no_img.png" style="width:120px;height: 120px; margin-top: 25px;border-radius: 100%;margin-right: 15px;"></td>
+<td class="profile-info">
+<div>
+<h3 style="font-size: 25px;"><b>{{ this.leadForm.value.firstname }}</b></h3>
+<p class="phone"><b>{{ this.leadForm.value.phone }}</b></p>
+<p class="email"><b>{{ this.leadForm.value.email }}</b></p>
+</div>
+</td>
+</tr>
+</tbody>
+
+
+</table>
+
+<!-- <div class="appointment-block bx-border-stl-2" style="padding: 0px;">
+<div class="heading vie--view__appt-heading" style="top:-18px;"><b>APPOINTMENT DETAILS</b></div>
+
+<table class="profile-table saved-profile no-margin" width="100%" cellpadding="0" cellspacing="0">
+<tbody>
+<tr>
+<td class="profile_data  txt-center" style="padding: 0px 0px 6px 0px;">
+<label class="labels date txt-center">{{ patientDetailsData.display_startdate }} </label>
+<label class="labels time txt-center">{{ patientDetailsData.display_starttime }}</label>
+</td>
+</tr>
+
+<tr>
+ <td class="profile_data txt-center">
+ <label class="doc_details">{{ patientDetailsData.resname }}</label><br><br>
+ <label class="accept_full vis--view__appt-acpt" *ngIf='patientDetailsData.request_status=="accepted"'>
+     <strong>ACCEPTED</strong>
+ </label>
+ <label class="new_full" *ngIf='patientDetailsData.request_status=="new"'>NEW</label>
+ <label class="review_full" *ngIf='patientDetailsData.request_status=="Review"'>REVIEW</label>
+ <label class="rejected_full" *ngIf='patientDetailsData.request_status=="canceled"'>CANCELLED</label>
+
+</td>
+</tr>
+</tbody>
+</table>
+
+</div> -->
+
+<br>
+<table class="profile-table saved-profile" width="70%" cellpadding="0" cellspacing="0" style="margin: -20px 60px;">
+<tbody>
+<tr>
+<!-- <td>
+<label class="labels">Amount paid</label>
+<input type="text" class="input" value="{{ patientDetailsData.booking_deposit }}" readonly>
+</td> -->
+<td>
+<label class="labels">Date of birth</label>
+<input type="text" class="input" value="{{ this.leadForm.value.dob }}" readonly *ngIf="this.leadForm.value.dob!='0000-00-00'">
+</td>
+<td>
+<label class="labels">Gender</label>
+<b>{{ this.leadForm.value.sex }}</b>
+</td>
+</tr>
+<tr>
+<td>
+<label class="labels">City</label>
+<b>{{ this.leadForm.value.city }}</b>
+</td>
+<td>
+<label class="labels">Area Locality</label>
+<input type="text" class="input" value="{{ this.leadForm.value.area }}" readonly>
+</td>
+<td>
+<label class="labels">Source</label>
+<b>{{this.leadForm.value.source}}</b>
+ </td>
+</tr>
+
+
+<tr>
+<td colspan="3">
+<label class="labels">Remarks</label>
+<p class="lead-remark"><b>{{ this.leadForm.value.remarks }}</b></p>
+</td>
+</tr>
+
+
+
+</tbody>
+
+</table>
+
+
+   </div>
+
+
+   </div>
+  </div>
 <!-- Container ends -->
-<div class="overlay" *ngIf="isAddLead || isEditLead || isStartLoader || isAlertPopupError || isAlertPopup || isPatientGroups || isDeleteAlertPopup ||deleteSuccessPopup"></div>
+<div class="overlay" *ngIf="isAddLead || isEditLead || isStartLoader || isAlertPopupError || isAlertPopup || isPatientGroups || isDeleteAlertPopup ||deleteSuccessPopup || isShowPatientDetails"></div>
