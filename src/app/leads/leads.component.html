@@ -231,7 +231,7 @@
     </td>
     <td [class.seleted]="eachdata.isChecked" *ngIf="eachdata.image!=''&&eachdata.image!='undefined'"><img src="{{eachdata.image}}" style="width: 34px;height: 34px;border-radius: 50%;object-fit: cover;"></td>
     <td [class.seleted]="eachdata.isChecked"  *ngIf="eachdata.image==''||eachdata.image=='undefined'"><span class="avatar avatar-r" [style.background-color]="eachdata.color"   style="margin: inherit !important;">{{ eachdata.imgTag }}</span></td>
-    <td class="v-name" [class.seleted]="eachdata.isChecked" title="{{ eachdata.firstname }}" (click)="PatientDetailsPopup(eachdata)">{{ eachdata.firstname }}</td>
+    <td class="v-name" [class.seleted]="eachdata.isChecked" title="{{ eachdata.firstname }}" (click)="PatientDetailsPopup(eachdata)" style="cursor: pointer;">{{ eachdata.firstname }}</td>
     <td class="v-sex " [class.seleted]="eachdata.isChecked"><span *ngIf="eachdata.sex!='null'">{{ eachdata.sex }}</span></td>
     <td class="v-age " [class.seleted]="eachdata.isChecked">{{ eachdata.age }}</td>
     <td class="v-mobile " [class.seleted]="eachdata.isChecked">{{ eachdata.mobile }}</td>
@@ -418,10 +418,9 @@
       <li>
       <label class="labels">Date of Birth</label>
       <div class="leads_date_cal" style="position:relative;">
-      <owl-date-time  type="calendar" dateFormat="DD-MM-YYYY" [formControl]="leadForm.controls['dob']" autoClose="true" placeHolder="dd-mm-yyyy" max="{{stopDates}}" tabindex="7" ></owl-date-time>
-      <img src="assets/images/calender_icon.png" class="lead_calender_img" > 
+      <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" [formControl]="leadForm.controls['dob']" autoClose="true" placeHolder="dd-mm-yyyy" max="{{stopDates}}" tabindex="7" class="outline-empty"></owl-date-time>
+       <img src="assets/images/calender_icon.png" class="lead_calender_img"> 
     </div>
-    
       <!-- <input type="date" class="input" [formControl]="leadForm.controls['dob']"> -->
       <span style="color:red" *ngIf="leadForm.controls['dob'].hasError('required') && leadForm.controls['dob'].touched">Enter date of Birth</span>
       <!-- <span style="color:red" *ngIf="leadForm.controls['city'].hasError('minlength') && leadForm.controls['city'].touched"> City be at least three characters in length.</span> -->
@@ -533,7 +532,7 @@
                   </div>
                  </div>
      </div>
- 
+
       <!-- delete yes or no popup -->
       <div class="model model-alerts" *ngIf="isDeleteAlertPopup" style="border-radius: 10px;box-shadow: 0 0 5px #777;" [style.margin-top.px]="windowBottom"> 
           <!-- <a class="close" href="#">Close</a> -->
@@ -564,7 +563,7 @@
 </div>
 <!-- Popup patient details-->
 <div class="model model-profile-view bx-shadow no-padding" *ngIf="isShowPatientDetails" [style.margin-top.px]="windowBottom">
-  <a class="close" style="cursor: pointer;" (click)="isShowPatientDetails = false;">Close</a>
+  <a class="close" style="cursor: pointer;" (click)="isShowPatientDetails = false;clearForm();">Close</a>
   <div class="model-titlebar" style="height: 62px;line-height: 62px;">
   <span class="model-title"> PATIENT DETAILS</span>
   </div>

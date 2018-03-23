@@ -179,7 +179,7 @@ PatientDetailsPopup(editLead){
     imgTag:editLead.imgTag
   })
   this.isShowPatientDetails=true;
-  console.log(this.leadForm.value);
+  //console.log(this.leadForm.value);
 
 }
    changeTagClick(tag) {
@@ -449,7 +449,9 @@ clearForm() {
     remarks: '',
     ctags:'',
     age:'',
-    id:''
+    id:'',
+    img:'',
+    imgTag:''
   });
 }
 

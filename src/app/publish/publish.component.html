@@ -2449,7 +2449,7 @@
                   </owl-date-time>
 
                   <owl-date-time [formControl]="createAndUpdateTheBlogForm.controls['createdTime']" (onSelect)="timeChange(createAndUpdateTheBlogForm.controls['createdTime'].value);" [showHeader]="true" [inputId]="'input101'"
-                    [type]="'timer'" [dateFormat]="'hh:mm a'" [autoClose]="'true'" required>
+                    [type]="'timer'" [dateFormat]="'hh:mm a'" [autoClose]="'true'" required min="{{stopTimes}}">
                     <div [ngClass]="showDate==''?'calendar-btn timer':'calendar-btn timer contenttime'">
                       <i class="fa fa-clock-o test" aria-hidden="true"></i>
                     </div>

@@ -61,6 +61,8 @@ addPromotionService(promotionid,content,image,promotionTitle) {
   } 
      let body = new FormData();
     var created=newDate.getFullYear()+"-"+mm+"-"+dd+" "+newDate.toString().split(" ")[4];
+    //var intitle=dd+"/"+mm+"/"+newDate.getFullYear()+" "+newDate.toString().split(" ")[4];
+    var intitle=dd+"/"+mm+"/"+newDate.getFullYear();
    //const headers = new Headers({'Content-Type' : 'application/X-www-form-urlencoded'});
     body.append('image',image);
     body.append('groupTags', '');
@@ -73,7 +75,7 @@ addPromotionService(promotionid,content,image,promotionTitle) {
     body.append('copyrights','');
     body.append('published',"4");
     body.append('subscription','');
-    body.append('title',promotionTitle+" "+created);
+    body.append('title',promotionTitle+" "+intitle);
     body.append('content',content);
     body.append('tags','');
     body.append('frontpage','1');

@@ -2609,6 +2609,7 @@ blogTopicClick(key) {
       dateChange(createdDate){
         var format = /[-]+/;
         var today_date=new Date();
+        var today_date_stop_times=new Date();
         today_date.setHours(0,0,0,0);
         if(format.test(createdDate)){
           createdDate=new Date(createdDate.replace(/-/g, "/"));
@@ -2638,7 +2639,9 @@ blogTopicClick(key) {
               this.enableSchedule=false;
           }
           else{
-              this.stopTimes=this.format(today_date, ['YYYY-MM-DD HH:mm:ss']);
+              
+              this.stopTimes=this.format(today_date_stop_times, ['YYYY-MM-DD HH:mm:ss']);
+              console.log(this.stopTimes);
               this.enablePublish=false;
               this.enableSchedule=true;
           }

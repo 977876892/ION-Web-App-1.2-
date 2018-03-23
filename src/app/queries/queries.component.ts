@@ -922,12 +922,10 @@ deleteAndIonizeAlertPopup(){
                     this.isStartLoader = false;
         })
       }
-      //blocked by <>*() charecters.
       omit_special_char(event) {
                 var k;  
                 k = event.charCode; // k = event.keyCode;  (Both can be used)   
-
-                return(k!=60 &&k!=62 && k!=42 && k!=40 && k!=41);
+                return(k!=60 &&k!=62);
         }
 
       ionizeTheQuery(eachquerie){

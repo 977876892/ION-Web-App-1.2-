@@ -109,7 +109,7 @@
         <table class="users855" *ngFor= "let booking of visitsData; let i = index">
             <thead>
               <tr class="v_user354">
-                <th class="row-1 row-ID bookinG">{{booking[0]}}</th> 
+                <th class="row-1 row-ID bookinG">{{booking[0]}}</th>
                 <th class="row-2 row-name"></th>
                 <th class="row-3 row-email"></th>
                 <th class="row-4 row-job"></th>
@@ -221,7 +221,7 @@
         <li>
          <label class="labels">SELECT DATE</label>
           <!-- <date-picker [formControl]="visitForm.controls['startdate']" format="L" required></date-picker> -->
-          <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD MMM, YYYY" [formControl]="visitForm.controls['startdate']" autoClose="true" (onSelect)="getDoctorTimeSlots(doctorID.value, selectedDate.value)" #selectedDate placeHolder="dd-mm-yyyy" min="{{stopDates}}" tabindex="3" required></owl-date-time>
+          <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD MMM, YYYY" [formControl]="visitForm.controls['startdate']" autoClose="true" (onSelect)="getDoctorTimeSlots(doctorID.value, selectedDate.value)" #selectedDate placeHolder="dd-mm-yyyy" min="{{stopDates}}" tabindex="3" required class="outline-empty"></owl-date-time>
           <!-- <input type="date" class="input xs-fill-wt" (change)="getDoctorTimeSlots(doctorID.value, selectedDate.value)" [formControl]="visitForm.controls['startdate']" required #selectedDate> -->
           <span class="booking_error" *ngIf="visitForm.controls['startdate'].hasError('required') && visitForm.controls['startdate'].touched">Date Is Required</span>
           <span class="booking_error" *ngIf="visitForm.controls['startdate'].hasError('minlength') && visitForm.controls['startdate'].touched"> Please Select Date.</span>
@@ -366,7 +366,7 @@
         <li class="visits-dob">
             <label class="labels">DATE OF BIRTH</label>
              <!-- <ng-datepicker [formControl]="visitForm.controls['dob']"></ng-datepicker>  -->
-             <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD MMM, YYYY" [formControl]="visitForm.controls['dob']" (onSelect)="dobSelected(visitForm.controls['dob'].value)" autoClose="true" placeHolder="dd-mm-yyyy" max="{{stopDates}}"  tabindex="11">
+             <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD MMM, YYYY" [formControl]="visitForm.controls['dob']" (onSelect)="dobSelected(visitForm.controls['dob'].value)" autoClose="true" placeHolder="dd-mm-yyyy" max="{{stopDates}}"  tabindex="11" class="outline-empty">
              </owl-date-time>
             <!-- <input type="text" type="date" class="input xs-fill-wt" minlength="5" maxlength="40" [formControl]="visitForm.controls['dob']"> -->
             <!--<span style="color:red" *ngIf="visitForm.controls['dob'].hasError('required') && visitForm.controls['dob'].touched">Invalid date of birth</span>
@@ -413,14 +413,14 @@
               <div class="form-section-btm" *ngIf="isAddVisit">
                   <ul>
                   <li>
-                    <tag-input [formControl]="visitForm.controls['tags']"   tabindex="15" (keypress)="omit_special_char($event)" secondaryPlaceholder="Enter the Group." addOnBlur=true>
+                    <tag-input [formControl]="visitForm.controls['tags']"   tabindex="15" (keypress)="omit_special_char($event)" secondaryPlaceholder="Enter the Group." addOnBlur=true ripple="false">
                       <tag-input-dropdown [autocompleteItems]="autoComplete">
                       </tag-input-dropdown>
                     </tag-input>
                   </li>
                   </ul>
               </div>
- 
+
   
         <div class="actions" *ngIf="!isEditVisit">
         <button class="button profile-action ripple btn" type="submit" (click)="addVisit()"  tabindex="16" [disabled]="buttonsDisabled">ADD APPOINTMENT</button> &#160;&#160;

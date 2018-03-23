@@ -376,7 +376,7 @@
     <li>
     <label class="labels">Date of Birth</label>
     <div class="leads_date_cal">
-    <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" tabindex="7" [formControl]="leadForm.controls['dob']" autoClose="true" placeHolder="dd-mm-yyyy" max="{{stopDates}}"></owl-date-time>
+    <owl-date-time hideClearButton="true" type="calendar" dateFormat="DD-MM-YYYY" tabindex="7" [formControl]="leadForm.controls['dob']" autoClose="true" placeHolder="dd-mm-yyyy" max="{{stopDates}}" class="outline-empty"></owl-date-time>
   </div>
     <!-- <input type="date" class="input" [formControl]="leadForm.controls['dob']"> -->
     <span style="color:red" *ngIf="leadForm.controls['dob'].hasError('required') && leadForm.controls['dob'].touched">Enter date of Birth</span>

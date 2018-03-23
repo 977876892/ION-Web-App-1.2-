@@ -177,10 +177,14 @@ export class VisitsComponent implements OnInit {
   this.visitsService.getVisitsListService(current_date).subscribe(
     (visitsResponse: any) => {
          this.grouped = _.chain(visitsResponse.data).groupBy('startdate').pairs();
+         console.log(this.grouped);
           for(let i = 0; i < this.grouped._wrapped.length; i++) {
               let date = new Date((this.grouped._wrapped[i])[0]).getDate();
               let month = new Date((this.grouped._wrapped[i])[0]).getMonth();
               this.grouped._wrapped[i][0] = months[month] + ' ' + date;
+               for (var j = 0; j < this.grouped._wrapped[i][1].length; j++) {
+                (this.grouped._wrapped[i][1])[j].color = ('#' + Math.floor(Math.random() * 16777215).toString(16));
+                }
             }
           this.visitsTempData = this.grouped._wrapped;
           if(this.visitsTempData[0]!==undefined && this.selectCalDate == this.visitsTempData[0][0]){
@@ -223,9 +227,6 @@ getFilterByDoctorsData(resId) {
   this.showNovisitsAvailable=false;
  if(resId == undefined || resId == '' || resId == null) {
   this.visitsData = this.visitsTempData; 
-  for (var i = 0; i < this.visitsData[0][1].length; i++) {
-    this.visitsData[0][1][i].color = ('#' + Math.floor(Math.random() * 16777215).toString(16));
-    }
  }else {
   this.visitsData = [];
   this.visitsTempData.forEach((resdata) => {
